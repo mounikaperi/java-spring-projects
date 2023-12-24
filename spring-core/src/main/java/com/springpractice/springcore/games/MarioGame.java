@@ -1,6 +1,6 @@
 package com.springpractice.springcore.games;
 
-public class MarioGame {
+public class MarioGame implements GamingConsole{
     MarioGame game;
     public void up() {
         System.out.println("Jump");
@@ -12,6 +12,6 @@ public class MarioGame {
         System.out.println("Go back");
     }
     public void right() {
-        System.out.println("A");
+        System.out.println("Accelerate");
     }
 }

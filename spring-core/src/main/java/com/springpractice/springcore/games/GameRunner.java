@@ -1,8 +1,8 @@
 package com.springpractice.springcore.games;
 
 public class GameRunner {
-    MarioGame game;
-    public GameRunner(MarioGame game) {
+    GamingConsole game;
+    public GameRunner(GamingConsole game) {
         this.game = game;
     }
     public void run() {
