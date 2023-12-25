@@ -13,6 +13,7 @@ public class AppGaming {
     public static void main(String[] args) {
         try (var context = new AnnotationConfigApplicationContext(AppGaming.class)) {
             context.getBean(GameRunner.class).run();
+            Arrays.stream(context.getBeanDefinitionNames()).forEach(System.out::println);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
