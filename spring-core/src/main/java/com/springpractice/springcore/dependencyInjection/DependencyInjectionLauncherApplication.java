@@ -55,6 +55,7 @@ class BusinessClassWithConstructorInjection {
         return "Using " + dependency1 + " and " + dependency2;
     }
 }
+
 @Component
 class Dependency1 {
 
@@ -64,6 +65,7 @@ class Dependency1 {
 class Dependency2 {
 
 }
+
 @Configuration
 @ComponentScan
 public class DependencyInjectionLauncherApplication {
