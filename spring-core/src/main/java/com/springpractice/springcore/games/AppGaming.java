@@ -3,6 +3,8 @@ package com.springpractice.springcore.games;
 import com.springpractice.springcore.games.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import java.util.Arrays;
+
 public class AppGaming {
     public static void main(String[] args) {
         // TightCoupling by creating objects specific to a class
@@ -26,13 +28,17 @@ public class AppGaming {
          */
 
         var context = new AnnotationConfigApplicationContext(GamingConfiguration.class);
-        System.out.println(context.getBean("name"));
-        System.out.println(context.getBean("age"));
-        System.out.println(context.getBean("myAddress"));
-        System.out.println(context.getBean("person"));
-        System.out.println(context.getBean("person1"));
-        System.out.println(context.getBean("person2"));
-        System.out.println(context.getBean(Address.class));
-        System.out.println(context.getBean(Person.class));
+        System.out.println("Bean name: " + context.getBean("name"));
+        System.out.println("Bean age: " + context.getBean("age"));
+        System.out.println("Bean myAddress " + context.getBean("myAddress"));
+        System.out.println("Bean person " + context.getBean("person"));
+        System.out.println("Bean person1 " + context.getBean("person1"));
+        System.out.println("Bean person2 " + context.getBean("person2"));
+        System.out.println("Bean Address class " + context.getBean(Address.class));
+        System.out.println("Bean Person class " +context.getBean(Person.class));
+        // List of all beans managed by spring
+        System.out.println("All Bean Definitions ");
+        Arrays.stream(context.getBeanDefinitionNames()).forEach(System.out::println);
+        System.out.println("Bean count " + context.getBeanDefinitionCount());
     }
 }
