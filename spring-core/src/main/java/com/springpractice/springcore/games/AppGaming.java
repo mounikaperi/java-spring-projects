@@ -1,4 +1,4 @@
-package com.springpractice.springcore;
+package com.springpractice.springcore.games;
 
 import com.springpractice.springcore.games.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -27,5 +27,12 @@ public class AppGaming {
 
         var context = new AnnotationConfigApplicationContext(GamingConfiguration.class);
         System.out.println(context.getBean("name"));
+        System.out.println(context.getBean("age"));
+        System.out.println(context.getBean("myAddress"));
+        System.out.println(context.getBean("person"));
+        System.out.println(context.getBean("person1"));
+        System.out.println(context.getBean("person2"));
+        System.out.println(context.getBean(Address.class));
+        System.out.println(context.getBean(Person.class));
     }
 }
