@@ -2,6 +2,17 @@ Annotations
 -----------
 1. @RestController
 2. @RequestMapping
+3. @ConfigurationProperties
+4. @Autowired
+5. @Component
+
+Others
+-------
+1. Spring Boot DevTools - no need to manually restart the server except changes done in pom.xml
+2. Profiles - Different configurations in different environments
+3. Multiple loggings - trace, debug, info, warning, error, off
+4. Spring boot actuator - expose endpoints health and metrics
+5. 2 ways of finding what is autoconfigured in spring boot- via actuator/beans and via logging at trace level
 
 What all are autoconfigured in spring-boot
 ------------------------------------------
