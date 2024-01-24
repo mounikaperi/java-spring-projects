@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<GetCourseDetailsResponse xmlns="http://java-spring-projects/soap-web-services/courses">
+<GetCourseDetailsResponse xmlns="http://java-spring-projects/soap-web-services/courses"
+    xsi:schemaLocation="http://java-spring-projects/soap-web-services/courses course-details.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <CourseDetails>
             <id>123</id>
             <name>Learning Soap Web Services</name>
