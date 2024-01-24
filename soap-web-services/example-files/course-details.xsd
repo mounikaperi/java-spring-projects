@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://java-spring-projects/soap-web-services/courses"
+        xmlns:tns="http://java-spring-projects/soap-web-services/courses"
+        elementFormDefault="qualified">
+    <element name="GetCourseDetailsRequest">
+        <complexType>
+            <sequence>
+                <element name="id" type="integer"></element>
+            </sequence>
+        </complexType>
+    </element>
+</schema>
