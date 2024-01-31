@@ -1,5 +1,5 @@
 package com.springcore.interfaces;
 
 public interface Speakers {
-    public void makeSound();
+    public String makeSound();
 }
