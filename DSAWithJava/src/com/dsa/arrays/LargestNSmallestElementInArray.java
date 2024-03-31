@@ -2,7 +2,7 @@ package com.dsa.arrays;
 
 import java.util.Scanner;
 
-public class LargestElementInArray {
+public class LargestNSmallestElementInArray {
 
 	public static void main(String[] args) {
 		/**
