@@ -86,5 +86,44 @@ try-with-resources
     // finally block is not needed here
     
         
-        
-      
+Interfaces (From JDK 8)
+
+      1. Interfaces can accomodate method with implementation but those methods must be marked as 'default'
+            interface Shape() {
+                  void area();
+                  void perimeter();
+                  public default double estimatePaintCost(double paintRate) {
+                        return this.area() * paintRate;
+                  }
+            }
+      2. Functional Interfaces: 
+            Interfaces that have only one abstract method. To ensure that a interface remains so. @FunctionalInterface compiler check annotation is used.
+            Functional Interfaces are introduced to facilitate a new programming paradigm called functional programming.
+            Functional Programming is passing a function as a parameter to another function.
+            Functional Interfaces can be implemented using Lambda Expressions without having to create a subclass.
+
+            @FunctionalInterface
+            interface Give {
+                  String doGive();
+            }
+            public class MyApplication {
+                  public static void main(String[] args) {
+                        Give orgName = () => "Cognizant";
+                        System.out.println(orgName.doGive());
+                        
+                        Give greet = () => "Hello"; // Lambda Expression
+                        System.out.println(greet.doGive());
+
+                        Give greetByTime = () => {
+                              String greeting = "";
+                              int h = LocalTime.now().getHour();
+                              if (h >=3 && h<=11) 
+                                    greeting = "Good Morning";
+                              else if (h >= 12 && h<=15) 
+                                    greeting = "Good Noon";
+                              else
+                                    greeting = "Good Evening";
+                              return greeting;
+                        };
+                        System.out.println(greetbyTime.doGive());
+
