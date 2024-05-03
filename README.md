@@ -126,4 +126,21 @@ Interfaces (From JDK 8)
                               return greeting;
                         };
                         System.out.println(greetbyTime.doGive());
+                  }
+            }
+      3. Types of Functional Interfaces:
+            - Consumer
+            - Supplier
+            - Predicate
+            - Operator
+
+            Consumer: 
+                  Functional Interfaces whose abstract method that accepts a param but doesnt return any value is called a Consumer
+            Supplier:
+                  Functional Interfaces whose abstract method doesn't accepts any param but returns a value is called Supplier
+            Predicate:
+                  Functional Interface whose abstract method always returns a boolean value. It doesnt matter whether it accepts a param or not, return value is always 
+                  boolean.
+            Operator:
+                  Functional Interface whose absract method accepts param and also returns a value.
 
