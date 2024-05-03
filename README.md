@@ -144,3 +144,5 @@ Interfaces (From JDK 8)
             Operator:
                   Functional Interface whose absract method accepts param and also returns a value.
 
+      4. java.util.function package offers a lot of pre-created functional interfaces
+
