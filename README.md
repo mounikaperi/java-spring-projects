@@ -155,3 +155,49 @@ Generics
       3. For Example: Sorting, Searching, Comparisions, swapping etc are logics that wont change with data type of the data
       4. Generics do not support primitive data types and we have to use Wrapper classes in such cases.
 
+Collections
+
+      1 Java approach for data structures
+      2. java.util.* has
+                  1-> Collection (I) -> represents a collection of data
+                                    -> Methods:
+                                          -> add(element)
+                                          -> remove(element)
+                                          -> contains(element)
+                                          -> size()
+                                          -> stream()
+                        1.a-> List (I) -> represents a linear data structure
+                                    -> Allows index on elements and hence support index based operations like 
+                                          -> add (element, index)
+                                          -> remove(element, index)
+                                          -> get(element, index) ...
+                                    -> Allows duplicate elements to be added and more than one null elements
+                                    -> classes that implement List Interface are:
+                                          -> ArrayList -> Growable array
+                                          -> Vector    -> Synchronized Growable array
+                                          -> LinkedList -> Doubly linked list
+                        1.b-> Set (I)  -> represents a non linear data structure and no duplicates are allowed. Index based operations are not possible
+                                       -> Classes implementing Set interface are:
+                                             -> HashSet -> pure set implementation. It follows no order of retrieval.
+                                             -> LinkedHashSet -> It follows entry order for retrieval
+                              1.b.a -> SortedSet (I)
+                                             -> Classes implementing SortedSet interface are:
+                                             -> TreeSet -> It follows sorted order for retrieval
+                              
+                  2-> Map (I)  -> represents a collection of key:value pairs, duplicate keys are not allowed.
+                               -> Methods 
+                                     -> put(key, value)
+                                     -> keySet(),
+                                     -> Values(),
+                                     -> containsKey(),
+                                     -> size(),
+                                     -> set (key, value)
+                              -> Classes implementing Map interface are:
+                                    -> HashMap -> . It follows no order of retrieval.
+                                    -> LinkedHashSet -> It follows entry order for retrieval
+                        -> SortedMap (I)
+                              -> Classes implementing SortedMap interface are:
+                                    -> TreeMap -> It follows sorted order for retrieval, sorted based on keys
+                  3-> Collections (C)
+                  4-> Comparator (I)
+                  
