@@ -145,4 +145,13 @@ Interfaces (From JDK 8)
                   Functional Interface whose absract method accepts param and also returns a value.
 
       4. java.util.function package offers a lot of pre-created functional interfaces
+      5. A functional interface can refer to a method, as long as the signature of the method being referred matched with the signature of the functional interface.
+      6. Scope resolution operator :: means referred -> System.out::println
+
+Generics
+
+      1. Generics are used to create Abstract Data Types (ADT's)
+      2. ADTs are used to house algorithms that are independent of the data types
+      3. For Example: Sorting, Searching, Comparisions, swapping etc are logics that wont change with data type of the data
+      4. Generics do not support primitive data types and we have to use Wrapper classes in such cases.
 
