@@ -8,6 +8,7 @@ public class SearchForTheTargetValue {
 		/**
 		 * You are given with sorted arry 'arr' of distinct values and a target value 'm'
 		 * You need to search for the index of the target value in the array
+		 * If the element is not present, return the index where it has to be inserted
 		 */
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter the size of the array: ");
