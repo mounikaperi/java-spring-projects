@@ -206,4 +206,12 @@ Collections
                               -> compare(a, b) -> shall return 0 if a is equal to b
                               -> compare(a, b) -> shall return a negative int if a is less than b
                               -> compare(a, b) -> shall return a positive int if a is greater than b
-                  
+                        -> java.lang.Comparable interface with method "int compareTo(x)" is also a similar interface
+                        -> Comparable is expected to be implemented by the class whose objects must be compared. 
+                        -> In that case, the current object is compared within the incoming object
+                              a.compareTo(b) -> shall return 0 if a is equal to b
+                              a.compareTo(b) -> shall return a negative int if a is less than b
+                              a.compareTo(b) -> shall return a positive int if a is greater than b
+
+                        -> Comparable is used as a default comparision logic
+                        -> Comparator is used as customized comparision logic
