@@ -198,6 +198,12 @@ Collections
                         -> SortedMap (I)
                               -> Classes implementing SortedMap interface are:
                                     -> TreeMap -> It follows sorted order for retrieval, sorted based on keys
-                  3-> Collections (C)
-                  4-> Comparator (I)
+                  3-> Collections (C) -> Collections class offers a lot of utility methods for a variety of collection related operations.
+                  4-> Comparator (I) 
+                        -> is a functional interface having "int compare(T a, T b)" as the method.
+                        -> It is to be implemented to dictate on how to compare our custom types like Employee, Consumer etc
+                        -> The expectation is:
+                              -> compare(a, b) -> shall return 0 if a is equal to b
+                              -> compare(a, b) -> shall return a negative int if a is less than b
+                              -> compare(a, b) -> shall return a positive int if a is greater than b
                   
