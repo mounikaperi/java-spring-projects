@@ -215,3 +215,39 @@ Collections
 
                         -> Comparable is used as a default comparision logic
                         -> Comparator is used as customized comparision logic
+
+DateTime API
+
+      java.time
+            Static Methods:
+            LocalDate       .now(), of(year, month, date),                       parse(ISOFormatString), parse(String, DateTimeFormatter)
+            LocalTime       .now(), of(year, month, date),                       parse(ISOFormatString), parse(string, DateTimeFormatter)
+            LocalDateTime   .now(), of(year, month, date, hour, minute, second), parse(ISOFormatString), parse(String, DateTimeFormatter)
+            ZonedDateTime    now(zoneId), of(year, month, date, hour, minute, second, zoneId)
+
+            Instance Methods
+            plusYears()
+            plusDays()
+            plusMonths()
+            plusHours()
+            plusMinutes()
+            minusYears()
+            minusDays()
+            minusMonths()
+            isAfter()
+            isBefore()
+            compareTo()
+
+            DateTimeFormatter
+                  static methods
+                        ofPattern("format")
+                  instance methods
+                        format(dateObject)
+
+            Period
+                  between (startDate, endDate)
+            Duration
+                  between (startTime, endTime)
+
+
+                        
