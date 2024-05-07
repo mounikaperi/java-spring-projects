@@ -2,7 +2,7 @@ package com.ocp17.collections;
 
 import java.util.Objects;
 
-public class Visitor {
+public class Visitor implements Comparable<Visitor> {
 	
 	private int visitorId;
 	private String fullName;
@@ -77,6 +77,9 @@ public class Visitor {
 				&& Objects.equals(fullName, other.fullName) && Objects.equals(mailId, other.mailId)
 				&& visitorId == other.visitorId;
 	}
-	
+
+	public int compareTo(Visitor o) {
+		return ((Integer)this.visitorId).compareTo(o.visitorId);
+	}
 	
 }
