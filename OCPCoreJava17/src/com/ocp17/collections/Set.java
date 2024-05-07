@@ -27,7 +27,7 @@ public class Set {
 		}
 		System.out.println("--------------------------------------------");
 		
-		java.util.Set<Visitor> visitors1= new LinkedHashSet()<>();
+		java.util.Set<Visitor> visitors1= new LinkedHashSet<>();
 		visitors1.add(new Visitor(105, "Vamsy", "abc@gmail.com", 67.00));
 		visitors1.add(new Visitor(102, "John", "john@gmail.com", 67.00));
 		visitors1.add(new Visitor(103, "Raju", "raju@gmail.com", 67.00));
@@ -61,7 +61,7 @@ public class Set {
 		}
 		System.out.println("--------------------------------------------");
 		
-		java.util.Set<Visitor> visitors3 = new TreeSet<>((v1, v2) -> ((Double)v1.getFee().compareTo(v2.getFee())));
+		java.util.Set<Visitor> visitors3 = new TreeSet<>((v1, v2) -> ((Double)v1.getFee()).compareTo(v2.getFee()));
 		
 	}
 
