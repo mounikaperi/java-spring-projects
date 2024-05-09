@@ -1,0 +1,7 @@
+
+This is a sample java program that creates a nio file and writes data to it.
+It creates a new file if file doesnt exist
+if file exists it appends the content to the existing file
+
+this is the appended data text to the existing files.txt
+see if the data is appended
