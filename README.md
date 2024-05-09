@@ -250,4 +250,48 @@ DateTime API
                   between (startTime, endTime)
 
 
-                        
+Streams API
+
+      A stream is a flow of data
+      Source <----------------stream------------------> Destination
+      Source and destination can be an array or any other collection (lists, sets etc)
+      We can operate on the data before the data flows into the destination
+      Source 
+            <--------------stream---------------------->
+                  OPERATION
+                        <--------------------stream --------------------------->
+                              DESTINATION
+      java.util.stream.Stream class represents the stream
+      A stream can be created by using 
+            Stream s1 = Stream.of(anArray);
+            Stream s2 = list.stream();
+            Stream s3 = list.stream();
+      Instance methods of Stream are:
+            forEach   -> takes a consumer as a param and executes the consumer on each element of the stream and returns nothing 
+                        as it doesn't return anything we cannot chain other operations and hence called as TERMINAL
+            reduce    -> reduce takes a binaryOperator and executes the binaryOperator on each pair of values and returns a single value wrapped in java.util.Optional class
+                         int[] arr = new int[] {1,2,3,4,5,6,7,8,9};
+                         Optional<Integer> result = Stream.of(arr).reduce((x, y) -> x+y);
+                         result.get() will give 10
+                         Optional is to avoid nullpointerexceptions
+
+                     -> takes a identity value and a binaryOperator and execute the binaryOperator on each pair of values and returns a single value
+                        int[] arr = new int[] {1,2,3,4,5,6,7,8,9};
+                        Integer result = Stream.of(arr).reduce(0, (x,y) -> x + y); // result is 10
+                        Integer result2 = Stream.of(arr).reduce(Integer.MIN_VALUE, (x,y) -> x>y ? x : y); // result is 4
+                        As it doesn't return a stream, we cannot chain other operations and hence is called a TERMINAL
+            collect  -> accepts a Collector object and returns a collection. 
+                        Collectors.toList()
+                        Collectors.toSet() are the prebuilt objects of the Collector
+                        int[] arr = new int[] {1, 2, 3, 4};
+                        List<Integer> list = Stream.of(arr).collect(Collectors.toList());
+                        As it doesn't return a stream, we cannot chain other operations and hence is called a TERMINAL
+            filter   -> takes a predicate and returns a new stream containing values that satisfy the predicate. 
+                        As it returns new stream, operations can be chained and hence called INTERMEDIATE.
+                        int[] arr = new int[]{1, 2, 3, 4};
+                        Stream.of(arr).filter(x -> x%2 == 0).reduce(0, (x,y) -> x + y); // returns result as 6
+            map      -> takes a mapper and returns a new stream containing all mapped values from old stream.
+                        int[] arr = new int[]{1, 2, 3, 4};
+                        Stream.of(arr).map(n -> n*n).forEach(System.out::println); // prints [1, 4, 9, 16]
+            
+      
