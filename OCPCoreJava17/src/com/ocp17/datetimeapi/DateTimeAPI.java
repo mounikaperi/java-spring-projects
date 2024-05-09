@@ -28,7 +28,7 @@ public class DateTimeAPI {
 		final int retirementAge = 70;
 		LocalDate retirementDate = dob.plusYears(retirementAge);
 		System.out.println("You can retire on: " + retirementDate.format(dateFormat));
-		
+		 
 		LocalTime appEndTime = LocalTime.now();
 		Duration executionDuration = Duration.between(appStartTime, appEndTime);
 		System.out.println("It took " + executionDuration.toNanos() + "nano seconds to execute");
