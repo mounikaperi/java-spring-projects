@@ -250,4 +250,26 @@ DateTime API
                   between (startTime, endTime)
 
 
-                        
+Streams API
+
+      A stream is a flow of data
+      Source <----------------stream------------------> Destination
+      Source and destination can be an array or any other collection (lists, sets etc)
+      We can operate on the data before the data flows into the destination
+      Source 
+            <--------------stream---------------------->
+                  OPERATION
+                        <--------------------stream --------------------------->
+                              DESTINATION
+      java.util.stream.Stream class represents the stream
+      A stream can be created by using 
+            Stream s1 = Stream.of(anArray);
+            Stream s2 = list.stream();
+            Stream s3 = list.stream();
+      Instance methods of Stream are:
+            forEach   -> takes a consumer as a param and executes the consumer on each element of the stream and returns nothing hence we cannot chain other operations.
+            filter    -> 
+            reduce
+            collect
+            map
+      
