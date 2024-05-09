@@ -115,6 +115,32 @@ public class DateTimeAPI2 {
 		var period = Period.ofMonths(1); // Create a period
 		performAnimalEnrichment(start, end, period);
 		
+		System.out.println("-------------------------------------------");
+		var annually = Period.ofYears(1); // every 1 year
+		var quarterly = Period.ofMonths(3); // every 3 years
+		var everyThreeWeeks = Period.ofWeeks(3); // every 3 weeks
+		var everyOtherDay = Period.ofDays(2); // every 2 days
+		var everyYearAndAWeek = Period.of(1, 0, 7); // every year and 7 days
+		
+		System.out.println("Period.ofYears - every one year: " + annually);
+		System.out.println("Period.ofMonths - every 3 years: " + quarterly);
+		System.out.println("Period.ofWeeks - every 3 weeks: " + everyThreeWeeks);
+		System.out.println("Period.ofDays - every 2 days: " + everyOtherDay);
+		System.out.println("Period.of(Year, month, days) - every year and 7 days : " + everyYearAndAWeek);
+		
+		System.out.println("-------------------------------------------");
+		
+		var date6 = LocalDate.of(2022, 1, 20);
+		var time6 = LocalTime.of(6,  15);
+		var dateTime9 = LocalDateTime.of(date6, time6);
+		var period1 = Period.ofMonths(1);
+		System.out.println("Adding period to LocalDate using plus(): "+ date6.plus(period1));
+		System.out.println("Adding period to LocalTime using plus(): " + time6.plus(period1)); // Exception
+		System.out.println("Adding period to LocalDateTime using plus(): " + dateTime9.plus(period1));
+		
+		System.out.println("-------------------------------------------");
+		
+		
 	}
 	static void performAnimalEnrichment(LocalDate start, LocalDate end) {
 		var upTo = start;
