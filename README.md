@@ -267,9 +267,19 @@ Streams API
             Stream s2 = list.stream();
             Stream s3 = list.stream();
       Instance methods of Stream are:
-            forEach   -> takes a consumer as a param and executes the consumer on each element of the stream and returns nothing hence we cannot chain other operations.
-            filter    -> 
-            reduce
+            forEach   -> takes a consumer as a param and executes the consumer on each element of the stream and returns nothing 
+                        as it doesn't return anything we cannot chain other operations and hence called as TERMINAL
+            reduce    -> reduce takes a binaryOperator and executes the binaryOperator on each pair of values and returns a single value wrapped in java.util.Optional class
+                         int[] arr = new int[] {1,2,3,4,5,6,7,8,9};
+                         Optional<Integer> result = Stream.of(arr).reduce((x, y) -> x+y);
+                         result.get() will give 10
+                         Optional is to avoid nullpointerexceptions
+
+                     -> takes a identity value and a binaryOperator and execute the binaryOperator on each pair of values and returns a single value
+                        int[] arr = new int[] {1,2,3,4,5,6,7,8,9};
+                        Integer result = Stream.of(arr).reduce(0, (x,y) -> x + y); // result is 10
+                        Integer result2 = Stream.of(arr).reduce(Integer.MIN_VALUE, (x,y) -> x>y ? x : y); // result is 4
+                        As it doesn't return a stream, we cannot chain other operations and hence is called a TERMINAL
             collect
             map
       
