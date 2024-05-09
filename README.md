@@ -280,6 +280,18 @@ Streams API
                         Integer result = Stream.of(arr).reduce(0, (x,y) -> x + y); // result is 10
                         Integer result2 = Stream.of(arr).reduce(Integer.MIN_VALUE, (x,y) -> x>y ? x : y); // result is 4
                         As it doesn't return a stream, we cannot chain other operations and hence is called a TERMINAL
-            collect
-            map
+            collect  -> accepts a Collector object and returns a collection. 
+                        Collectors.toList()
+                        Collectors.toSet() are the prebuilt objects of the Collector
+                        int[] arr = new int[] {1, 2, 3, 4};
+                        List<Integer> list = Stream.of(arr).collect(Collectors.toList());
+                        As it doesn't return a stream, we cannot chain other operations and hence is called a TERMINAL
+            filter   -> takes a predicate and returns a new stream containing values that satisfy the predicate. 
+                        As it returns new stream, operations can be chained and hence called INTERMEDIATE.
+                        int[] arr = new int[]{1, 2, 3, 4};
+                        Stream.of(arr).filter(x -> x%2 == 0).reduce(0, (x,y) -> x + y); // returns result as 6
+            map      -> takes a mapper and returns a new stream containing all mapped values from old stream.
+                        int[] arr = new int[]{1, 2, 3, 4};
+                        Stream.of(arr).map(n -> n*n).forEach(System.out::println); // prints [1, 4, 9, 16]
+            
       
