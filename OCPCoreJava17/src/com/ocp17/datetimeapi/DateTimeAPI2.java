@@ -237,6 +237,31 @@ public class DateTimeAPI2 {
 		
 		System.out.println("-------------------------------------------");
 		
+		var date12 = LocalDate.of(2022, 5, 25);
+		var time12 = LocalTime.of(11, 55, 00);
+		zone = ZoneId.of("US/Eastern");
+		var zonedDateTime = ZonedDateTime.of(date, time, zone);
+		var instant = zonedDateTime.toInstant();
+		
+		System.out.println("ZonedDateTime: " + zonedDateTime);
+		System.out.println("Instant: " + instant);
+		
+		System.out.println("-------------------------------------------");
+		
+		var date13 = LocalDate.of(2022, Month.MARCH, 13);
+		var time13 = LocalTime.of(1,  30);
+		zone = ZoneId.of("US/Eastern");
+		var dateTime13 = ZonedDateTime.of(date13, time13, zone);
+		System.out.println("DateTime: " + dateTime13);
+		System.out.println("DateTime hour: " + dateTime13.getHour());
+		System.out.println("DateTime offset: " + dateTime13.getOffset());
+		dateTime13 = dateTime13.plusHours(1);
+		System.out.println("DateTime after adding 1 hour: " + dateTime13);
+		System.out.println("DateTime hour: " + dateTime13.getHour());
+		System.out.println("DateTime offset: " + dateTime13.getOffset());
+		
+		System.out.println("-------------------------------------------");
+		
 	}
 	static void performAnimalEnrichment(LocalDate start, LocalDate end) {
 		var upTo = start;
