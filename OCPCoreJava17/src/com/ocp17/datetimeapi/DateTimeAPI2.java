@@ -187,8 +187,56 @@ public class DateTimeAPI2 {
 		
 		System.out.println("ChronoUnit.HOURS.between temporal unit 1 and unit2: " + ChronoUnit.HOURS.between(one, two));
 		System.out.println("ChronoUnit.MINUTES between temporal units: " + ChronoUnit.MINUTES.between(one, two));
-//		System.out.println("ChronoUnit.MINUTES between temporal units: " + ChronoUnit.MINUTES.between(one, date)); // Exception
+//		System.out.println("ChronoUnit.MINUTES between temporal units: " + ChronoUnit.MINUTES.between(one, date)); // DateTimeException
 	
+		System.out.println("-------------------------------------------");
+		
+		LocalTime time = LocalTime.of(3,  12, 45);
+		LocalTime truncated = time.truncatedTo(ChronoUnit.MINUTES);
+		System.out.println("LocalTime: " + time);
+		System.out.println("truncatedTime: " + truncated);
+		
+		System.out.println("-------------------------------------------");
+		
+		var date9 = LocalDate.of(2022, 1, 20);
+		var time9 = LocalTime.of(6, 15);
+		var datetime9 = LocalDateTime.of(date, time);
+		var duration = Duration.ofHours(6);
+		
+		System.out.println("DateTime and duration: " + dateTime9.plus(duration));
+		System.out.println("time plus duration: " + time9.plus(duration));
+//		System.out.println("date and duration: " + date9.plus(duration)); // UnsupportedTemporalTypeException
+		
+		System.out.println("-------------------------------------------");
+		
+		var date10 = LocalDate.of(2022, 1, 20);
+		var time10 = LocalTime.of(6, 15);
+		var dateTime10 = LocalDateTime.of(date10, time10);
+		var duration1 = Duration.ofHours(23);
+		
+		System.out.println("DateTime plus duration: " + dateTime10.plus(duration1));
+		System.out.println("time plus duration: " + time10.plus(duration1));
+		System.out.println("Date plus duration: "+ date10.plus(duration));
+		
+		System.out.println("-------------------------------------------");
+		
+		//Period vs duration
+		var date11 = LocalDate.of(2022, 5, 25);
+		var period11 = Period.ofDays(1);
+		var days = Duration.ofDays(1);
+		
+		System.out.println("date with period: " + date11.plus(period));
+		System.out.println("date with duration: " + date11.plus(days)); // Unsupported unit: Seconds
+		
+		System.out.println("-------------------------------------------");
+		
+		var now = Instant.now();
+		var later = Instant.now();
+		var duration2 = Duration.between(now, later);
+		System.out.println(duration.toMillis()); // returns number of milliseconds
+		
+		System.out.println("-------------------------------------------");
+		
 	}
 	static void performAnimalEnrichment(LocalDate start, LocalDate end) {
 		var upTo = start;
