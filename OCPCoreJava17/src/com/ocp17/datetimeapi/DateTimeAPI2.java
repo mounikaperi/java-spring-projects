@@ -1,6 +1,7 @@
 package com.ocp17.datetimeapi;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 
 
 public class DateTimeAPI2 {
@@ -135,12 +136,59 @@ public class DateTimeAPI2 {
 		var dateTime9 = LocalDateTime.of(date6, time6);
 		var period1 = Period.ofMonths(1);
 		System.out.println("Adding period to LocalDate using plus(): "+ date6.plus(period1));
-		System.out.println("Adding period to LocalTime using plus(): " + time6.plus(period1)); // Exception
+//		System.out.println("Adding period to LocalTime using plus(): " + time6.plus(period1)); // Exception
 		System.out.println("Adding period to LocalDateTime using plus(): " + dateTime9.plus(period1));
 		
 		System.out.println("-------------------------------------------");
 		
+		var daily = Duration.ofDays(1);
+		var hourly = Duration.ofHours(1);
+		var everyMinute = Duration.ofMinutes(1);
+		var everyTenSeconds = Duration.ofSeconds(10);
+		var everyMilli = Duration.ofMillis(1);
+		var everyNano = Duration.ofNanos(1);
 		
+		System.out.println("Duration ofDays: " + daily);
+		System.out.println("Duration ofHours: " + hourly);
+		System.out.println("Duration ofMinutes: " + everyMinute);
+		System.out.println("Duration ofSeconds: " + everyTenSeconds);
+		System.out.println("Duration ofMillis: " + everyMilli);
+		System.out.println("Duration ofNanos: " + everyNano);
+		
+		/*
+		 *  Duration ofDays: PT24H
+			Duration ofHours: PT1H
+			Duration ofMinutes: PT1M
+			Duration ofSeconds: PT10S
+			Duration ofMillis: PT0.001S
+			Duration ofNanos: PT0.000000001S
+		 */
+		System.out.println("-------------------------------------------");
+		
+		daily = Duration.of(1,  ChronoUnit.DAYS);
+		hourly = Duration.of(1, ChronoUnit.HOURS);
+		everyMinute = Duration.of(1, ChronoUnit.MINUTES);
+		everyTenSeconds = Duration.of(10, ChronoUnit.SECONDS);
+		everyMilli = Duration.of(1, ChronoUnit.MILLIS);
+		everyNano = Duration.of(1, ChronoUnit.NANOS);
+		
+		System.out.println("Duration ChronoUnit.DAYS: " + daily);
+		System.out.println("Duration ChronoUnit.HOURS: " + hourly);
+		System.out.println("Duration ChronoUnit.MINUTES: " + everyMinute);
+		System.out.println("Duration ChronoUnit.SECONDS: " + everyTenSeconds);
+		System.out.println("Duration ChronoUnit.MILLIS: " + everyMilli);
+		System.out.println("Duration ChronoUnit.NANOS: " + everyNano);
+		
+		System.out.println("-------------------------------------------");
+		
+		var one = LocalTime.of(5, 15);
+		var two = LocalTime.of(6, 30);
+		var date8 = LocalDate.of(2016, 1, 20);
+		
+		System.out.println("ChronoUnit.HOURS.between temporal unit 1 and unit2: " + ChronoUnit.HOURS.between(one, two));
+		System.out.println("ChronoUnit.MINUTES between temporal units: " + ChronoUnit.MINUTES.between(one, two));
+//		System.out.println("ChronoUnit.MINUTES between temporal units: " + ChronoUnit.MINUTES.between(one, date)); // Exception
+	
 	}
 	static void performAnimalEnrichment(LocalDate start, LocalDate end) {
 		var upTo = start;
