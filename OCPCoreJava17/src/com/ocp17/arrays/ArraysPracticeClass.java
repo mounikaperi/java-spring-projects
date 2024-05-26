@@ -61,6 +61,23 @@ public class ArraysPracticeClass {
 //		System.out.println(Arrays.compare(new int[] {1}, new String[] {"a"})); // Doesnt compile
 		
 		System.out.println("---------------------------------------------");
+		System.out.println(Arrays.mismatch(new int[] {1}, new int[] {1})); // arrays are same hence -1
+		System.out.println(Arrays.mismatch(new String[] {"a"}, new String[] {"A"})); //not equal - hence 0
+		System.out.println(Arrays.mismatch(new int[] {1, 2}, new int[] {1})); // 1
+		
+		/**
+		 * equals() -
+		 * 		-> When arrays contain the same data - true
+		 * 		-> When arrays are different - false
+		 * compare() - 
+		 * 		-> When arrays contain the same data - 0
+		 * 		-> when arrays are different - positive or negative
+		 * mismatch() -
+		 * 		-> when arrays contain the same data - -1
+		 * 		-> when arrays are different - zero or positive index
+		 */
+		
+		System.out.println("---------------------------------------------");
 	}
 
 }
