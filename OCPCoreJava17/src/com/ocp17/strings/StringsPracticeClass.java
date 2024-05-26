@@ -109,14 +109,45 @@ public class StringsPracticeClass {
 					+ "  b\n"
 					+ " c";
 		
-		System.out.println(block.length()); // 6 - 3 characters(a, b, c) one space before b 2 new lines after a and b
-		System.out.println(concat.length()); // 9 - 3 characters(a, b, c) 1 space before a, 2 spaces before b and one space before c and 2 newlines after a and b
-		System.out.println(block.indent(1).length()); // 10 - 3 characters(a, b, c) one space before b 2 newlines after a and b, one space added before a, b, c and one newline added after c if doesnt exist
-		System.out.println(concat.indent(-1).length()); // 7 -> 3 characters(a, b, c) 3 new lines after a b c and one space before b
-		System.out.println(concat.indent(-4).length()); // 6 -> 3 characters (a, b , c) 3 new lines after a, b, c 
-		System.out.println(concat.stripIndent().length()); // 6 -> 3 characters (a, b, c) 2 new lines one space before b
+		System.out.println(block.length()); 
+		// 6 - 3 characters(a, b, c) one space before b 2 new lines after a and b
+		System.out.println(concat.length()); 
+		// 9 - 3 characters(a, b, c) 1 space before a, 2 spaces before b and one space before c and 2 newlines after a and b
+		System.out.println(block.indent(1).length()); 
+		// 10 - 3 characters(a, b, c) one space before b 2 newlines after a and b, one space added before a, b, c and one newline added after c if doesnt exist
+		System.out.println(concat.indent(-1).length()); 
+		// 7 -> 3 characters(a, b, c) 3 new lines after a b c and one space before b
+		System.out.println(concat.indent(-4).length()); 
+		// 6 -> 3 characters (a, b , c) 3 new lines after a, b, c 
+		System.out.println(concat.stripIndent().length()); 
+		// 6 -> 3 characters (a, b, c) 2 new lines one space before b
 		
 		System.out.println("----------------------------------------------------");
+		var str = "1\\t2";
+		System.out.println(str); // 1\t2
+		System.out.println(str.translateEscapes()); // 1    2
+		
+		System.out.println("----------------------------------------------------");
+		System.out.println(" ".isEmpty()); // false
+		System.out.println("".isEmpty()); // true
+		System.out.println(" ".isBlank()); // true
+		System.out.println("".isBlank()); // true
+		
+		System.out.println("----------------------------------------------------");
+		
+		var name5 = "Kate";
+		var orderId = 5;
+		
+		System.out.println("Hello " + name5 + ", order " + orderId + " is ready");
+		System.out.println(String.format("Hello %s, order %d is ready", name5, orderId));
+		System.out.println("Hello %s, order %d is ready".formatted(name5, orderId));
+		
+		/**
+		 * %s  -> Applies to any type commonly String values
+		 * %d  -> Applies to integer values like int and long
+		 * %f  -> Applies to floating point values like float and double
+		 * %n  -> Inserts a line break using the system-dependent line seperator
+		 */
 	}
 
 }
