@@ -39,6 +39,28 @@ public class ArraysPracticeClass {
 		
 		System.out.println();
 		System.out.println("---------------------------------------------");
+		int[] a = {2, 4, 6, 8};
+		System.out.println(Arrays.binarySearch(a, 2)); // 0
+		System.out.println(Arrays.binarySearch(a, 4)); // 1
+		System.out.println(Arrays.binarySearch(a, 1)); // -1
+		System.out.println(Arrays.binarySearch(a, 3)); // -2
+		System.out.println(Arrays.binarySearch(a, 9)); // -5
+		
+		System.out.println("---------------------------------------------");
+		int[] b = { 4, 2, 8};
+		System.out.println(Arrays.binarySearch(a, 2)); // 0
+		System.out.println(Arrays.binarySearch(a, 4)); // 1
+		
+		System.out.println("---------------------------------------------");
+		System.out.println(Arrays.compare(new int[] {1}, new int[] {2})); // -1
+		System.out.println(Arrays.compare(new int[] {1, 2}, new int[] {1})); // 1 - the first element is same but the first array is longer
+		System.out.println(Arrays.compare(new int[] {1, 2}, new int[] {1, 2})); // 0 - Exact Match
+		System.out.println(Arrays.compare(new String[] {"a"}, new String[] {"aa"})); // -1 - second array is longer
+		System.out.println(Arrays.compare(new String[] {"a"}, new String[] {"A"})); // 32 - uppercase is smaller than lower case
+		System.out.println(Arrays.compare(new String[] {"a"}, new String[] {null})); // 1- null is smaller than "a"s
+//		System.out.println(Arrays.compare(new int[] {1}, new String[] {"a"})); // Doesnt compile
+		
+		System.out.println("---------------------------------------------");
 	}
 
 }
