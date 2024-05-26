@@ -148,6 +148,26 @@ public class StringsPracticeClass {
 		 * %f  -> Applies to floating point values like float and double
 		 * %n  -> Inserts a line break using the system-dependent line seperator
 		 */
+		
+		var pi = 3.14159265259;
+		System.out.format("[%f]", pi);     // [3.141593]
+		System.out.format("[%12.8f]", pi); // [  3.14159565];
+		System.out.format("[%012f]", pi);  // [00003.141593];
+		System.out.format("[12.2f]", pi);  // [        3.14];
+		System.out.format("[%.3f]", pi);   // [3.142];
+		
+		System.out.println();
+		
+		System.out.println("----------------------------------------------------");
+		var start = "AniMal   ";
+		var trimmed = start.trim(); // "AniMal"
+		var lowercase = trimmed.toLowerCase(); // animal
+		var result = lowercase.replace('a', 'A'); // AnimAl
+		System.out.println(result);
+		
+		String result1 = "AniMal   ".trim().toLowerCase().replace('a', 'A');
+		System.out.println(result1);
 	}
+	
 
 }
