@@ -54,6 +54,69 @@ public class StringsPracticeClass {
 		
 		
 		System.out.println("----------------------------------------------------");
+		System.out.println("abc".startsWith("a")); // true
+		System.out.println("abc".startsWith("A")); // false
+		
+		System.out.println("abc".endsWith("c")); // true
+		System.out.println("abc".endsWith("a")); // false
+		
+		System.out.println("abc".contains("b")); // true
+		System.out.println("abc".contains("B")); // false
+		
+		System.out.println("----------------------------------------------------");
+		System.out.println("abcabc".replace("a", "A")); // AbcAbc
+		System.out.println("abcabc".replace('a', 'A')); // AbcAbc
+		
+		System.out.println("----------------------------------------------------");
+		System.out.println("abc".strip()); // abc
+		System.out.println("\t a b c\n".strip()); // a b c
+		
+		String text = " abc\t ";
+		System.out.println(text.trim().length()); // 3
+		System.out.println(text.strip().length()); // 3
+		System.out.println(text.stripLeading().length()); // 5
+		System.out.println(text.stripTrailing().length()); // 4
+		
+		System.out.println("----------------------------------------------------");
+		
+		/**
+		 * indent(n) where n > 0 
+		 * 		-> Adds n spaces to beginning of each line
+		 * 		-> Normalizes existing line breaks (Yes)
+		 * 		-> Adds line break at end if missing
+		 * 
+		 * indent(n) where n == 0
+		 * 		-> No change
+		 * 		-> Normalizes existing line breaks (Yes)
+		 * 		-> Adds line break at end if missing
+		 * 
+		 * indent(n) where n<0
+		 * 		-> Removes upto n spaces from each line where the same number of chanracters is removed from each non-blank line
+		 * 		-> Normalizes existing line breaks
+		 * 		-> Adds line break at end if missing
+		 * 
+		 * stripIndent() 
+		 * 		-> Removes all leading incidental whitespaces
+		 * 		-> Normalizes existing line breaks
+		 * 		-> Doesnt add line break at end if missing
+		 */
+		
+		var block = """
+				a
+				 b
+				c""";
+		var concat =  " a\n"
+					+ "  b\n"
+					+ " c";
+		
+		System.out.println(block.length()); // 6 - 3 characters(a, b, c) one space before b 2 new lines after a and b
+		System.out.println(concat.length()); // 9 - 3 characters(a, b, c) 1 space before a, 2 spaces before b and one space before c and 2 newlines after a and b
+		System.out.println(block.indent(1).length()); // 10 - 3 characters(a, b, c) one space before b 2 newlines after a and b, one space added before a, b, c and one newline added after c if doesnt exist
+		System.out.println(concat.indent(-1).length()); // 7 -> 3 characters(a, b, c) 3 new lines after a b c and one space before b
+		System.out.println(concat.indent(-4).length()); // 6 -> 3 characters (a, b , c) 3 new lines after a, b, c 
+		System.out.println(concat.stripIndent().length()); // 6 -> 3 characters (a, b, c) 2 new lines one space before b
+		
+		System.out.println("----------------------------------------------------");
 	}
 
 }
