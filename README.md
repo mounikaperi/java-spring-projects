@@ -1,5 +1,45 @@
 # java-spring-projects
 
+Methods:
+
+      public final void nap(int minutes) throws InterruptedException {}
+
+      - This is called method declaration. Two parts - method name and parameter list are called the method signature
+
+Access Modifiers:
+
+      - An access modifier determines what classes a method can be accessed from. 
+      - Access modifiers help to enforce when these components are allowed to talk to each other
+            - private: method can be called only from within the same class
+            - package: method can be called only from class in same package. also called as package-private/default access
+            - protected: method can be called only from a class in the same package or a subclass
+            - public: method can be called anywhere
+      - Optional specifiers for methods:
+            - static: Indicates that method is a member of the shared class object
+            - abstract: Used in an abstract class or interface when the method body is excluded.
+            - final: Specifies that the method may not be overriden in a subclass.
+            - default: Used in an interface to provide default imlementation of method for classes that implement interface
+            - synchronized: Used with multithreaded code
+            - native: Used with interacting with code written in another language such as C++
+            - strictfp: Used for making floating-point calculations portable
+
+Effectively final variables:
+
+      - An effectively final local variable is one that is not modified after it is assigned. This means that the value of a variable doesnt change after it is et regardless of whether it is explicitly marked as final.
+
+Understanding Inheritance:
+
+      1. Inheritance is a process by which subclass automatically includes certain members of the class, including primitives, objects or methods defined in parent class.
+      2. When one class inherits from a parent class, all public and protected members are automatically available as part of child class. Private members are restricted to the class they are defined and are never available via inheritance.
+
+Class Modifiers:
+
+      final: The class may not be extended
+      abstract: The class is abstract may contain abstract methods and requires a concrete subclass to instantiate
+      sealed: The class may only be extended by a specific list of classes
+      non-sealed: A subclass of a sealed class permits potentially unnamed subclasses.
+      static: Used for static nested classes defined within a class.
+
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
