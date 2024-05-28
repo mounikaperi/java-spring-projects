@@ -23,9 +23,48 @@ Access Modifiers:
             - native: Used with interacting with code written in another language such as C++
             - strictfp: Used for making floating-point calculations portable
 
+      - The same class
+            - private: YES
+            - package: YES
+            - protected: YES
+            - public: YES
+      - another class in the same package
+            - private: NO
+            - package: YES
+            - protected: YES
+            - public: YES
+      - a subclass in a different package
+            - private: NO
+            - package: NO
+            - protected: YES
+            - public: YES
+      - an unrelated class in a different package
+            - private: NO
+            - package: NO
+            - protected: NO
+            - public: YES
+
 Effectively final variables:
 
-      - An effectively final local variable is one that is not modified after it is assigned. This means that the value of a variable doesnt change after it is et regardless of whether it is explicitly marked as final.
+      - An effectively final local variable is one that is not modified after it is assigned. 
+      - This means that the value of a variable doesnt change after it is et regardless of whether it is explicitly marked as final.
+
+Working with Varargs:
+
+      - Rules for creating a method with Varargs:
+      - A method can have atmost one varargs parameter
+      - If a method contains a varargs parameter, it must be the last parameter in the list
+
+Understating static methods:
+
+      - For utility or helper methods that don't require any object state. 
+      - Since there is no need to access instance variables, having static methods eliminates the need for the caller to instantiate an object just to call the method.
+      - For state that is shared by all instances of the class, like a counter. All instances must share the same state. 
+      - Methods that merely use the state should be static as well.
+      - A static member cannot call an instance member without referencing an instance of the class. 
+      - A static or instance method can call a static method because static methods dont require an object to use.
+      - Only an instance method can call another instance method on the same class without using a reference variable because instance methods do require an object.
+      
 
 Understanding Inheritance:
 
