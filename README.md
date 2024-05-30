@@ -79,6 +79,37 @@ Class Modifiers:
       non-sealed: A subclass of a sealed class permits potentially unnamed subclasses.
       static: Used for static nested classes defined within a class.
 
+Single vs Multiple Inheritance:
+
+      1. Java supports single inheritance, by which a class may inherit from only one direct parent class. 
+      2. Java also supports multiple levels of inheritance, by which one class can extend another class which in turn extends another class.
+      3. Multiple Inheritance, by which a class may have multiple direct parents. By design, Java doesn't support multiple inheritance.
+      4. Multiple Inheritance can lead to complex, often difficult-to-maintain data models. 
+      5. Part of what makes multiple inheritance complicated is determining which parent to inherit values from in case of a conflict.
+
+Inheriting Object:
+
+      1. In Java, all classes inherit from a single class: java.lang.Object. Object is the only class that doesn't have a parent class.
+      2. The compiler has been automatically inserting code into any class you write that doesn't extend a specific class. 
+      3. The result is that every class gains access to any accessible methods in the Object class.  For Eg: toString() and equals()
+      4. Primitive types such as int and boolean do not inherit from Object, since they are not classes. 
+      5. Through autoboxing they can be assigned or passed as an instance of an associated wrapper class which does inherit Object.
+
+Accessing the "this" Reference:
+
+      1. When a method parameter has the same name as an existing instance variable, Java uses the most granular scope so when method parameter name and instance variabe name are same it thinks you are assigning the method parameter value to itself.
+      2. The assignment completes successfullly within the method, but the value of the instance variable is never modifies. 
+      3. The fix when you have a local variable with the same name as an instance variable is to use the this reference or keyword.
+      4. The this reference refers to the current instance of the class and can be used to access any member of the class, including inherited members.
+      5. It cannot be used where there is no implicit instance of te class, such as static method or static initializer block.
+
+Calling the "super" reference:
+
+      1. In Java, a method or variable can be defined in both a parent class and child class. 
+      2. This means the object instance actually holds two copies of the same variable with the same underlying name. 
+      3. To reference the version in parent class instead of current subclass we use super keyword.
+      4. Declaring a variable with the same name as an inherited variable is referred to as hiding a variable.
+      
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
