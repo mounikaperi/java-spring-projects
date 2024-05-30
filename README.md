@@ -1,4 +1,4 @@
-# java-spring-projects
+# CORE JAVA 17
 
 Methods:
 
@@ -109,6 +109,16 @@ Calling the "super" reference:
       2. This means the object instance actually holds two copies of the same variable with the same underlying name. 
       3. To reference the version in parent class instead of current subclass we use super keyword.
       4. Declaring a variable with the same name as an inherited variable is referred to as hiding a variable.
+
+Declaring Constructors:
+
+      1. A constructor is a special method that matches the name of the class and has no return type.
+      2. It is called when a new instance of the class is created.
+      3. A class can have multiple constructors, as long as each constructor has a unique constructor signature. In this case, the parameters must be distinct.
+      4. Like methods with the same name but different signatures, declaring multiple constructors with different signatures is referred to as constructor overloading.
+      5. Constructors are used when creating a new object. This process is called instantiation because it creates a new instance of te class.
+      6. A constructor is called when we write new followed by the name of the class we want to instantiate.
+      7. When Java sees a new keyword, it allocates memory for thew new object. It then looks for constructor with a matching signature and calls it.
       
 Core Java 8, 11, 17, 21
 
