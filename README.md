@@ -171,10 +171,56 @@ Summary of Rules:
       1. A class can contain many overloaded constructors, provided the signature for each is distinct.
       2. The compiler inserts a default no-argument constructor if no constructors are declared.
       3. If a constructor calls this(), then it must be the first line of the constructor. 
-      4. Java doesn't alloe cyclic constructor calls.
+      4. Java doesn't allow cyclic constructor calls.
 
+Calling Parent constructors with super():
 
-      
+      1. The first statement of every constructor is a call to a parent constructor using super() or another constructor in the class using this().
+      2. Like this and this(), super and super() are unrelated in Java. 
+      3. The first super, is used to reference members of the parent class, while the second super() calls a parent constructor. 
+      4. super() can be called only once and should be the first statement in the constructor.
+      5. Java automatically inserts a call to the no-argument constructor super() if you donot explicitly call this() or super() as the first line of a constructor.
+            public class Donkey() {}
+            public class Donkey() { 
+                  public Donkey() {}
+            }
+            is converted equivalent to:
+            public class Donkey() {
+                  public Donkey() {
+                        super();
+                  }
+            }
+
+Default constructor Tips and Tricks:
+
+      1. Let's say we have a class that doesn't include a no-argument constructor. 
+      2. What happens if we define a subclass with no constructor or a subclass with a constructor that dosnt include a super() reference?
+            public class Mammal {
+                  public Mammal(int age) {}
+            }
+            public class Seal extends Mammal {} // Doesn't compile
+            public class Elephant extends Mammal {
+                  public Elephant() {} // Doesnt compile
+            } 
+      3. The answer is that neither subclass compiles. Since Mammal defines a constructor, the compiler does not insert a no-argument constructor. 
+      4. The compiler will insert a default no-argument constructor in Seal class but it will call a nonexistent parent default constructor.
+            public class Seal extends Mammal {
+                  public Seal() {
+                        super();
+                  }
+            }
+      5. Likewise, Elephant will not compile for similar reason, The compiler doesn't see a call to super() or this() as the first line of the constructor so it inserts a call to non-existent no-argument super() automatically.
+      6. In these cases, the compiler will not help, you must create atleast one constructor in your child class that explicitly calls a parent constructor via super().
+            public class Seal extends Mammal {
+                  public Seal() {
+                        super(6);
+                  }
+            }
+            public class Elephant extends Mammal {
+                  public Elephant() {
+                        super(4); 
+                  }
+            }
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
