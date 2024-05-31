@@ -329,7 +329,123 @@ Important Rules:
 Inheriting Members:
 
       1. One of the Java's biggest strengths is leveraging its inheritance model to simplify the code.
-      
+      2. For example, lets say you have five classes, each of which extends from the Animal class. 
+      3. Furthermore, each class defnes an eat() metod with an identical implementation. In this scenario, it's a lot better to define eat() only in the animal class than to have to maintain the same method in 5 separate classes.
+      4. Inheriting a class not only grants access to inherited methods in the parent class but also sets the stage for collisions between methods defined in both the parent class and the subclass.
+      5. We refer to the ability of an object to take on many different forms as polymorphism. 
+
+Overriding a method:
+
+      1. What if a method with the same signature is defined in both parent and child classes? 
+      2. For example, you may want to define a new version of the method and have it behave differently for that subclass. 
+      3. The solution is to override the method in the child class. 
+      4. In Java, overriding a method occurs when a subclass declares a new implementation for an inherited method with the same signature and compatible return type.
+      5. When you override a method, you may still reference the parent version of the method using the super keyword.
+      6. In this manner, the keywords this and super allow you to select between the current and parent versions of a method respectively.
+            public class Marsupial {
+                  public double getAverageWeight() {
+                        return 50;
+                  }
+            }
+            public class Kangaroo extends Marsupial {
+                  public double getAverageWeight() {
+                        return super.getAverageHeight() + 20;
+                  }
+                  public static void main(String[] args) {
+                        System.out.println(new Marsupial().getAverageWeight()); // 50.0
+                        System.out.println(new Kangaroo().getAverageWeight()); // 70.0
+            }
+
+Rules of Overriding:
+
+      To override a method, you must follow the number of rules. The compiler performs the following checks when you override a method:
+            1. The method in the child class must have the same signature as the method in parent class.
+            2. The method in the child class must be atleast as accessible as te method in the parent class.
+            3. The method in the child class may not declare a checked exception that is new or broader than the class of any exception declared in the parent class method.
+            4. If the method returns a value, it must be the same or a subtype of the method in the parent class known as covariant return types.
+
+Rule #1: Method Signatures:
+
+      1. The first rule of overriding a method is somewhat self-explanatory.
+      2. If two methods have the same name but different signatures, the methods are overloaded, not overridden. 
+      3. Overloaded methods are considered independent and do not share the same polymorphic properties as overridden methods.
+
+Rule #2: Access Modifiers:
+
+      public class Camel {
+            public int getNumberOfHumps() {
+                  return 1;
+            }
+      }
+      public class BactrianCamel extends Camel {
+            private int getNumberOfHumps() { // Doesn't compile
+                  return 2; 
+            }
+      }
+      1. In this example, BactrianCamel attempts to override the getNumberOfHumps() method defined in the parent class but fails because the access modifier private is more restrictive than the defined in the parent version of the method
+
+Rule #3: CheckedExceptions:
+
+      1. The third rule says that overriding a method cannot declare new checked exceptions or checked exceptons broader than the inherited method.
+      2. This is done for polymorphic reasons similar to limiting access modifiers. 
+      3. In other words, you could end up with an object that is more restrictive than the reference type it is assigned to, resulting in a checked excepton that is not handled or declared 
+      4. One implication of this rule is that overridden methods are free to declare any number of new unchecked exceptions.
+
+            public class Reptile {
+                  protected void sleep() throws IOException {}
+                  protected void hide() {}
+                  protected void existShell() throws FileNotFoundException {}
+            }
+            public class GalapagosTortoise extends Reptile {
+                  public void sleep() throws FileNotFoundException {}
+                  public void hide() thhrows FileNotFoundException {} // Doesnot compile
+                  public void existShell() throws IOException {} // Doesnt compile
+      5. In above example, we have three overridden methods. These overridden methods use the more accessible public modifier, which is allowed per our second rules for overridden methods. 
+
+Rule #4: Covariant Return Types:
+
+      1. The fourth and final rule around overriding a method is probably the most complicated, as it requires knowing the relationships between the return types.
+      2. The overriding method must use a return type that is covariant with the return type of the inherited method.
+      3. A simple test for covariance is the following: Given an inherited return type A and an overriding return type B can you assign an instance of B to a reference varaible for A without a cast? If so, then tey are covariant. 
+      4. This rule applies to primitive types and object types alike. If one of the return types is void, then they both must be void, as nothing is covariant with void except itself.
+
+Redeclaring private methods:
+
+      1. In Java, you can't override private methods since they are not inherited. 
+      2. Just because a child class doesn't have access to the parent method doesn't mean the child class can't define its own version of the method.
+      3. It means, the new method is not an overridden version of the parent class's method.
+      4. Java permits you to redeclare a new method in the child class with the same or modified signature as the method in the parent class.
+      5. This method in the child class is a separate and independent method, unrelated to the parent version's method, so none of the rules for overriding methods is invoked
+
+Hiding static methods:
+
+      1. A static method cannot be overridden because class objects do not inherit from each other in the same way as instance objects. They can be hidden.
+      2. A hidden method occurs when a child class defines a static method with the same name and signature as an inherited static metod defined in a parent class. 
+      3. Method hiding is similar to but not exactly the same as method overriding. The previous four rules for overiding a method must be followed when a method is hidden
+      4. In addition, a new fifth rule is added for hiding a method:
+      5. The method defined in the child class must be marked as static if it is marked as static in a parent class.
+      6. Put simply, it is method hiding if the two methods are marked static and method overriding if they are not marked static.
+      7. If one is marked static and other is not, the class will not compile.
+
+Hiding Variables:
+
+      1. The rules for variables with the same name in the parent and child classes are much simpler. 
+      2. In fact, Java doesn't allow variables to be overridden. Variables can be hidden though.
+      3. A hidden variable occurs when a child class defines a variable with the same name as an inherited variable defined in the parent class.
+      4. This creates two distinct copies of the variable within an instance of the child class: one instance defined in the parent class and one defined in child class.
+            class Carnivore {
+                  protected boolean hasFur = false;
+            }
+            public class Meerkat extends Carnivore {
+                  protected boolean hasFur = true;
+                  public static void main(String[] args) {
+                        Meerkat m = new Meerkat();
+                        Carnivore c = m;
+                        System.out.println(m.hasFur); // true
+                        System.out.println(c.hasFur); // false
+                  }
+            }
+
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
