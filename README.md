@@ -446,6 +446,109 @@ Hiding Variables:
                   }
             }
 
+Creating Abstract Classes:
+
+      1. While designing a model, we sometimes want to create an entity that cannot be instantiated directly. 
+      2. For Eg: We have a Canine class with subclasses Wolf, Fox and Coyote. We want other developers to be able to create instances of the subclasses but perhaps we don't want them to be able to create a Canine instance. 
+      3. In other words, we want to force all objects of Canine to have a particular type at runtime. 
+      4. Enter abstract classes -> An abstract class is a class declared with the abstract modifier that cannot be instantiated directly and may contain abstract methods.
+            public abstract class Canine {}
+            public class Wolf extends Canine {}
+            public class Fox extends Canine {}
+            public class Coyote extends Canine {}
+            In this example, other developers can create instances of Wolf, Fox, Coyote but not Canine. 
+      5. They can pass a variable reference as a Canine, but the underlying object must be a subclass of Canine at runtime.
+      6. An abstract class can contain abstract methods. An abstract method is a method declared with the abstract modifier that doesn't define a body.
+      7. Put another way, an abstract method forces subclasses to override the method.
+      8. Why would we want this? Polymorphism! By declaring a method abstract, we can guarantee that some version will be available on an instance without having to specify what that version is in the abstract parent class.
+
+            public abstract class Canine {
+                  public abstract String getSound();
+                  public void bark() {
+                        System.out.println(getSound());
+                  }
+            }
+            public class Wolf extends Canine {
+                  public String getSound() {
+                        return " Woooooooof!";
+                  }
+            }
+            public class Fox extends Canine {
+                  public String getSound() {
+                        return "Squeak!!";
+                  }
+            }
+            public class Coyote extends Canine {
+                  public String getSound() {
+                        return "Roar!!!";
+                  }
+            }
+      9. We can then create an instance of Fox and assign it to parent type Canine. The overridden method will be used at runtime.
+            public static void main(String[] args) {
+                  Canine w = new Wolf();
+                  w.bark();
+            }
+
+Rules of Abstract Classes:
+
+      1. Only instance methods can be marked abstract within a class, not variables, constructors or static methods.
+      2. An abstract method can only be declared in an abstract class.
+      3. A non-abstract class that extends abstract class must implement all inherited abstract methods.
+      4. Overriding an abstract method follows the existing rules for overriding methods.
+      5. An abstract class is most commonly used when you want another class to inherit properties of a particular class, but you want the subclass to fill in some of the implementation details.
+      6. Earlier, we said that an abstract class is one that cannot be instantiated. This means that if you attempt to instantiate it, the compiler will report an exception.
+      7. An abstract class can be initialized, but only part of the instantiation of a no abstract subclass.
+
+Declaring Abstract methods:
+
+      1. An abstract method is always declared without a body. It also includes (;) after the method declaration. 
+      2. An abstract class may include non-abstract methods. In fact, an abstract class can include all of the same members as a non-abstract class, including variables, static and instance methods, constructors etc
+      3. An abstract class is not required to include any abstract methods. This code still compiles
+            public abstract class Llama {
+                  public void chew() {}
+            }
+      4. Even without abstract methods, the class cannot be directly instantiated. 
+
+Creating Concreate class:
+
+      1. An abstract class becomes usabe when it is extended by a concrete subclass. A concrete class is a non-abstract class.
+      2. The first concrete subclass that extends an abstract class is required to implement all inherited abstract methods.
+      3. This includes implementing any inherited abstract methods from inherited interfaces.
+
+Creating constructors in Abstract classes:
+
+      1. Even though abstract classes cannot be instantiated, they are still initialized through constructors by their subclasses. 
+            abstract class Mammal {
+                  abstract CharSequence chew();
+                  public Mammal() {
+                        System.out.println(chew()); // Does this compile?
+                  }
+            }
+            public class Platypus extends Mammal {
+                  String chew() {
+                        return "yummy!!!";
+                  }
+                  public static void main(String[] args) {
+                        new Platypus();
+                  }
+            }
+      2. Using the constructor rules, the compiler inserts a default no-argument constructor into the Platypus class, which first calls super() in the Mammal class. 
+      3. The Mammal constructor is only called when the abstract class is being initialized through a subclass, therefore there is an implementaion of chew() at the time the constructor is called. This code compiles and prints yumme!!! at runtime.
+      4. The abstract classes are initialized with constructors in the same way as non-abstract classes. 
+      5. If an abstract class doesn't provide a constructor, the compiler will automatically insert a default no-argument constructor.
+      6. The primary difference between a constructor in an abstract class and a non-abstract class is that a constructor in an abstract class can be called only when it is being initialized by a non-abstract subclass as abstract class cannot be instantiated.
+
+Spotting Invalid Declarations:
+
+      public abstract class Turtle {
+            public abstract long eat() // Does not compile - Missing semicolon
+            public abstract void swim() {}; // Does not compile - No braces should be present
+            public abstract int getAge() { return 10; } // Does not compile - abstract method cannot have body
+            public abstract void sleep; // Does not compile - no parentheses
+            public void goInShell(); // Does not compile - no abstract keyword
+
+abstract and final modifiers:
+
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
