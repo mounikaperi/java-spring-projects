@@ -549,6 +549,93 @@ Spotting Invalid Declarations:
 
 abstract and final modifiers:
 
+      1. What would happen if you marked a class or method both abstract and final? If you mark something astract, you intend for someone else to extend or implement it.
+      2. But if you mark something final, you are preventing anyone from extending or implementing it. These concepts are in direct conflict with each other. 
+      3. Due to incompatibility, Java does not permit a class or method to be marked both abstract and final
+            public abstract final class Tortoise { // Does not compile
+                  public abstract final void walk(); // Does not compile
+            }
+      4. In this example, neither the class nor the method declarations will compile because they are marked both abstract and final. 
+
+abstract and private modifiers:
+
+      1. A method cannot be marked as both abstract and private because you cant define a subclass that implements required method if the method is not inherited by subclass. 
+      2. While it is not possible to declare a method abstract and private, it is possible to declare a method final and private.
+            public abstract class Whale {
+                  protected abstract void sing();
+            }
+            public class HumpbackWhale extends Whale {
+                  private void sing() { // Doesn't compile
+                        System.out.println("Humpback whale is singing");
+                  }
+            }
+      3. In this modified example, the code will still not compile, but for completely different reason. 
+      4. If you remember the rules for overriding a method, the subclass cannot reduce the visibility of the parent method, sing()
+      5. Because, the method is declared protected in the parent class, it must be marked protected or public in the child class.
+      6. Even with abstract methods, the rules for overriding methods must be followed.
+
+abstract and static modifiers:
+
+      1. A static method can only be hidden not be overridden. It is defined as belonging to the class, not an instance of the class.
+      2. If a static method cannot be overridden, then it follows that it cannot be marked abstract snce it can never be implemented.
+            abstract class Hippo {
+                  abstract static void swim(); // Does not compile
+            }
+
+Creating Immutable Objects:
+
+      1. An immutable object is one that cannot change state after it is created.
+      2. The immutable objects pattern is an object-oriented design pattern in which an object cannot be modified after it is created.
+      3. Immutable objects are helpful when writing secure code because you don't have to worry about changing values.
+      4. They also simplify code when dealing with concurrency since immutable objects can be easily shared between multiple threads.
+
+Declaring an Immutable class:
+
+      Although there are a variety of techniques for writing an immutable class, you should be familiar with a common stategy for making a class immutable.
+            1. Mark the class as final or make all the constructors private
+            2. Mark all the instance variables private and final
+            3. Don't define any setter methods
+            4. Don't allow referenced mutable objects to be modified.
+            5. Use a constructor to set all properties of the object, making a copy if needed.
+      The first rule prevents anyone from creating a mutable subclass.
+      The second and third rules ensure that callers dont make changes to instance variables and are the hallmarks of good encapsulation.
+      The fourth rule for creating immutable objects is subtle. Basically it means you shouldnt expose an accessor(getter) method for mutable instance fields.
+
+            import java.util.*;
+            public final class Animal { // Not an immutable object declaration
+                  private final ArrayList<String> favouriteFoods;
+                  public Animal()  {
+                        this.favouriteFoods = new ArrayList<String>();
+                        this.favouriteFoods.add("Apples");
+                  }
+                  public List<String> getFavouriteFoods() {
+                        return favouriteFoods;
+                  }
+            }
+      We carefully followed the first three rules, but unfortunately, a malicious caller could still modify our data:
+            var zebra = new Animal();
+            System.out.println(zebra.getFavouriteFoods()); // [Apples]
+            zebra.getFavouriteFoods().clear();
+            zebra.getFavouriteFoods().add("Chocolate Chip Cookies");
+      It's not an immutable object if we can change the contents! If we don't get a getter for the favouriteFoods object caller cannot access it. 
+      We can provide delegate or wrapper methods to read the data
+
+            import java.util.*;
+            public final class Animal {
+                  private final List<String> favouriteFoods;
+                  public Animal() {
+                        this.favouriteFoods = new ArrayList<String>();
+                        this.favouriteFoods.add("Apples");
+                  }
+                  public int getFavouriteFoodsCount() {
+                        return favouriteFoods.size();
+                  }
+                  public String getFavouriteFoodsItem(int index) {
+                        return favouriteFoods.get(index);
+                  }
+            }
+      In this improved version, the data is still available. However, it is a true immutable object because the mutable variable cannot be modified by the caller.
+      
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
