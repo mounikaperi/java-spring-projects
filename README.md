@@ -263,7 +263,72 @@ Initializing final fields:
       8. Unlike local final variables, which are not required to have a value unless they are actually used, final instance variables must be assigned a value. 
       9. If they are not assigned a value when they are declared or in an instance initializer, then they must be assigned a value in the constructor declaration 
       10. Failure to do so will result in a compile error on the line that declares the constructor.
-      
+      11. In the case of final instance variables when a constructor calls another constructor in the same class, you have to follow the flow carefully, making sure wvwey final instance variable is assigned a value exactly once. 
+
+Initialing Instances:
+
+      1. First, start at the lowest-level constructor where the new keyword is used. 
+      2. Remember, the first line of every constructor is a call to this() or super() and if omitted, the compiler will automatically insert a call to this() or super(). 
+      3. Then, progress upward and note the order of constructors. F
+      4. Finally, initialize each class starting with the superclass, processing each instance initializer and constructor in the reverse order in which it can be called.
+
+Initialize Instance Of X:
+
+      1. Initialize class X if it has not been previously initialized.
+      2. If there is a superclass Y of X, then intitialize the instance of Y first.
+      3. Process all instance variable declarations in the order in which they appear in the class.
+      4. Process all instance initializers in the order in which they appear in the class.
+      5. Initialize the constructor, including any overloaded constructors referenced with this().
+
+      class GiraffeFamily {
+            static {
+                  System.out.print("A");
+            }
+            {
+                  System.out.print("B");
+            }
+            public GiraffeFamily(String name) {
+                  this(1);
+                  System.out.print("C");
+            }
+            public GiraffeFamily() {
+                  System.out.print("D");
+            }
+            public GiraffeFamily(int stripes) {
+                  System.out.print("E");
+            }
+      }
+      public class Okapi extends GiraffeFamily {
+            static {
+                  System.out.print("F");
+            }
+            public Okapi(int stripes) {
+                  super("sugar");
+                  System.out.print("G");
+            }
+            {
+                  System.out.print("H");
+            }
+            public static void main(String[] args) {
+                  new Okapi(1);
+                  System.out.println();
+                  new Okapi(2);
+            }
+      }
+      Output:
+            AFBECHG
+            BEHCG
+
+Important Rules:
+
+      1. A class is initialized atmost once by the JVM before it is referenced or used.
+      2. All static final variables must be assigned a value exactly once, either when they are declared in an instance initializer or in a constructor.
+      3. Non-final static and instance variables defined without a values are assigned a default value based on type.
+      4. Order of intialization is as follows: variable declarations -> initializers -> constructors
+
+Inheriting Members:
+
+      1. One of the Java's biggest strengths is leveraging its inheritance model to simplify the code.
       
 Core Java 8, 11, 17, 21
 
