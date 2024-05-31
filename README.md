@@ -221,6 +221,50 @@ Default constructor Tips and Tricks:
                         super(4); 
                   }
             }
+
+Summary of Constructor calls:
+
+      1. The first lne of every constructor is a call to a parent constructor using super() or an overloaded constructor using this().
+      2. If the constructor does not contain a this() or super() reference, then compiler automatically inserts super() with no arguments at the first line of constructor.
+      3. If a constructor calls super(), ten it must be the first line of the constructor.
+
+Initializing Objects:
+
+      1. Order of initialization refers to how members of a class are assigned values. 
+      2. They can be given default values like 0 for an int or require explicit values such as for final variables. 
+      3. First, we initialize the class, which involves invoking all static members in the class hierarchy, starting eith the highest superclass and working downward.
+      4. This is sometimes referred to as loading the class. The Java Virtual Machine controls when the class is initialized.
+      5. The class may be initialized when the program first starts, when a static member of the class is referenced, or shortly before an instance of the class is created.
+      6. One of the most important rues with class initialization is that it happens atmost once for each class. 
+      7. The class may also never be loaded if it is not used in the program.
+
+Initialize class:
+
+      1. If there is a superclass Y of X, then initialize class Y first.
+      2. Process all static variable declarations in the order in which they appear in the class.
+      3. Process all static initializers in the order in which they appear in the class. 
+
+Initializing final fields:
+
+      1. For instance and class variables they are assigned a default value based on their type of no value is specified. 
+      2. For example: a double is initialized with 0.0 while an object reference is initialized to null. A default value is only appled to a non-final field though.
+      3. final static variables must be explicitly assigned a value exactly once. 
+      4. Fields marked final can be assigned values in the line in which they are declared or in an instance initializer
+            public class MouseHouse {
+                  private final int volume;
+                  private final String name = "The Mouse House";
+                  {
+                        volume = 10; // Instance initializer assignment
+                  }
+            }
+      5. Unlike static class members, though, final instance fields can also be set in a constructor.
+      6. The constructor is part of the initialization process, so it is allowed to assign final instance variables.
+      7. By the time the constructor completes, all final instance variables must be assigned a value exactly once.
+      8. Unlike local final variables, which are not required to have a value unless they are actually used, final instance variables must be assigned a value. 
+      9. If they are not assigned a value when they are declared or in an instance initializer, then they must be assigned a value in the constructor declaration 
+      10. Failure to do so will result in a compile error on the line that declares the constructor.
+      
+      
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
