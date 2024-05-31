@@ -119,6 +119,61 @@ Declaring Constructors:
       5. Constructors are used when creating a new object. This process is called instantiation because it creates a new instance of te class.
       6. A constructor is called when we write new followed by the name of the class we want to instantiate.
       7. When Java sees a new keyword, it allocates memory for thew new object. It then looks for constructor with a matching signature and calls it.
+
+The Default Constructor:
+
+      1. Every class in Java has a constructor whether you code one or not.
+      2. If you don't include any constructors in the class, Java will create one for you without any parameters.
+      3. The Java-created constructor is called the default constructor and is added any time a class is declared without any constructors. 
+      4. The default constructor as an empty parameter list and an empty body. The constructor is generated at compile time step.
+      5. The constructor wouldn't be present in .java extension file but would be present in the .class extension file
+      6. Having only private constructors in a class tells the compiler not to provide a default no-argument constructor.
+      7. It also prevents other classes from instantiating te class. 
+      8. This is useful when a class has only static methods or the developer wants to have full control of all the calls to create new instances of the class.
+
+Calling overloaded constructors with this():
+
+      1. Since a class can contain multiple overloaded constructors, these constructors can actually call one another. 
+      2. Constructors can be called only by writing new before the name of the constructor.
+            public Hamster(int weight, String color) {
+                  this.weight = weight;
+                  this.color = color;
+            }
+            public Hamster(int weight) {
+                  new Hamster(weight, "brown"); // Compiles but creates new object
+            }
+      3. This attempt does compile. When this constructor is called, it creates a new object with default weight and color. 
+      4. It then constructs a different object with the desires weight and color. In this manner, we end up with two objects, one of which is discarded after it is created.
+      5. Java provides a solution: this() - the same keyword we used to refer to instance members with parentheses.
+      6. When this() is used wit parentheses, Java calls another constructor on the same instance of the class.
+            public Hamster(int weight) {
+                  this(weight, "brown");
+            }
+      7. Now, Java calls the constructor that takes two parameters with weight and color as expected.
+
+this vs this()
+
+      1. Despite using the same keyword, this and this() are very different. 
+      2. The first this, refers to an instance of the class while the second this() refers to the constructor call within the class.
+      3. Calling this() has one special rule, if you choose to call this(), it must be te first statement in the constructor. 
+      4. There can be only one this() call in any constructor.
+      5. Constructors calling each other can end up in infinte loop and Java detects this and throws a compile time error.
+            public class Gopher {
+                  public Gopher() {
+                        this(5); // Doesn't compile
+                  }
+                  public Gopher(int dugHoles) {
+                        this(); // Doesn't compile
+                  }
+
+Summary of Rules:
+
+      1. A class can contain many overloaded constructors, provided the signature for each is distinct.
+      2. The compiler inserts a default no-argument constructor if no constructors are declared.
+      3. If a constructor calls this(), then it must be the first line of the constructor. 
+      4. Java doesn't alloe cyclic constructor calls.
+
+
       
 Core Java 8, 11, 17, 21
 
