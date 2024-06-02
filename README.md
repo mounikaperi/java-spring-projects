@@ -748,6 +748,65 @@ Inheriting Duplicate abstract methods:
             public interface Herbivore { public void eatPlants(); }
             public interface Omnivore { public int eatPlants(); }
             public class Tiger implements Omnivore, Herbivore { .. } // Does not compile
+
+Inserting Implicit Modifiers:
+
+      1. An implicit modifier is one that compiler will automatically insert. 
+      2. It's reminiscent of the compiler inserting a default no-argument constructor if you do not define a constructor.
+      3. The following list includes the implicit modifiers for interfaces
+            - Interfaces are implicitly abstract
+            - Interface variables are implicitly public, static and final
+            - Interface methods without a body are implicitly abstract
+            - Interface methods without the private modifier are implicitly public
+            The last rule applies to abstract, defaut and static interface methods. 
+                  public interface Soar {
+                        int MAX_HEIGHT = 10;
+                        final static boolean UNDERWATER = true;
+                        void fly(int speed);
+                        abstract void takeoff();
+                        public abstract double dive();
+                  }
+            is equivalent to:
+                  public abstract interface Soar {
+                        public static final int MAX_HEIGHT = 10;
+                        public final static boolean UNDERWATER = true;
+                        public abstract void fly(int speed);
+                        public abstract void takeoff();
+                        public abstract double dive();
+                  }
+            First, the abstract keyword is added to the interface declaration, Next, the public, static, final keywords are added to the interface variables if they do not exist. Finally, each abstract method is prepended with the abstract and public keywords if it does not contain them already.
+
+Conflicting Modifiers:
+
+      What happens if a developer marks a method or variable with a modifier that conflicts with an implicit modifier?
+            public interface Dance {
+                  private int count = 4; // DOES NOT COMPILE - interface variables are implicitly public static and final
+                  protected void step(); // DOES NOT COMPILE - interface methods are implicitly public and abstract
+            }
+
+Differences between Interfaces and Abstract classes:
+
+      1. Even though abstract classes and interfaces are both considered abstract types, only interfaces make use of implicit modifiers.
+            abstract class Husky { 
+                  abstract void play(); 
+            }
+            interface Poodle {
+                  void play();
+            }
+            Both of these method definitions are considered abstract. That said, the Husky class will not compile if the play() method is not marked abstract
+            whereas the method in the Poodle interface will comple with or without the abstract modifier. 
+            public class Webby extends Husky {
+                  void play() {}
+            }
+            public class Georgette implements Poddle {
+                  void play() {} // Does not compile - method is public in interface
+            }
+
+
+Declaring Concrete Interface Methods:
+
+      
+      
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
