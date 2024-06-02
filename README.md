@@ -916,7 +916,76 @@ Calling a Hidden default method:
       - This is an area where a default method exhibits properties of both a static and instance method. 
       - We use the interface name to indicate whch method we want to call, but we use the super keyword to show that we are following instance inheritance, not class inheritance. Walk.getSpeed() and Walk.this.getSpeed() will not work
 
-      
+Declaring static interface methods:
+
+      1. Interfaces are also declared with static methods. These methods are defined explicitly with the static keyword and, for the most part, behave just like static methods defined in classes.
+
+Static Interface Method Definition Rules:
+
+      1. A static method must be marked with the static keyword and include a method body. 
+      2. A static method without an access modifier is implicitly public.
+      3. A static method cannot be marked abstract or final.
+      4. A static method is not inherited and cannot be accessed in a class implementing the interface without a reference to the interface name.
+
+      - Theses rules should follow from what you know for far for classes, interfaces and static methods.
+      - For example, you can't declare static methods without a body in classes, either.
+      - Like default and abstract interface methods, static interface methods are implicitly public if they are declared without an access modifier. 
+
+            public interface Hop {
+                  static int getJumpHeight() {
+                        return 8;
+                  }
+            }
+      - Since the method is defined without an access modifier, the compiler will automatically insert the public access modifier.
+      - The method getJumpHeight() works just like a static method as defined in a class. 
+
+            public class Skip {
+                  public int skip() {
+                        return Hop.getJumpHeight();
+                  }
+            }
+            public class Bunny implements Hop {
+                  public void printDetails() {
+                        System.out.println(getJumpHeight()); // Does not compile
+                  }
+            }
+      - Without an explicit reference to the name of the interface, the code will not compile, even though Bunny implements Hop.
+      - This can be easily fixed by using the interface name
+      - Notice, we don't have the same problem we did when we inherited two defaul interface methods with the same signature. 
+      - Java solved the multiple inheritance problem of static interface methods by not allowing them to inherited.
+
+Reusing Code with private interface methods:
+
+      - The last two types of concrete methods that can be added to interfaces are private and private static interface methods.
+      - Because both types of methods are private, they can only be used in the interface declaration in which they are declared.
+      - For this reason, they were added primarily to reduce code duplication.
+
+            public interface Schedule {
+                  default void wakeUp() {
+                        checkTime(7);
+                  }
+                  private void haveBreakfast() {
+                        checkTime(9);
+                  }
+                  static void workOut() {
+                        checkTime(18);
+                  }
+                  private static void checkTime(int hour) {
+                        if (hour > 17) {
+                              Syste.out.println("You are late!");
+                        } else {
+                              System.out.println("You are " + (17-hour)+ "hours left to make apporintment");
+                        }
+                  }
+            }
+      - You could write this interface without using a private method by copying the contents of the checkTime() method into the places it is used.
+      - We could have also declared checkTime() as ublic in the previous example, but this would expose the method to use outside the interface.
+      - One important tenent of encapsulation is to not expose the internal workings of a class or interface when not required.
+      - The difference between a non-static private method and a static one is analogous to difference between an instance and static method declared within a class
+
+Private Interface method Definition rules:
+
+      -
 
 Core Java 8, 11, 17, 21
 
