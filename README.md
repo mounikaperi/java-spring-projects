@@ -985,7 +985,13 @@ Reusing Code with private interface methods:
 
 Private Interface method Definition rules:
 
-      -
+      - A private interface method must be maked with the private modifier and include a method body.
+      - A private static interface method may be called by any method within the interface definition.
+      - A private iterface method may only be called by default and other private non-static methods within the interface definition.
+
+      - Another way to think of it is that a private interface method is only accessible to non-static methods defined within the interface.
+      - A private static interface methhod, on the other hand, can be accessed by any method in the interface. 
+      - For both types of private methods, a class inheriting the interface cannot directly invoke them.
 
 Core Java 8, 11, 17, 21
 
