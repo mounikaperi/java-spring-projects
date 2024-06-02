@@ -805,8 +805,119 @@ Differences between Interfaces and Abstract classes:
 
 Declaring Concrete Interface Methods:
 
+      - Constant Variable
+            - Membership Type: Class
+            - Required Modifiers: -
+            - Implicit Modifiers: public, static, final
+            - Has value or body - Yes
+      - abstract method:
+            - Membership Type: instance
+            - Required Modifiers: -
+            - Implicit Modifiers: public, abstract
+            - Has value or body - No
+      - default method:
+            - Membership Type: Instance
+            - Required Modifiers: default
+            - Implicit Modifiers: public
+            - Has value or body - Yes
+      - static Method:
+            - Membership Type: Class
+            - Required modifiers: static
+            - Implicit modifiers: public
+            - Has value or body: Yes
+      - private method:
+            - Membership Type: Instance
+            - Required Modifiers: private
+            - Implicit Modifiers: -
+            - has value or body - Yes
+      - private static method:
+            - Membership Type: Class
+            - Required Modifiers: private, static
+            - Implicit Modifiers: -
+            - Has value or body - Yes
+
+      - The Membership Type determines how it is able to be accessed. A method with a membership type of class is shared among all the instances of the interrface
+        whereas a method with membership type of instance is associated with a particualr instance of the interface.
+
+      - Alongside public methods, interfaces now support private methods. 
+      - They donot support protected access, though, as a class cannot extend an interface.
+      - They also do not support package access, although more likely for syntax reasons and backward compatibility. 
+      - Since interface methods without an access modifier have been considered implicitly public, changing this behavior to package access would break many existing programs.
+
+Writing a default interface method:
+
+      - The first type of concrete method is the default method.
+      - A default method is a method defined in an interface with the default keyword and includes a method body. 
+      - It may be optionally overridden by a class implementing the interface.
+      - One use of default methods is for backward compatibility. 
+      - You can add a new default method to an interface without the need to modify all of the existing classes that implement the interface. 
+      - The older classes will just use the default implementation of the method defined in the interface. 
+            public interface IsColdBlooded {
+                  boolean hasScales();
+                  default double getTemperature() {
+                        return 10.0;
+                  }
+            }
+            public class Snake implements IsColdBlooded {
+                  public boolean hasScales() {
+                        return true;
+                  }
+                  public double getTemperature() { // Optional Override
+                        return 12;
+                  }
+            }
+      - This example defines two interface methods, one abstract and one default. 
+      - Note that the default interface method modifier is not the same as default label used in a switch statement or expression.
+      - Likewise, even though package access is sometimes referred to as defaut access, that feature is implemented by omiting an access modifier. 
+
+Default Interface Method Definition Rules:
+
+      - A default method may be declared only within an interface.
+      - A default method must be marked with the default keyword and include a method body.
+      - A default method is implicitly public.
+      - A default method cannot be marked abstract, final and static.
+      - A default method may be overridden by a class that implements the interface.
+      - If a class inherits two or more default methods with the same method signature, then the class must override the method.
+
+            public interface Carnivore {
+                  public default void eatMeat(); // Does not compile - default methods should have body
+                  public int getRequiredFoodAmount() { // Does not compile - this should be marked default as method has implementation
+                        return 13;
+                  }
+            }
+
+      - Like abstract interface methods, default methods are implicitly public.
+      - Unlike abstract methods, though, default interface methods cannot be marked abstract since they provide a body.
+      - They also cannot be marked as final, because they are designed so that they can be overridden in classes implementing the interface, just like abstract methods.
+      - Finally, they cannot be marked static since they are associated with the instance of the class implementing the interface.
+
+Inheriting Duplicate default ethods:
+
+      public interface Walk {
+            public default int getSpeed() { return 5; }
+      }
+      public interface Run {
+            public default int getSpeed() { return 10; }
+      }
+      public class Cat implements Walk, Run {} // Does not compile
+
+            Cat inherits two default methods from both Walk and Run and compiler is not sure whether it has to consider 5 or 10, hence throws compile time error
+            
+      - If the class implementing the interfaces overrides the duplicate default method, the code will compile without issue.
+      - By overriding te conflicting method, the ambiguity about which version of the method to call has been removed.
+
+Calling a Hidden default method:
+
+      - Cat class could override a pair of conflicting default methods, but what if Cat class wanted to access the version of getSpeed() in Walk or Run?
+            public class Cat implements Walk, Run {
+                  public int getSpeed() { return 1; }
+                  public int getWalkSpeed() { return Walk.super.getSpeed(); }
+            }
+      - This is an area where a default method exhibits properties of both a static and instance method. 
+      - We use the interface name to indicate whch method we want to call, but we use the super keyword to show that we are following instance inheritance, not class inheritance. Walk.getSpeed() and Walk.this.getSpeed() will not work
+
       
-      
+
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
