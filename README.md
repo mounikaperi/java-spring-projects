@@ -709,8 +709,45 @@ Extending an Interface:
 
 Inheriting an interface:
 
-      
-            
+      1. Like an abstract class, when a concrete class inherites an interface, all of the inherited methods must be implemented. 
+            public interface HasTail {
+                  public int getTailLength();
+            }
+            public interface HasWhiskers {
+                  public int getNumberOfWhiskers();
+            }
+            public abstract class HarborSeal implements HasTail, HasWhiskers {}
+            public class CommonSeal extends HarborSeal {} // Does not compile
+
+            The HarborSeal class compiles because it is abstract and not required to implement any of the abstract methods it inherites.
+            The concrete CommonSeal class, though, must override all inherited abstract methods.
+
+Mixing Class and Interface Keywords:
+
+            public interface CanRun {}
+            public class Cheetah extends CanRun {} // Does not compile - class implements interface
+
+            public class Hyena {}
+            public interface HasFur extends Hyena {} // Does not compile - interface extends another interface
+
+Inheriting Duplicate abstract methods:
+
+      1. Java supports inheriting two abstract methods that have compatible method declarations
+            public interface Herbivore {
+                  public void eatPlants();
+            }
+            public interface Omnivore {
+                  public void eatPlants();
+            }
+            public class Bear extends Herbivore, Omnivore {
+                  public void eatPlants {
+                        System.out.println("Eating Plants");
+                  }
+            }
+      2. By Compatible, we mean a method can be written that probably overrides both inherited methods. 
+            public interface Herbivore { public void eatPlants(); }
+            public interface Omnivore { public int eatPlants(); }
+            public class Tiger implements Omnivore, Herbivore { .. } // Does not compile
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
