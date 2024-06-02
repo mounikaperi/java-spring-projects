@@ -635,7 +635,82 @@ Declaring an Immutable class:
                   }
             }
       In this improved version, the data is still available. However, it is a true immutable object because the mutable variable cannot be modified by the caller.
+
+Copy on Read Accessor Methods:
+
+      Besides delegating access to any private mutable objects, another approach is to make a copu of the mutable object any time it is requested.
+            public ArrayList<String> getFavouriteFoods() {
+                  return new ArrayList<String>(this.favouriteFoods);
+            }
+      Changes in the copy won't be reflected in the original, but atleast the original is protected from external changes. 
+
+Performing a Defensive Copy:
+
+      1. In designing out class, let's say we want a rule that the data for favouriteFoods is provided by the caller and that it always contains atleast one element
+      2. This rule is often called an invariant; it is true anytime we have an instance of the object.
+            import java.util.*;
+            public final class Animal {
+                  private final ArrayList<String> favouriteFoods;
+                  public Animal(ArrayList<String> favouriteFoods) {
+                        if (favouriteFoods == null || favouriteFoods.size() == 0) {
+                              throw new RuntimeException("favouriteFoods is required");
+                        }
+                        this.favouriteFoods = new ArrayList<String>(favouriteFoods);
+                  }
+                  public int getFavouriteFoodsCount() {
+                        return favouriteFoods.size();
+                  }
+                  public String getFavouriteFoodsItem(int index) {
+                        return favouriteFoods.get(index);
+                  }
+            }
+            The copy operation is called a defensive copy because the copy is being made in case other code does something unexpected.
+
+Implementing Interfaces:
+
+      1. Since classes can only extend one class, they had limited use for inheritance.
+      2. On the other hand, a class may implement any number of interfaces.
+      3. An interface is an abstract data type that declares a list of abstract methods that any class implementing the interface must provide.
+            public abstract interface CanBurrow {
+                  public abstract Float getSpeed(int age);
+                  public static final int MINIMUM_DEPTH = 2;
+            }
+
+      4. Interface declaration includes an abstract method and a constant variable.
+      5. Interface variables are referred to as constants because they are assumed to be public, static and final.
+      6. They are initialized with a constant value when they are declared. 
+      7. Since they are public and static, they can be used outside the interface declaration without requiring an instance of the interface.
+      8. One aspect of an interface declaration that differs from an abstract class is that it contains implict modifiers.
+      9. An implicit modifier is a modifier that compiler automatically inserts into the code. 
+      10. For example, an interface is always considered to be abstract, even if it is not marked so.
+            public abstract interface WalkOnTwoLegs {}
+      11. It compiles because interfaces are not required to define any methods. 
+      12. The abstract modifier in this example is optional for interfaces, with the compiler inserting it if it is not provided.
+            public class Biped {
+                  public static void main(String[] args) {
+                        var e = new WalkOnTwoLegs(); // Does not compile
+                  }
+            }
+            Interface cannot be instantiated.
+            public final interface WalkOnTwoLegs() {} // Does not compile
+            Interface cannot be marked as final for the same reason that abstract classes cannot be marked as final. 
+            Marking an interface final implies no class could ever implement it. 
+            A class can implement multiple interfaces each separated by a comma If any of the interfaces define abstract methods, then the concrete class is required to override them.
+
+Extending an Interface:
+
+      1. Like a class, an interface can extend another interface using the extends keyword.
+            public interface Nocturnal {}
+            public interface HasBigEyes extends Nocturnal {}
+      2. Unlike a class, which can extend only one class, an interface can extend multiple interfaces.
+      3. Extending two interfaces is permitted because interfaces are not initialized as part of class hierarchy.
+      4. Unlike abstract classes, they do not contain constructors and are not part of instance initialization.
+      5. Interfaces simply define a set of rules and methods that a class implementing them must follow.
+
+Inheriting an interface:
+
       
+            
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
