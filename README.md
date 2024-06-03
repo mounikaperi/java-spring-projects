@@ -1366,7 +1366,45 @@ Usage of permits clause in sealed classes"
       1. In a different file from the sealed class - permits clause is Required
       2. In the same file as the sealed class - permits clause is permitted but not required
       3. Nested inside of the sealed class - permits clause is permitted but not required
+
+Sealing Interfaces:
+
+      1. Besides classes, interfaces can also be sealed. The idea is analogous to classes and many of the same rules apply.
+      2. The sealed interface must appear in the same package or named module as the classes or interfaces that directly extend or implement it.
+      3. One distinct feature of a sealed interface is that the permits list can apply to a class that implements the interface or an interface that extends the interface.
+            // Sealed Interface
+            public sealed interface Swims permits Duck, Swan, Floats {}
+            // Classes permitted to implement sealed interface
+            public final class Duck implements Swims {}
+            public final class Swan implements Swims {}
+            // Interface permitted to extend sealed interface
+            public non-sealed interface Floats extends Swims {}
+      4. Interfces are implicitly abstract and cannot be marked final. For this reason, interfaces can extend a sealed interface can only be marked sealed or non-sealed.
+      5. They cannot be marked final
+
+Reviewing Sealed Class Rules:
+
+      1. Sealed classes are declard with the sealed and permits modifiers.
+      2. Sealed classes must be declared in the same package or named module as their direct subclasses.
+      3. Direct subclasses of sealed classes must be marked final, sealed or non-sealed.
+      4. The permits clause is optional if the sealed class and its direct subclasses are declared within same file or the subclasses are nested within the sealed class.
+      5. Interfaces can be sealed to limit the classes that implement them or the interfaces that extend them.
+
+Why have Sealed Classes?
+
+      1. Switch expressions and pattern matching- Imagine if we could treat a sealed class like an enum in switch expression by applying pattern matching.
+      2. Given a sealed class Fish with two direct subclasses, it looks something like this:
+            public void printName(Fish fish) {
+                  System.out.println(switch(fish) {
+                        case Trout t -> t.getTroutName();
+                        case Bass b -> b.getBaseName();
+                  });
+            }
+      3. If Fish wasn't sealed, the switch expression would require a default branch or the code would not compile. Since it's sealed, the compiler knows all options
+      4. The good news is that this feature is on the way and is in preview in Java17.
+
       
+
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
