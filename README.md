@@ -1086,6 +1086,107 @@ Working with Enums:
             public enum ExtendedSeason extends Season {}  // Doesnt compile
 
       - The values in an enum are fixed. You cannot add more by extending the enum.
+
+Calling the values(), name() and ordinal() methods:
+
+      - An enum provides a values() ethod to get an array of all the values.
+
+            for (var season: Season.values()) {
+                  System.out.println(season.name() + " " + season.ordinal());
+            }
+            /**
+              *    WINTER 0
+              *    SPRING 1
+              *    SUMMER 2
+              *    FALL 3
+            */
+
+      - We cant compare an int and an enum value directly anyway since an enum is a type like a Java class and not a primitive int.
+            if(Season.SUMMER == 2) {} // Does not compile
+
+Calling the valueOf() method:
+
+      - Another useful feature is retrieving an enum vaue from a String using the valueOf() method.
+      - This is helpful when working with older code or parsing user input.
+      - The String passed in must match the enum value exactly
+
+            Season s = Season.valueOf("SUMMER"); // SUMMER
+            Season t = Season.valueOf("summer"); // IllegalArgumentException
+            
+      - The first statement works and assigns the proper enum value to s. Note that this line is not creating an enum value atleast not directly.
+      - Each enum value is created once when the enum is first loaded.
+      - Once the enum has been loaded, it retrieves the single enum value with the matching name.
+
+Using Enums in switch statements:
+
+      - Enums can be used in switch statements and expressions. 
+
+                  Season summer = Season.SUMMER;
+                  switch(summer) {
+                        case WINTER:
+                              System.out.print("Get out the sled!");
+                              break;
+                        case SUMMER:
+                              System.out.print("Time for the pool!");
+                              break;
+                        default:
+                              System.out.print("Is it summer yet?");
+                  }
+      - The following will not compile
+
+                  Season summer = Season.SUMMER;
+                  var message = switch(summer) {
+                        case Season.WINTER -> "Get out the sled!"; // Does not compile
+                        case 0 -> "Time for the pool!"; // Does not compile
+                        default -> "It is summer yet!!";
+                  };
+                  System.out.println(message);
+
+      - The first case statement does not compile because Season is used in the case value. If we change Season.WINTER to WINTER then it would compile.
+      - Second case statement does not compile because you can't compare enums with int values. you cannot use them in a switch statement with int values.
+
+Adding Constructors, Fields and Methods:
+
+      - While a simple enum is composed of just a list of values we can defne a complex enum with additional elements. 
+
+            public enum Season {
+                  WINTER("Low"), SPRING("Medium"), SUMMER("high"), FALL("Medium");
+                  private final String expectedVisitors;
+                  private Season(String expectedVisitors) {
+                        this.expectedVisitors = expectedVisitors;
+                  }
+                  public void printExpectedVisitors() {
+                        System.out.println(expectedVisitors);
+                  }
+            }
+
+      - The list of enum values ends with a semicolon(;). 
+      - While this is optional when enum is composed of solely list of values it is required if there is anything in the enum besides the values.
+      - We have an instance variable, a constructor and a method.
+      - We mark the instance variable private and final so that our enum properties cannot be modified.
+      - Although it is possible to create an enum with instance variables that can be modified, it is very porrt practice to do so since they are shared within the JVM.
+      - While designing an enum, the values should be immutable.
+      - All enum constructors are implicitly private with the modifier being optional.
+      - This is reasonable since you can't extend an enum and the constructors can be called only within the enum itself.
+      - Infact, an enum constructor will not compile if it contains a public or protected modifier.
+      - WINTER("Low"), SPRING("Medium"), SUMMER("high"), FALL("Medium"); -> These are constructor calls, but without the new keyword normally used for objects.
+      - The first time we ask for any of the enum values, Java constructs all of the enum values.
+      - After that, Java just returns the already constructed enum values, you can see why this calls the constructor only once:
+
+            public enum OnlyOne {
+                  ONCE(true);
+                  private OnlyOne(boolean b) {
+                        System.out.print("Constructing...");
+                  }
+            }
+            public class PrintTheOne {
+                  public static void main(String[] args) {
+                        System.out.print("begin,");
+                        OnlyOne firstCall = OnlyOne.ONCE; // Prints Constructing...
+                        OnlyOne secondCall = OnlyOne.ONCE; // Doesn't print anything
+                        System.out.print("end");
+                  }
+            }
       
 Core Java 8, 11, 17, 21
 
