@@ -993,6 +993,100 @@ Private Interface method Definition rules:
       - A private static interface methhod, on the other hand, can be accessed by any method in the interface. 
       - For both types of private methods, a class inheriting the interface cannot directly invoke them.
 
+Calling Abstract Methods:
+
+      - It turns out default and private non-static methods can access abstract methods declared in the interface.
+      - This is the primary reason we associate these methods wit instance membership.
+
+            public interface ZooRenovation {
+                  public String projectName();
+                  abstract String status();
+                  default void printStatus() {
+                        System.out.print("The " + projectName() + " project " + status());
+                  }
+            }
+      - In this example, both projectName() and status() have the same modifiers (abstract and public are implicit) and can be called by the default method printStatus()
+
+Reviewing Interface Members:
+
+      - constant variable
+            - Accessible from default and private methods within the interface: YES
+            - Accessible from static methods within the interface: YES
+            - Accessible from methods in classes inheriting the interface: YES
+            - Accessible without an instance of the interface: YES
+      - abstract method:
+            - Accessible from default and private methods within the interface: YES
+            - Accessible from static methods within the interface: NO
+            - Accessible from methods in classes inheriting the interface: YES
+            - Accessible without an instance of the interface: NO
+      - default method:
+            - Accessible from default and private methods within the interface: YES
+            - Accessible from static methods within the interface: NO
+            - Accessible from methods in classes inheriting the interface: YES
+            - Accessible without an instance of the interface: NO
+      - static method:
+            - Accessible from default and private methods within the interface: YES
+            - Accessible from static methods within the interface: YES
+            - Accessible from methods in classes inheriting the interface: YES (interface name required)
+            - Accessible without an instance of the interface: YES (interface name required)
+      - private method:
+            - Accessible from default and private methods within the interface: YES
+            - Accessible from static methods within the interface: NO
+            - Accessible from methods in classes inheriting the interface: NO
+            - Accessible without an instance of the interface: NO
+      - private static method:
+            - Accessible from default and private methods within the interface: YES
+            - Accessible from static methods within the interface: YES
+            - Accessible from methods in classes inheriting the interface: NO
+            - Accessible without an instance of the interface: NO
+      
+      - Treat abstract, default and non-static private methods as belonging to an instance of the interface.
+      - Treat static methods and variables as belonging to the interface class object.
+      - All private interface method types are only accessible within the interface declaration.
+
+      public interface ZooTrainTour {
+            abstract int getTrainName();
+            private static void ride() {}
+            default void playHorn() {
+                  getTrainName();
+                  ride();
+            }
+            public static void slowDown() {
+                  playHorn();  //Does not compile -> 
+                  // The slowDown() method is static though and cannot call a default or private method such as playHorn() without an explicit reference object. 
+            }
+            static void speedUp() {
+                  ride();
+            }
+      }
+
+Working with Enums:
+
+      - An enumeration or enum for short is like a fixed set of constants.
+      - Using an enum is much better than using a bunch of constants because it provides type-safe checking.
+      - With numeric or String constants, you can pass an invalid value and not findout until runtime.
+      - With enums, it is impossible to create an invalid enum value without introducing a compile error.
+      - Enumerations show up whenever you have a set of items whose types are known at compile time.
+
+            public enum Season {
+                  WINTER, SPRING, SUMMER, FALL;
+            }
+
+      - When working with simple enums, the semicolon at the end of the list is optional.
+
+            var s = Season.SUMMER;
+            System.out.println(Season.SUMMER);
+            System.out.println(s == Season.SUMMER);
+
+      - enums print the name of the enum when toString() is called.
+      - They can be compared using == because they are like static final constants.
+      - In other words, you can use equals() or == to compare enums, since each enum value is initialized only once in the JVM.
+      - We can't extend an enum.
+
+            public enum ExtendedSeason extends Season {}  // Doesnt compile
+
+      - The values in an enum are fixed. You cannot add more by extending the enum.
+      
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
