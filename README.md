@@ -1308,7 +1308,64 @@ A final subclass:
 
 A sealed subclass:
 
-      
+      public sealed class Mammal permits Equine {}
+      public sealed class Equine extends Mammal permits Zebra {}
+      public final class Zebra extends Equine {}
+
+      1. The sealed modifier applied to the subclass Equine means the same kind of rules that we applied to the parent class Mammal must be present.
+      2. Namely, Equine defines its own list of permitted subclasses.
+      3. Zebra is an indirect subclass of Mammal but is not named in the Mammal class.
+      4. Despite allowing indirect subclasses not named in Mammal, the list of classes that can inherit Mammal is still fixed.
+      5. If you have a reference to a Mammal object, it must be Mammal, Equine or Zebra.
+
+A non-sealed subclass:
+
+      1. The non-sealed modifier is used to open a sealed parent class to potentially unknown sub-classes. 
+      2. Let's modify our earlier example to allow MyWold to compile woithout modifying the declaration of Wolf
+            public sealed class Wolf permits Timber {}
+            public non-sealed class Timber extends Wolf {}
+            public class MyWolf extends Timber {}
+      3. In this example, we are able to create an indirect subclass of Wolf, called MyWold, not named in the declaration of Wolf.
+      4. Also notice that MyWolf is not final, so it may be extended by any subclass, such as MyFurryWolf.
+            public class MyFurryWolf extends MyWolf {}
+      5. We were able to create subclasses of Wolf that were not declared in Wolf. So is Wold still sealed? Yes
+      6. Any instance of MyWold or MyFlurryWolf is also an instance of Timber, which is named in the Wolf declaration.
+      7. Person writing the sealed class can see the declaration of all direct subclasses at compile time. 
+      8. They can decide whether to alow the non-sealted subclass to be supported.
+
+Omitting the permits Clause:
+
+      1. We have see have required a permits clause when declaring a sealed class, but this is not always the case. 
+            // Snake.java
+            public sealed class Snake permits Cobra {}
+            final class Cobra extends Snake {}
+            In this case, the permits clause is optional and can be omitted. The extends keyword is still required in the subclass though:
+            // Snake.java
+            public sealed class Snake {}
+            final class Cobra extends Snake {}
+            If these classes were in separate files, this code would not compile! This rule also applies to the sealed classes with nested subclasses.
+            // Snake.java
+            public sealed class Snake {
+                  final class Cobra extends Snake {}
+            }
+
+Referencing Nested SubClasses:
+
+      1. While it makes the code easier to read if you omit the permits clause for nested subclasses.
+            public sealed class Snake permits Cobra { // Does not compile
+                  final class Cobra extends Snake {}
+            }
+         This code does not compile because Cobra requires a reference to the Snake namespace. The following fixes the issue
+            public sealed class Snake permits Snake.Cobra
+                  final class Cobra extends Snake {}
+            }
+         When all of your subclasses are nested, strongly recommend omitting the permits clause
+
+Usage of permits clause in sealed classes"
+
+      1. In a different file from the sealed class - permits clause is Required
+      2. In the same file as the sealed class - permits clause is permitted but not required
+      3. Nested inside of the sealed class - permits clause is permitted but not required
       
 Core Java 8, 11, 17, 21
 
