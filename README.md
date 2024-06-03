@@ -1403,6 +1403,51 @@ Why have Sealed Classes?
       3. If Fish wasn't sealed, the switch expression would require a default branch or the code would not compile. Since it's sealed, the compiler knows all options
       4. The good news is that this feature is on the way and is in preview in Java17.
 
+Encapsulation:
+
+      1. A POJO stands for Plain Old Java Object, a class used to model and pass data around, often with few or no complex methods.
+            public class Crane {
+                  int numberEggs;
+                  String name;
+                  public Crane(int numberEggs, String name) {
+                        this.numberEggs = numberEggs;
+                        this.name = name;
+                  }
+            }
+            The fields are package access. That means someone outside the class and inside the same package could change these values and create invalid data
+            public class Poacher {
+                  public void badActor() {
+                        var mother = new Crane(5, "Cathy");
+                        mother.numberEggs = -100;
+                  }
+            }
+            Mother Crane can have no negative number of eggs.
+      2. Encapsulation is a way to protect class members by restricting access to them.
+      3. In Java, it is commonly implemented by declaring all instance variables as private.
+      4. Callers are required to use methods to retrieve or modify instance variables.
+      5. Encapsulation is about protecting a class from unexpected use. 
+      6. It also allows us to modify the methods and behavior of the class later without someone already having direct access to an instance variable witin the class.
+
+            public final class Crane {
+                  private final int numberEggs;
+                  private final String name;
+                  public Crane(int numberEggs, String name) {
+                        if (numberEggs >= 0) {
+                              this.numberEggs = numberEggs; // guardCondition
+                        } else {
+                              throw new IllegalArgumentException();
+                        }
+                        this.name = name;
+                        public int getNumberEggs() { return numberEggs; }
+                        public String getName() { return name; }
+                  }
+            }
+      7. Notice that the instance variables are now private. This means only code within the class can read or write their values.
+      8. The class and its instance variables are set to final and we don't have any mutator methods or setters to modify the value of the instance variables. 
+      9. That's because we want our class to be immutable in addition to being well encapsulated.
+      10. The immutable objects pattern is an object oriented design pattern in which an object cannot be modified after it is created.
+      11. Instead of modifying an immutable object, you create a new object that contains any properties from the original object you want copied over.
+      12. You must omit the setters if you want the class to remain immutable.
       
 
 Core Java 8, 11, 17, 21
