@@ -1187,6 +1187,128 @@ Adding Constructors, Fields and Methods:
                         System.out.print("end");
                   }
             }
+
+      - To call a method in enum -> Season.SUMMER.getExpectedVisitors();
+      - Sometimes we want to define different methods for each enum. 
+
+      public enum Season {
+            WINTER {
+                  public String getHours() { return "10am-3pm"; }
+            },
+            SPRING {
+                  public String getHours() { return "9am-5pm"; }
+            },
+            SUMMER {
+                  public String getHours() { return "9am-7pm"; }
+            },
+            FALL {
+                  public String getHours() { return "9am-5pm"; }
+            }
+            public abstract String getHours();
+      }
+      - It looks like we created an abstract class and a bunch of tiny subclasses.
+      - The enum itself has an abstract method. This means that each and every enum value is required to implement this method. If we forget to implement the method for one of the values we get a compile error.
+      - The enum constant WINTER must implement the abstract method getHours();
+      - But what if we don't want each and every enum value to have a method? We can create an implementaton for all values and override it only for the special cases.
+
+      public enum Season {
+            WINTER {
+                  public String getHours() { return "10am-3pm"; }
+            },
+            SPRING {
+                  public String getHours() { return "9am-5pm"; }
+            },
+            SUMMER, FALL {
+                  public String getHours() { return "9am-7pm"; }
+            },
+            public abstract String getHours();
+      }
+      - An enum can even implement an interface, as this just requires overriding the abstract methods:
+
+            public interface Weather {
+                  int getAverageTemperature();
+            }
+            public enum implements Weather {
+                  WINTER, SPRING, SUMMER, FALL;
+                  public int getAverageTeperature() {
+                        return 30;
+                  }
+            }
+      - Just because an enum can have lots of methods doesn't mean that it should. Try to keep your enums simple.
+      - Whether the enum is simple or complex, the list of values always comes first.
+
+Sealing Classes:
+
+      - An enum with many constructors, fields and methods may start to resemble a full-featured class.
+      - We can create a class but limit the direct subclasses to a fixed set of classes.
+      - This can be done by using sealed classes.
+      - A sealed class is a class that restricts which other classes may directlry extend it. 
+      - These are brand new to Java17
+      
+Declaring a Sealed Class:
+
+      - A sealed class declares a list of classes that can extend it, while the subclasses declare that they extend the sealed class.
+            public sealed class Bear permits Kodiak, Panda {}
+            public final class Kodiak extends Bear {}
+            public non-sealed class Panda extends Bear {}
+      - Java 17 includes three new keywords. We often use final with sealed subclasses
+
+Sealed class keywords:
+
+      - sealed: Indicates that a class or interface may only be extended/implemented by named classes or interfaces.
+      - permits: Used with the sealed keyword to list the classes and interfaces allowed.
+      - non-sealed: Applied to a class or interface that extends a sealed class, indicating that it can be extended by unspecified classes.
+
+            public class sealed Frog permits GlassFrog {} // Does not compile
+            public final class GlassFrog extends Frog {}
+            public abstract sealed class Wolf permits Timber {}
+            public final class Timber extends Wolf {}
+            public final class MyWolf extends Wolf {} // Does not compile
+
+      - The first example does not compile because the class and sealed modifiers are in the wrong order. 
+      - The modifier has to be before the class type.
+      - The second example does not compile because MyWolf isn't listed in the declaration of Wolf.
+
+      - Sealed classes are commonly declared with the abstract modifier, although this is certainly not required.
+
+Compiling Sealed Classes:
+
+      Let's say we create a Penguin class and compile it in a new package without any other source code.
+
+      // Penguin.java
+      package zoo;
+      public sealed class Penguin permits Emperor {}
+
+      This doesn't compile. The answer is that a sealed class needs to be declared and compiled in the same package as its direct subclasses. They must each extend the sealed class. 
+
+      // Penguin.java
+      package zoo;
+      public sealed class Penguin permits Emperor {} // Does not compile
+
+      // Emperor.java
+      package zoo;
+      public final class Emperor {}
+
+      Even though the Emperor class is declared, it does not extend the Penguin class.
+      Named Modules which allow sealed classes and their direct subclasses in different packages, provided they are in the same named module.
+
+Specifying the subclass modifier:
+
+      1. While some types like interfaces have a certain number of implicit modifiers, sealed classes do not.
+      2. Every class that directly extends a sealed class must specify exactly one of the following three modifiers:
+         final, sealed or non-sealed.
+
+A final subclass:
+
+      1. The first modifier we are going to look at that can be applied to a direct subclass of a sealed class is the final modifier
+            public sealed class Antelope permits Gazelle {}
+            public final class Gazelle extends Antelope {}
+            public class George extends Gazelle {} // Does not compile      
+      2. Just as with a regular class, the final modifier revents the subclass Gaelle from being extended further.
+
+A sealed subclass:
+
+      
       
 Core Java 8, 11, 17, 21
 
