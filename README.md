@@ -1448,7 +1448,97 @@ Encapsulation:
       10. The immutable objects pattern is an object oriented design pattern in which an object cannot be modified after it is created.
       11. Instead of modifying an immutable object, you create a new object that contains any properties from the original object you want copied over.
       12. You must omit the setters if you want the class to remain immutable.
+
+Applying Records:
+
+      public record Crane(int numberEggs, String name) {}
+
+      1. A record is a special type of data-oriented class in which the compiler inserts boilerplate code.
+      2. In fact, the compiler inserts much more than the 14 lines we wrote earlier.
+      3. As the bonus, the compiler inserts useful implementation of the Object method equals(), hashCode() and toString().
+      4. Imagine we had 10 data fields instead of 2. That's a lot of methods we are saved from wrting.
+      5. Anytime, someone changes a field, dozens of lines of related code may need to be updated.
+      6. Creating an instance of a Crane and printing some fields is easy.
+
+            var mommy = new Crane(4, "Cammy");
+            System.out.println(mommy.numberEggs()); // 4
+            System.out.println(mommy.name()); // Cammy
+
+      7. First, we never defined any constructors or methods in our Crane declaration.
+      8. Behind the scenes, it creates a constructor for you with the parameters in the same order in which they appear in the record declaration. 
+            var mommy1 = new Crane("Cammy", 4);
+            var mommy2 = new Crane("Cammy");
+      9. For each field, it also creates an accessor as the field name, plus a set of parentheses.
+      10. Unlike traditional POJOs or JavaBrans, the methods don't have the prefix get or is.
+      11. Finally, records override a number of methods in Object for you.
+
+Members automatically added to Records:
+
+      - Constructor: A constructor with the parameters in the same order as the record declaration.
+      - Accessor method: One accessor for each field
+      - equals(): A method to compare two elements that returns true if each field is equal in terms of equals()
+      - hashCode() - A consistent hashCode() method using all of the fields.
+      - toString() - A toString() implementation that prints each field of the recod in convenient, easy-to-read format.
+
+      - The following shows examples of the new methods.
+      - Remember that the println() method will call the toString() method automatically on any object passed to it.
+
+            var father = new Crane(0, "Craig");
+            System.out.println(father); // Crane[numberEggs=0, name=Craig]
+
+            var copy = new Crane(0, "Craig");
+            System.out.println(copy); // Crane[numberEggs=0, name=Craig]
+            System.out.println(father.equals(copy)); // true
+            System.out.println(father.hashCode() + " , " + copy.hashCode()); // 1007, 1007
+
+      - It is lega to have a record without any fields. It is siply declared with the record keyword and parentheses.
+            public record Crane() {}
       
+Understandng Record Immutability:
+
+      - Records don't have setters. 
+      - Each field is inherently final and cannot be modified after it has been written in the constructor.
+      - In order to "modify" a record, you have to make a new object and copy all of the data you want to preserve.
+            var cousin = new Crane(3, "Jenny");
+            var friend = new Crane(cousin.numberEggs(), "Janeice");
+      - Just as interfaces are implicitly abstract, records are also implicitly final.
+      - The final modifier is optional but assumed.
+            public final record Crane(int numberEggs, String name) {}
+      - Like enums, that means you can't extend or inherit a record.
+            public record BlueCrane() extends Crane {} // Does not compile
+      - Also like enums, a record can implement a regular or sealed interface, provided it implements all of the abstract methods.
+            public interface Bird {}
+            public record Crane(int numberEggs, String name) implements Bird {}
+      - There are some good reasons to make data-oriented classes immutable.
+      - Doing so can lead to less error-prone code, as a new object is established any time the data is modified.
+      - It also makes them inherently thread-safe and usable in concurrent frameworks.
+
+Declaring Constructors:
+
+      - What if you need to declare a record with some guards as we did earlier?
+      - In this section, we cover two ways we can accomplish this with records.
+
+The Long Constructor:
+
+      - First, we can just declare the constructor the compiler normally inserts automatically which we refer to as the long constructor.
+      public record Crane(int numberEggs, String name) {
+            public Crane(int numberEggs, String name) {
+                  if (numberEggs < 0) throw new IllegalArgumentException();
+                  this.numberEggs = numberEggs;
+                  this.name = name;
+            }
+      }
+      - The compiler will not insert a constructor if you define one with the same list of parameters in the same order.
+      - Since each field is final, the constructor must set every field.
+      - For example, ths record does not compile:
+            public record Crane(int numberEggs, String name) {
+                  public Crane(int numberEggs, String name) {} // Does not compile
+            }
+      - While being able to declare a constructor is a nice feature of records, it's also problematic.
+      - If we have 20 fields, we will need to declare assignments for every one, introducing the boilerplate to remove.
+
+Compact Constructors:
+
 
 Core Java 8, 11, 17, 21
 
