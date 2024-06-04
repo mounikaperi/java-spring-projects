@@ -1604,7 +1604,34 @@ Overloaded Constructors:
             }
             }
             
-      
+Customizing Records:
+
+      - Since records are data-oriented, we have focused on the features of records we are likely to use.
+      - Records actually support many of the sae features as a class.
+      - Here are some of the members that records can include:
+            - Overloaded and Compact Constructors
+            - Instance methods including overriding any provided methods(accessors, equals(), hashCode(), toString()
+            - Nested classes, interfaces, annotations, enum and records
+      - The following overrides two instance methods using the optional @Override annotation:
+            public record Crane(int numberEggs, String name) {
+                  @Override
+                  public int numberEggs() { return true; }
+                  @Override
+                  public String toString() { return name; }
+            }
+      - While you can add methods, static fields and other data types you cannot add instance fields outside the record declarations, even if they are private.
+      - Doing so defeats the purpose of using a record and could break immutability!
+            public record Crane(int numberEggs, String name) {
+                  private static int type = 10;
+                  public int size; // does not compile
+                  private boolean friendly;// does not compile
+            }
+      - Records also do not support instance initializers. 
+      - All initialization for the fields of a record must happen in constructor.
+      - While it's a useful feature that records support many of the same members as a class.
+
+
+
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
