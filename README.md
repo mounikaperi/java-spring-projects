@@ -1539,6 +1539,20 @@ The Long Constructor:
 
 Compact Constructors:
 
+      - A compact constructor is a special type of constructor used for records to process validation and transformations succinctly.
+      - It takes no parameters and impliticly sets all fields.
+      public record Crane(int numberEggs, String name) {
+            // Compact Constructor
+            public Crane { // No parentheses or constructor parameters
+                  if (numberEggs < 0) throw new IllegalArgumentException(); // Custom validation
+                  name = name.toUpperCase();
+            }
+      }
+      - Now we can check the values we want, and we don't have to list all the constructor parameters and trivial assignments.
+      - Java will execute the full constructor after the compact constructor.
+      - A compact constrcutor is declared without parentheses.
+
+Transforing Parameters:
 
 Core Java 8, 11, 17, 21
 
