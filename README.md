@@ -1554,6 +1554,57 @@ Compact Constructors:
 
 Transforing Parameters:
 
+      - Compact constructors give you the opportunity to apply transformations to any of the input values.
+            public record Crane(int numberEggs, String name) {
+                  public Crane {
+                        if (name == null || name.length() < 1)
+                              throw new IllegalArgumentException();
+                        name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
+                  }
+            }
+      - It validates te string then formats it such that only the first letter is capitalized.
+      - Java calls the full constructor after the compact constructor but with the modified constructor parameters.
+      - While compact constructors can modify the constructor parameters, they cannot modify the fields of the records.
+            public record Crane(int numberEggs, String name) {
+                  public Crane {
+                        this.numberEggs = 10; // Does not compile
+                  }
+            }
+      - Removing the this reference allows the code to compile, as the constructor parameter is modified instead.
+
+Overloaded Constructors:
+
+      - You can also create overloaded constructors that take a completely dfferent list of parameters.
+      - They are more closely related to the long-form constructor and don't use any of the syntactical features of compact constructors.
+            public record Crane(int numberEggs, String name) {
+                  public Crane(String firstName, String lastName) {
+                        this(0, firstName + " " + lastName);
+                  }
+            }
+      - The first line of an overloaded constructor must be an explicit call to another constructor via this().
+      - If there are no other constructors, the long constructor must be called.
+      - Contrast to where calling super() and this() was often optional in constructor declarations.
+      - Also, unlike compact constructors, you can only transform the data on the first line.
+      - After the first line, all of the fields will already be assigned and the object is immutable.
+            public record Crane(int numberEggs, String name) {
+                  public Crane(int numberEggs, String firstName, String lastName) {
+                        this(numberEggs+1, firstName+" "+lastName);
+                        numberEggs = 10; // no effect- applies to parameter, not instance field
+                        this.numberEggs = 20; // Does not compile
+                  }
+            }
+      - You also can't declare two record constructors that call each other infinitely or as a cycle.
+            public record Crane(int numberEggs, String name) {
+                  public Crane(String name) {
+                        this(1);// Doesnot compile
+                  }
+                  public Crane(int numberEggs) {
+                        this("");// Doesnot compile
+                  }
+            }
+            }
+            
+      
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
