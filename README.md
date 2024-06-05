@@ -2170,3 +2170,68 @@ Nested class access rules:
             - can access instance members of enclosing class? YES if delcared in an instance method
             - - can access local variables of enclosing method? YES if final or effectively final
       
+Understanding Polyorphism:
+
+      - Polymorphism is the property of an object to take on many different forms. To put this more precisely, a Java object may be accessed using:
+            - A reference with the same type as the object
+            - A reference that is a superclass of the object
+            - A reference that defines an interface the object implements or inherits.
+      - Furthermore, a cast is not required if te object is being reassigned to a supertype or interface of the object. 
+            public class Primate {
+                  public boolean hasHair() { return true; }
+            }
+            public interface HasTail {
+                  public abstract boolean isTailStriped();
+            }
+            public class Lemur extends Primate implements HasTail {
+                  public boolean isTailStriped() { return false; }
+                  public int age = 10;
+                  public static void main(String[] args) {
+                        Lemur lemur = new Lemur();
+                        System.out.println(lemur.age);
+                        HasTail hasTail = lemur;
+                        System.out.println(hasTail.isTailStriped());
+                        Primate primate = lemur;
+                        System.out.println(primate.hasHair());
+                  }
+            }
+      - The most important thing to note about this example is that only one object Lemur, is created. 
+      - Polymorphism enables an instance of Lemur to be reassigned or passed to a method using one of its supertypes, such as Primate or HasTail.
+      - Once the object has been assigned to a new reference type, only the methods and variables available to that reference type are callble on the object without an explicit cast.
+            HasTail hasTail = new Lemur();
+            System.out.println(hasTail.age); // Does not compile
+            Primate primate = new Lemur();
+            System.out.println(primate.isTailStriped()); // Does not compile
+      - In this example, the reference hasTail has direct access only to methods defined with the HasTail interface, therefore, it doesn't know the variable age is part of the object. Likewise, the reference priate has access onlyto methods defined in the Primate class, and it doesnt have direct access to the isTailStriped() method.
+
+Object vs Reference:
+
+      - In Java, all objects are accessed by reference, so as developer you never have direct access to the object itself.
+      - You should consider the object as the entity that exists in memory, allocated by the Java Runtime Environment.
+      - Regardless of the type of the reference you have for the object in memory, the object itself doesn't change.
+      - Since all objects inherit java.lang.Object they can all be reassigned to java.lang.Object
+            Lemur lemur = new Lemur();
+            Object lemurAsObject = lemur;
+      - Even though the lemur object has been assigned to a reference with a different type, the object itself has not changed and still exists as a Lemur object in memory.
+      - What has changed, then, is our ability to access methods within the Lemur class with the lemurAsObject reference.
+      - Without an explicit cast back to Lemur, we no longer have access to the Lemur properties of the object.
+      - We can summarize this principle with the following two rules:
+            - The type of the object determines which properties exist within the object in memory.
+            - The type of the reference to the object determines which methods and variables are accessible to the Java program.
+      - It therefore follows tat successfully changing the reference of an object to a new reference type may give you access to new properties of the object; 
+            but remember those properties existed before the reference change occurred.
+
+Using Interface References:
+
+      - When working with a group of objects that implement a common interface, it is considered a good coding practice to use an interface as the reference type.
+            public void sortAndPrioritizeAnimals(List<String> animals) {
+                  Collections.sort(animals);
+                  for(String a: animals) System.out.println(a);
+            }
+      - This method sorts and prints animals in alphabetic order. At no point in this class inserted in wat the actual underlying object for animals is.
+      - It might be an ArrayList or another type. The code works on any of these types because we used the interface reference type rather than a class type.
+
+Casting Objects:
+
+      - 
+
