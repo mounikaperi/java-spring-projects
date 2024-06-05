@@ -2233,5 +2233,87 @@ Using Interface References:
 
 Casting Objects:
 
-      - 
+      - In the previous example, we created a single instance of a Lemur object and accessed it via superclass and interface references.
+      - Once we changed the reference type, though, we lost access to more specific members defined in the subclass that still exist within the object.
+      - We can reclaim those references by casting the object back to the specific subclass it came from:
+            Lemur lemur = new Lemur();
+            Primate primate = lemur; // Implicit cast to supertype
+            Lemur lemur2 = (Lemur) primate; // Explicit cast to subtype
+            Lemur lemur3 = primate; // Does not compile (missing cast)
+      - Casting objects is similar to casting primitives. When casting objects, you do not need a cast operator if casting to an inherited supertype.
+      - This is referenced to as an implicit cast and applies to classes or interfaces the object inherits.
+      - Alternatively, if you want to access a subtype of the current reference, you need to perform an explicit cast with a compatible type.
+      - If the underlying object is not compatible with the type, then a ClassCastException will be thrown at runtime.
+
+Summary of Casting Rules:
+
+      - Casting a reference from a subtype to a supertype doesn't require an explicit cast.
+      - Casting a reference from supertype to a subtype requires an explicit cast.
+      - At runtime, an invalid cast of a reference to an incompatible type results in a ClassCastException being thrown.
+      - The compiler disallows casts to unrelated types.
+
+Casting Interfaces:
+
+      - While the compiler can enforce rules about casting to unrelated types for classes, it cannot always do the same for interfaces.
+      - Instances support multiple inheritance, which limits what the compiler can reason about them.
+      - While a given class may not implement an interface, it's possible that some subclass may implement the interface.
+      - When holding a reference to a particular cass, the compiler doesn't know which specific sutype it is holding.
+
+            interface Canine {}
+            interface Dog {}
+            class Wolf implements Canine {}
+            public class BadCasts {
+                  public static void main(String[] args) {
+                        Wolf wolf = new Wolf();
+                        Dog badWolf = (Dog) wolf;
+                  }
+            }
+      - In this program, the Wolf object is created and then assigned to a Wolf reference type. With interfaces, the compiler has limited ability to enforce many rules because even though a reference type many not implement an interface, one of its subclasses could.Therefore, it allows the invalid cast to the Dog reference type. 
+      - Even though the code compiles, it still throw a ClassCastException at runtime.
+      - The limitation aside, the compiler can enforce one rule around interface casting.
+      - The compiler does not allow a cast from an interface reference to an object reference if the object type cannot possibly implement the interface, such as if the class is marked as final. The compiler recognized that there are no possible sunclasses of Wolf capable of implementing the Dog interface.
+
+The instanceof Operator:
+
+      - The instanceof operator can be used to check whether an object belongs to a particular class or interface and to prevent a ClassCastException at runtime.
+            class Rodent {}
+            public class Capybara extends Rodent {
+                  public static void main(String[] args) {
+                        Rodent rodent = new Rodent();
+                        var capybara = (Capybara) rodent; // ClassCastException
+                  }
+            }
+      - to fix this exception
+            if (rodent instanceof Capybara c)  { // Do stuff }
+      - Now the code snippet doesnt throw exception at runtime and performs the cast only if the instanceof operator is successful.
+      - Just as the compiler does not allow casting an object to unrelated types, it also doesnot allow instanceof to be used with unrelated types. 
+            public class Bird {}
+            public class Fish {
+                  public static void main(String[] args) {
+                        Fish fish = new Fish();
+                        if (fish instanceof Bird b) { // Do stuff } // Doesnt compile - because Fish doesnt extend Bird
+                  }
+            }
+
+Polymorphism and Method Overriding:
+
+      - In Java, polymorphism states that when you override a method, you replace all calls to it, even those defined in the parent class.
+            class Penguin {
+                  public int getHeight() { return 3; }
+                  public void printInfo() {
+                        System.out.print(this.getHeight());
+                  }
+            }
+            public class EmperorPenguin extends Penguin {
+                  public int getHeight() { return 8; }
+                  public static void main(String[] args) {
+                        new EmperorPenguin().printInfo();
+                  }
+            }
+      - Polymorphism's ability to replace methods at runtime via overriding is one of the most important properties of Java.
+      - It allows you to create complex inheritance models with subclasses that have their own custom implementation of overridden methods.
+      - It also means that the parent class does not need to be updated to use the custom or overriden method.
+      - If the method is properly overridden, then the overridden version will be used in all places that is called.
+      - We can choose to limit polymorphic behavior by marking methods final which prevents them from being overriden by a subclass.
+
 
