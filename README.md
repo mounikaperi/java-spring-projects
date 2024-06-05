@@ -1779,7 +1779,51 @@ Why can Local classes only access final or effectively final variables?
 
 Defining an Anonymous class:
 
-      - 
+      - An anonymous class is a specialized form of a local class that does not have a name. 
+      - It is declared and instantiated all in one statement using the new keyword, a type name with parentheses and a set of braces {}.
+      - Anonymous classes must extend an existing class or implement an existing interface.
+      - They are yseful when you have a short imlementation thagt wil not be used anywhere else. 
+            public class ZooGiftShop {
+                  abstract class SaleTodayOnly {
+                        abstract int dollarsOff();
+                  }
+                  public int admission(int basePrice) {
+                        SaleTodayOnly sale = new SaleTodayOnly() {
+                              int dollarsOff() { return 3; }
+                        }; // Dont forget the semicolon
+                        return basePrice - sale.dollarsOff();
+                  }
+            }
+      - Lines 2-4 define an abstract class. Lines 6-8 define the anonymous class. 
+      - Notice how this anonymous class does not have a name. The code says to instantiate a new SaleTodayOnly object. But SaleTodayOnly s abstract.
+      - This is okay because we provide the class body right here  - anonymously.
+      - Writing an anonymous class is equivalent to writing a local class with an unspecified name that extends SaleTodayOnly and immediately uses it.
+      - Now we convert tis example to implement an interface instead of extending an abstract class:
+            public class ZooGiftShop {
+                  interface SaleOnlyToday {
+                        int dollarsOff();
+                  }
+                  public int admission(int basePrice)  {
+                        SaleTodayOnly sale = new SaleTodayOnly() {
+                              public int dollarsOff() { return 3; }
+                        };
+                        return basePrice - sale.dollarsOff();
+                  }
+            }
+      - Lines 2-4 declare an interface instead of abstract class. Line7 is public instead of using default access since interfaces require public methods.
+      - The anonymous class is the same whether you impleent an interface or extend a class
+      - Java figures out which one you want automatically. 
+      - But what if we want to both implement an interface and extend a class? You cant do so with an anonymous class unless the class to extend is Java.lang.Object.
+      - The Object class doesn't count in the rule.
+      - Remember that an anonymous class is just an unnamed local class. You can write a local class and give it a name if you have this problem.
+      - Then you can extend a class and implement as many interfaces as you like. 
+      - You can even define anonymous classes outside a method body. The following may look like we are instantiating an interface as an instance variable but {} after the interface name indicates tat this is an anonymous class implementing the interface.
+            public class Gorilla {
+                  interface Climb{}
+                  Climb climbing = new Climb() {};
+            }
+
+
 
 Core Java 8, 11, 17, 21
 
