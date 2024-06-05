@@ -1823,8 +1823,58 @@ Defining an Anonymous class:
                   Climb climbing = new Climb() {};
             }
 
+Anonymous Classes and Lambda Expressions:
 
+      - Prior to Java8, anonymous classes were frequently used for asynchronous tasks and event handlers. 
+      - The following shows an anonymous class used as an eventhandler in a JavaFX application:
+            var redButton = new Button();
+            redButton.setOnAction(new EventHandler<ActionEvent>() {
+                  public void handle(ActionEvent e) {
+                        System.out.println("Red button pressed!");
+                  }
+            });
+      - Since the introduction of lambda expressions, anonymous classes are now oftern replaced with much shorter implementations:
+            Button redButton = new Button();
+            redButton.setOnAction(e -> System.out.println("Red button pressed!");
 
+Reviewing Nested classes:
+
+      - Inner class 
+            - All Access modifiers permitted
+            - abstract class permitted
+            - final modifier permitted
+      - static nested classes
+            - All access modifiers permitted
+            - abstract modifier permitted
+            - final permitted
+      - Local class
+            - None permitted
+            - abstract permitted
+            - final permitted
+      - Anonymous class
+            - None permitted
+            - abstract not permitted
+            - final not permitted
+
+Nested class access rules:
+
+      - Inner class
+            - can extend a class or implement any number of interfaces? YES
+            - can access instance members of enclosing class? YES
+            - can access local variables of enclosing method? N/A
+      - static nested class
+            - can extend a class or implement any number of interfaces? YES
+            - - can access instance members of enclosing class? NO
+            - can access local variables of enclosing method? N/A
+      - Local class
+            can extend a class or implement any number of interfaces? YES
+            - can access instance members of enclosing class? YES if declared in an instance method
+            - can access local variables of enclosing method? YES if final or effectively final
+      - Anonymous class
+            can extend a class or implement any number of interfaces? No - must have exactly one superclass or one interface
+            - can access instance members of enclosing class? YES if delcared in an instance method
+            - - can access local variables of enclosing method? YES if final or effectively final
+      
 Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
