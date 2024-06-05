@@ -2316,4 +2316,44 @@ Polymorphism and Method Overriding:
       - If the method is properly overridden, then the overridden version will be used in all places that is called.
       - We can choose to limit polymorphic behavior by marking methods final which prevents them from being overriden by a subclass.
 
+Calling the Parent Version of an Overridden method:
+
+      - Just because a method is overriden doesn't mean that the parent method is completely inaccessible. We can use the super reference to access it. 
+
+Overriding vs Hinding Members:
+
+      - While method overriding replaces the method everywhere it is called, static method and variable hiding do not.
+      - Hiding members is not a form of polymorphism since the methods and variables maintain their individual properties.
+      - Unlike method overriding, hiding members is very sensitive to the reference type and location where the member is being used.
+            class Penguin {
+                  public static int getHeight() { return 3; }
+                  public void printInfo() {
+                        System.out.println(this.getHeight());
+                  }
+            }
+            public class CrestedPenguin extends Penguin {
+                  public static int getHeight() { return 8; }
+                  public static void main(String... fish) {
+                        new CrestedPenguin().printInfo();
+                  }
+            }
+      - The CrestedPenguin example is nearly identical to previous EmperorPenguin example. It prints 3 instead of 8.
+      - The getHeight() method s static and is therefore hidden, not overriden. The result is that calling getHeight() in CrestedPenguin returns a different value than calling it in Penguin
+      even if the underlying object is same.
+            class Marsupial {
+                  protected int age = 2;
+                  public static boolean isBiped() { return false; }
+            }
+            public class Kangaroo extends Marsupial {
+                  protected int age = 6;
+                  public static boolean isBiped() { return true; }
+                  public static void main(String[] args) {
+                        Kangaroo joey = new Kangaroo();
+                        Marsupial moey = joey;
+                        System.out.println(joey.isBiped()); // true
+                        System.out.println(moey.isBiped()); // false
+                        System.out.println(joey.age); // 6
+                        System.out.printn(moey.age); // 2
+                  }
+            }
 
