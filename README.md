@@ -1630,7 +1630,119 @@ Customizing Records:
       - All initialization for the fields of a record must happen in constructor.
       - While it's a useful feature that records support many of the same members as a class.
 
+Creating Nested Classes:
 
+      - A nested class is a class that is defined within another class. A nested class can come in one of four flavours:
+            - Inner class: A non-static type defined at the member level of a class.
+            - Static nested class: A static type defined at the member level of a class.
+            - Local class: A class defned within a method body.
+            - Anonymous class: A special case of a local class that does not have a name.
+      - There are many benefits of using nested classes. They can define helper classes and restrict them to the containing class, thereby improvind encapsulation.
+      - They can make it easy to create a class that will be used in only one place. 
+      - They can even make the code cleaner and easier to read.
+      - When used improperly, though nested classes can sometimes make the code harder to read.
+      - They can also tend to tightly couple the enclosing inner class, but there may be cases where you want to use the inner class by itself.
+      - In this case, you shoud move the inner class out into a separate top-level class.
+
+Declaring an Inner Class:
+
+      - An inner class, also called a member inner class, is a non-static type defined at the member level of a class.
+      - Because they are not top-level types, they can use any of the four access levels not just public and package access.
+      - Inner classes have the following properties:
+            - Can be declared public, protected, package or private
+            - Can extend a class and implement interface.
+            - Can be marked abstract or final.
+            - Can access members of the outer class, including private members.
+      - The last property is pretty cool. It means that the inner class can access variables in the outer class without doing anything special.
+            public class Home {
+                  private String greeting = "Hi!";
+                  protected class Room {
+                        public int repeat = 3;
+                        public void enter() {
+                              for(int i=0; i<repeat; i++) greet(greeting);
+                        }
+                        private static void greet(String message) {
+                              System.out.println(message);
+                        }
+                  }
+                  public void enterRoom() {
+                        var room = new Room();
+                        room.enter();
+                  }
+                  public static void main(String[] args) {
+                        var home = new Home();
+                        home.enterRoom();
+                  }
+            }
+      - An inner class declaration just looks like a stand-alone class declaration except that it happens to be located inside another class.
+      - Since an inner class is not static, it has to be called using an instance of outer class
+      - That means you have to create two objects.(Home and Room object)
+
+Instantiating an Instance of an Inner Class:
+
+      - There is another way to instantiate Room that looks odd at first. 
+            public static void main(String[] args) {
+                  var home = new Home();
+                  Room room = home.new Room(); // Create the inner class instance
+                  room.enter();
+            }
+      - can be written as new Home().new Room().enter();
+
+Creating .class files for Inner classes:
+
+      - Compiling the Home.java class with which we have been working creates two class files.
+      - Home.class file and for the inner class, the compiler creates Home$Room.class
+
+Referencing members of an Inner class:
+
+      - Inner classes can have the same variable names as outer classes, making scope a little tricky.
+      - There is a special way of calling this to say which variable you want to access. 
+      - In fact you aren't limited to just one inner class. 
+            public class A {
+                  private int x = 10;
+                  class B {
+                        private int x = 20;
+                        class C {
+                              private int x = 30;
+                              public void allTheX() {
+                                    System.out.println(x);        // 30
+                                    System.out.println(this.x);   // 30
+                                    System.out.pritnln(B.this.x); // 20
+                                    System.out.println(A.this.x); // 10
+                              }
+                        }
+                  }
+                  public static void main(String[] args) {
+                        A a = new A();
+                        A.B b = a.new B();
+                        A.B.C c = b.new C();
+                        c.allTheX();
+                  }
+            }
+
+Creating a static nested class:
+
+      - A static nested class is a static type defined at the member level.
+      - Unlike an inner class, a static nested class can be instantiated without an instance of the enclosing class.
+      - The trade-off though is that it can't access instance variables or methods declared in the outer class. 
+      - In other words, it is like a top-level class except for the following:
+            - The nesting creates a namespace because the enclosing class name must be used to refer to it.
+            - It can additionally be marked private or protected.
+            - The enclosing class can refer to the fields and methods of the static nested class.
+
+                  public class Park {
+                        static class Ride {
+                              private int price = 6;
+                        }
+                        public static void main(String[] args) {
+                              var ride = new Ride();
+                              System.out.println(ride.price);
+                        }
+                  }
+      -ride instantiates the nested class. Since the class is static, you do not need an instance of Park to use it. You are allowed to access private instance variables.
+
+
+                        
 
 Core Java 8, 11, 17, 21
 
