@@ -2357,3 +2357,151 @@ Overriding vs Hinding Members:
                   }
             }
 
+Writing Simple Lambdas:
+
+      - Java is an object oriented language at heart. We have seen plenty of objects by now.
+      - Functional Programming is a way of writing code delcarativey. You specify what you want to do rather than dealing with the state of objects. You focus more on expressions than loops.
+      - Functional Programming uses lambda expressions to write code. 
+      - A lambda expression is a block of code that gets passed around. You can think of a lambda expression as an unnamed method existing inside an anonymous class.
+      - It has parameters and a body just like full-fledged methods do but it doesn;t have a name like a real method.
+      - Lambda expressions are often referred to as lambdas for short. 
+      - Lambdas allow you to write powerful code in Java.
+            public record Animal(String species, boolean canHop, boolean canSwim) {}
+            The Animal record has three fields. Let's say we have a list of animals and we want to process the data based on a particular attribute. 
+            For eg: we want to print all the animals that can hop. We can define an interface to generaize the concept and support a arge variety of checks:
+            public interface CheckTrait {
+                  boolean test(Animal a);
+            }
+            The first thing we want to check is whether the Animal can hop. We provide a class that implements our interface:
+            public class CheckIfHopper implements CheckTrait {
+                  public boolean test(Animal a) { return a.canHop(); }
+            }
+            import java.util.*;
+            public class TraditionalSearch {
+                  public static void main(String[] args) {
+                        var animals = new ArrayList<Animal>();
+                        animals.add(new Animal("fish", false, true));
+                        animals.add(new Animal("kangaroo", true, false));
+                        animals.add(new Animal("rabbit", true, false));
+                        animals.add(new Animal("turtle", false, true));
+                        print(animals, new CheckIfHopper());
+                  }
+                  private static void print(List<Animal> animals, CheckTrait checker) {
+                        for (Animal animal: animals) {
+                              if (checker.test(animal)) System.out.print(animal + " ");
+                        }
+                        System.out.println();
+                  }
+            }
+      - What happens if we want to print the Animals that swim. We need to write another class, CheckIfSwims. Granted, it is only a few ines but it is a whole new file. Then we need to add a new line that instantiates the class. With lambdas 
+            print(animals, a -> a.canHop());
+            print(animals, a -> a.canSwim());
+            print(animals, a -> !a.canSwim());
+      - The point is that it is really very easy to write code that uses lambdas once you get the basics in place. 
+      - This code uses a concept called deferred execution. 
+      - Deferred execution means that the code is specified now but will run later. In this case, "later" is inside the print() method body as opposed to when it is passed to the method.
+
+Learning Lambda Syntax:
+
+      - Lambdas work with interfaces that have exactly one abstract method.
+      - In this case, Java looks at the CheckTrait interface, which has one method. The lambda in our example suggests that Java should call a method with an Animal parameter that returns a boolean value that's the result of a.canHop().
+      - We know all this because we wrote the code. But how does Java know?
+      - Java relies on context when figuring out what lambda expressions mean.
+      - Context refers to where and how the lambda is interpreted.
+      - Referring to our earlier example, we passed the lambda as the second parameter of the print method
+            print(animals, a->a.canHop());
+            private static print(List<Animal> animals, Checktrait checker) {...}
+      - Since we are pasing a lambda instead, Java tries to map our lambda to the abstract method declaration in the CheckTrait interface.
+            boolean test(Animal a);
+      - Since that interfce's method takes an Animal, the lambda parameter has to be an Animal. And since that interface's method returns a boolean, we know the lambda returns a boolean.
+      - The syntax of lambdas are tricky because many parts are optional. These two ines do the exact same thing:
+            a -> a.canHop();
+                  - A single parameter specified with the name a
+                  - The arrow parameter to separate the parameter and body
+                  - A body that calls a single method and returns the result of that method.
+            (Animal a) -> { return a.canHop(); }
+                  - A single parameter specified with the name a and stating that the type is Animal
+                  - The arrow operator(->) to separate the parameter and body
+                  - A body that has one or more lines of code including a semicolon and a return statement.
+      - The parentheses around the lambda parameters can be omitted only if there is a single parameter and its type is not expicitly stated. 
+      - Java does this because developers commonly use lambda expressions this way and can do as little typing as possible.
+      - Java allows you to omit a return statement and semicolon when no braces are used.
+            a -> { return a.canHop(); }
+            (Animal a) -> a.canHop()
+      - s -> {} is a valid lambda. If there is no code on the right side of the expression, you don't need the semicolon or return statement.
+
+Valid lambdas that return a boolean:
+
+      () -> true                                        => No of parameters are 0
+      x -> x.startsWith("test")                         => No of parameters are 1
+      (String x) -> x.startsWith("test")                => No of parameters are 1
+      (x, y) -> { return x.startsWith("test"); }        => No of parameters are 2
+      (String x, String y) -> x.startsWith("test")      => No of parameters are 2
+
+Invalid lambdas that return a boolean
+
+      x,y -> x.startsWith("fish");                      => Missing parentheses on left
+      x -> { x.startsWith("camel"); }                   => Missing return on right
+      x -> { return x.startsWith("giraffe") }           => Missing semicolon inside braces
+      String x -> x.endsWith("eagle")                   => Missing parentheses on left
+
+      - Remember that the parentheses are optional only when there is one parameter and it doesn't have a type declared. Those are the basics of writing a lambda/
+
+Assigning lambdas to var
+
+      var invalid = (Animal a) -> a.canHop(); // Does not Compile
+
+      - Java infers information about the lambda from the context. var, assumes the type based on the context as well.
+      - There's not enough context here. Neither the lambda nor var have enough information to determing what type of functional interface should be used.
+
+Functional Interfaces:
+
+     - A functional interface is an interface that contains a single abstract method(SAM).
+           @FunctionalInterface
+           public interface Sprint {
+                 public void sprint(int speed);
+            }
+            public class Tiger implements Sprint {
+                  public void sprint(int speed) {
+                        System.out.println("Animal is sprinting fast! " + speed);
+                  }
+            }
+      - In this example, the Sprint interface is a functional interface because it contains exactly one abstract method and the Tiger class is a valid class that implements the interface.
+
+@FunctionalInterface Annotation:
+
+      - The @FunctionalInterface annotation tells the compiler that you intend for the code to be a functional interface.
+      - If the interface does not follow the rules of a functional interface, the compiler will give you an error.
+            @FunctionalInterface
+            public interface Dance { // Does not compile
+                  void move();
+                  void rest();
+            }
+      - Java incudes @FunctionalInterface on some, but not all, functional interfaces. This annotation means the authors of the interface promie it will be safe to use in lambda in future
+      - However, just you don't see the annotation doesn't mean it's not a functional interface. 
+      - Remember that having exactly one abstract method is what makes it a functional interface not the annotation.
+            @FunctionalInterface
+            public interface Sprint {
+                 public void sprint(int speed);
+            }
+            public interface Dash extends Sprint {}
+            public interface Skip extends Sprint {
+                  void skip();
+            }
+            public interface Sleep {
+                  private void snore() {}
+                  default int getZzz() { return 1; }
+            }
+            public interface Climb {
+                  void reach();
+                  default void fall() {}
+                  static int getBackup() { return 100; }
+                  private static boolean checkHeight() { return true; }
+            }
+      - All four of these are valid interfaces, but not all of them are functional interfaces.
+      - The Dash interface is a functional interface because it extends Sprint interface and inherits the single abstract method sprint().
+      - The Skip interface is not a valid functional interface because it has two abstract methods - the inherited sprint() method and the declared skip() method.
+      - The Sleep interface is also not a valid functional interface. Neither snore() nor getZzz() meets the criteria of a single abstract method. Even though the default methods function like abstract methods, in that they can be overriden in a class implementing the interface, they are insufficient for satisfying the single abstract method requirement.
+      - Finally the Climb interface is a functional interface. Despite defining a slew of methods, it contains only one abstract method: reach()
+                        
+                              
