@@ -1741,8 +1741,45 @@ Creating a static nested class:
                   }
       -ride instantiates the nested class. Since the class is static, you do not need an instance of Park to use it. You are allowed to access private instance variables.
 
+Writing a Local class:
 
-                        
+      - A local class is a nested class defined within a method. 
+      - Like local variables, a local class declaration does not exist until the method is invoked and it goes out of scope when the method returns.
+      - This means you can create instances only from withn the method.
+      - Those instances can still be returned from the method.
+      - Local classes are not limited to being declared only inside methods. For example, they can be declared inside constructors and initializers.
+      - Local classes have the following properties:
+            - They do not have an access modifier.
+            - They can be declared final or abstract.
+            - They have access to all felds and methods of the enclosng class (when defined in an instance method).
+            - They can access final and effectively final local variables.
+
+                  public class PrintNumbers {
+                        private int length = 5;
+                        public void calculate() {
+                              final int width = 20;
+                              class Calculator {
+                                    public void multiply() {
+                                          System.out.print(length * width);
+                                    }
+                              }
+                              var calculator = new Calculator();
+                              calculator.multiply();
+                        }
+                        public static void main(String[] args) {
+                              var printer = new PrintNumbers();
+                              printer.calculate(); // 100
+                        }
+                  }
+
+Why can Local classes only access final or effectively final variables?
+
+      - The compiler generates a separate .class file for each inner class. A seperate class has no way to refer to a local variable.
+      - However if the local variable is fina or effectively final, Java can handle it by passing a copy of the value or reference variable to the constructor of the local class. If it wren't final or effectively final, these tricks wouldnt work because the value could change after the copy was made.
+
+Defining an Anonymous class:
+
+      - 
 
 Core Java 8, 11, 17, 21
 
