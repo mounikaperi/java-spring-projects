@@ -2644,3 +2644,49 @@ Calling Instance Methods on a Parameter:
       - Since the functional interface takes two parameters, Java has to figure out what they represent. The first one will always be the instance of the object for instance methods. Any others are to be method parameters.
       - StringTwoParameterChecker methodRef = String::startsWith; -> This might looks like a static method, but it is really a method reference declaring that the instance of the object will be specified later. 
       - StringTwoParamaterChecker lambda = (s, p)-> s.startsWith(p); - SHows some of the power of a method reference. We were able to replace two lambda parameters.
+
+Calling Constructors:
+
+      - A constructor reference is a special type of method reference that uses new instead of a methos and instantiates an object. 
+      - For example, our functional interface will not take any parameters but will return a String.
+            interface EmptyStringCreator {
+                  String create();
+            }
+            EmptyStringCreator methodRef = String::new;
+            EmptyStringCreator lambda = () -> new String();
+            var myString = methodRef.create();
+            System.out.println(myString.equals("Snake")); // false
+      - It expands like the method references you have seen so far. In the previous example, tha lambda doesn't have any parameters.
+      - Method references can be tricky. This time we create a functional interface that takes one parameter and returns a result.
+            interface StringCopier {
+                  String copy(String value);
+            }
+            StringCopier methodRef = String::new;
+            StringCopier lambda = () -> new String(x);
+            var myString = methodRef.copy("Zebra");
+            System.out.println(myString.equals("Zebra")); // true
+      - This means you can't always determine which method can be called by looking at the method reference. 
+      - Instead, you have to look at the context to see what parameters are used and if there is a return type. 
+      - In this example, Java sees that we are passing a String paraeter and calls the constructor of String that takes such a parameter.
+
+Reviewing Method References:
+
+      - Reading method references is helpful in understanding the code.
+      - static methods
+            Before colon: ClassName
+            After colon: MethodName
+            Example: Math::random
+      - Instance methods on a particular object.
+            Before Colon: Instance Variable Name
+            After Colon: Method Name
+            Example: str::startsWith
+      - Instance methods on a parameter
+            Before Colon: ClassName
+            After Colon: method name
+            example: String::isEmpty
+      - Constructor
+            Before Colon: className
+            After Colon: new
+            example: String:🆕
+
+
