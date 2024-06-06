@@ -2505,3 +2505,142 @@ Functional Interfaces:
       - Finally the Climb interface is a functional interface. Despite defining a slew of methods, it contains only one abstract method: reach()
                         
                               
+Adding Object Methods:
+
+      - All classes inherit certain methods from Object.
+            public String toString()
+            public boolean equals(Object)
+            public int hashCode()
+      - We bring this up now because there is one exception to the single abstract method rule that you should be familiar with.
+      - If a functional interface includes an abstract method with the same signature as a public method found in Object, those methods do not count toward the single abstract method test.
+      - The motivation behind this rule is that any class that implements the interface will inherit from Object, as all classes do and therefore always implement these methods.
+      - Since Java assumes all classes extend from Object, you also cannot declare an interface method that is compatible with Object.
+      - For example, declaring an abstract method int toString() in an interface would not compile since Object's version of the method returns a String.
+
+      public interface Soar {
+            abstract String toString();
+      }
+      - It is not a functional interface. Since toString) is a public method implemented in Object it does not count twoward the single abstract method test.
+      - On the other hand, the following implementation of Dive is a functional interface.
+            public interface Dive {
+                  String toString();
+                  public boolean equals(Object o);
+                  public abstract int hashCode();
+                  public void dive();
+            }
+            The dive() method is the single abstract method while the others are not counted since they are public methoods defined in the Object class.
+      - The below interface is not a functional interface
+            public interface Hibernate {
+                  String toString();
+                  public boolean equals(Hibernate o);
+                  public abstract int hashCode();
+                  public void rest();
+            }
+            Despite looking a lot like our Dive interface, the Hibernate interface uses equals(Hibernate) instead of equals(Object). 
+            Because this doesnt match the method sinature of the equals(Object) method defined in the object class, 
+            this interface is counted as containing two abstract methods: equals(Hibenate) an rest()
+
+Using Method References:
+
+      - Method References are another way to make the code easier to read, such as simply mentioning the name of the method
+      - Like lambdas, it takes time to get used to the new syntax.
+      - In this section, we show the syntax along with the four types of method references.
+            public interface LearnToSpeak {
+                  void speak(String sound);
+            }
+            public class DuckHelper {
+                  public static void teacher(String name, LearnToSpeak trainer) {
+                        trainer.speak(name);
+                  }
+            }
+            public class Duckling {
+                  public static void makeSound(String sound) {
+                        LeanToSpeak learner = s -> System.out.println(s);
+                        DuckHelper.teacher(sound, learner);
+                  }
+            }
+      - However, it does nothing other than pass that parameter to another method.
+      - A method reference lets us remove that redundancy and instead write this:
+            LeanToSpeak learner = System.out::println;
+      - The :: operator tells Java to call the println() method later. It will take a little while to get used to the syntax.
+      - Remember that :: is like a lambda, and it is used for deferred execution with a functional interface. You can even magine the method reference as a lambda if it helps you.
+      - A method reference and lambda behave the same way at runtime. You can pretend the compiler tuens your method references into lambdas for you.
+      - There are four formats for method references:
+            - static methods
+            - Instance methods on a particular object
+            - Instance methods on a parameter to be determined at runtime.
+            - Constructors
+
+Calling static methods:
+
+      - For the first example, we use a functional interface that converts a double to a long:
+            interface Converter {
+                  long round(double num);
+            }
+            Convertor methodRef = Math::round;
+            Convertor lambda = x -> Math.round(x);
+            System.out.println(methodRef.round(100.1)); // 100
+      - Convertor methodRef = Math::round; -> we reference a method with one parameter and Java knows that it's like a lambda with one parameter.
+      - Additionally, Java knows to pass that parameter to the method.
+      - round() method is overloaded. it can take a double and a float.How does Java know that we want to call the version of double()?
+      - With both lambdas and method references, Java infers the information from the Context.
+      - In this case, we said that we were declaring a Converter which has a method taking a double parameter.
+      - Java looks for a method that matches the description. If it can't find it or finds multiple matches, then the compiler will report an error.
+      - This latter is sometimes called an ambiguous type error.
+
+Calling Instance methods on a particular Object:
+
+      1. interface StringStart {
+      2.      boolean beginningCheck(String prefix);
+      3. }
+      4. var str = "Zoo";
+      5. StringStart methodRef = str::startsWith;
+      6. StringStart lambda = s -> str.startsWith(s);
+      7. System.out.println(methodRef.beginningCheck("A")); // false
+      Line6, shows that we want to call str.startsWith() and pass a single parameter to be supplied at runtime. This would be a nice way of filtering the data in a list.
+
+      - A method reference doesn;t have to call str.startsWith() and pass a single parameter to be supplied at runtime.
+      - In this example, we create a functional interface with a method that doesn't take any parameters but returns a value
+            interface StringChecker {
+                  boolean check();
+            }
+            var str = "";
+            StringChecker methodRef = str::isEmpty;
+            StringChecker lambda = () -> str.isEmpty();
+            System.out.print(methodRef.check()); // true
+      - Since the method on String is an instance method, we call the methodReference on an instance of the String class.
+      - While all method references can be turned into lambdas, the opposite is not always true.
+            var str= "";
+            StringChecker lambda = () -> str.startsWith("Zoo");
+            How might we write this as a method reference?
+            StringChecker methodRef = str::startsWith; // Doesnt compile
+            StringCheker methodRef = str::startsWith("Zoo");// doesnt compile
+      - Neither of these works! While we can pass the str as part of the method reference, there's no way to pass the "Zoo" parameter with it.
+      - Therefore, it is not possible to write the lambda as a method reference.
+
+Calling Instance Methods on a Parameter:
+
+      - This time we are going to call the same instance method that doesn't take any parameters. 
+      - The trick is that we will do so without knowing the instance in advance.
+      - We need a different functional interface this time since it needs to know about the string.
+            interface StringParameterChecker {
+                  boolean check(String text);
+            }
+            We can implement the functional interface as follows:
+            StringParameterChecker methodRef = String::isEmpty;
+            StringParameterChecker lambda = s -> s.isEmpty();
+            System.out.println(methodRef.check("Zoo")); // false
+      - The method that we want to call is declared in String. It looks like a static method but it isn't.
+      - Instead, Java knows that isEmpty() is an instance method that does not take any parameters. 
+      - Java uses the parameter supplied at runtime as the instance on which the method is called.
+      - The before example and this might look similar - One references a local variable names str while the other only references the functional interface parameters.
+      - You can even combine the two types of instance method references. Again, we need a new functional interface that takes two parameters:
+            interface StringTwoParameterChecker {
+                  boolean check(String text, String prefix);
+            }
+            StringTwoParameterChecker methodRef = String::startsWith;
+            StringTwoParamaterChecker lambda = (s, p)-> s.startsWith(p);
+            System.out.println(methodRef.check("Zoo","A")); // false
+      - Since the functional interface takes two parameters, Java has to figure out what they represent. The first one will always be the instance of the object for instance methods. Any others are to be method parameters.
+      - StringTwoParameterChecker methodRef = String::startsWith; -> This might looks like a static method, but it is really a method reference declaring that the instance of the object will be specified later. 
+      - StringTwoParamaterChecker lambda = (s, p)-> s.startsWith(p); - SHows some of the power of a method reference. We were able to replace two lambda parameters.
