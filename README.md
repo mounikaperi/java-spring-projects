@@ -2898,5 +2898,51 @@ Checking Functional Interfaces:
       - The return value type is missing at first line causing the code not to compile.
       - Second Line is UnaryOperator returns same type as passed in. The example returns a double rather than a long causing the code not to compile.
 
+Using Convenience Methods on Functional Interfaces:
+
+      - By definition, all functional interfaces have a single abstract method. 
+      - This doesn't mean they can have only one method though.
+      - Several of the common functional interfaces provide a number of helpful default interface methods.
+      - Consumer
+            Method return type - Consumer
+            MethodName- andThen()
+            MethodParameters - Consumer
+      - Function
+            Method return type - Function
+            MethodName- andThen()
+            MethodParameters - Function
+      - Function
+            Method return type -Function
+            MethodName - compose()
+            MethodParameters - Function
+      - Predicate
+            Method return type - Predicate
+            MethodName - and()
+            MethodParameters - Predicate
+      - Predicate
+            Method return type - Predicate
+            Methodname - negate()
+            Method parameters - -
+      - Predicate 
+            Method return type - Predicate
+            Method name - or()
+            Method parameters - Predicate
+
+      Let;s start with these two predicate variables:
+            Predicate<String> egg = s -> s.contains("egg");
+            Predicate<String> brown = s -> s.contains("brown");
+      Now we want a predicate for brown eggs and another for all other colors of eggs
+            Predicate<String> brownEggs = s -> s.contains("egg") && s.contains("brown");
+            Predicate<String> otherEggs = s -> s.contains("egg") && !s.contains("brown");
+      - This works but it's not so great. It's a bit long to read and it contains duplication. What if we decide the letter e should be capitalized in egg?
+      - We would have to change it in three variables: egg, brownEggs and otherEggs. 
+      - A better way to deal with this situation is to use two of the default methods on Predicate.
+            Predicate<String> brownEggs = eggs.and(brown);
+            Predicate<String> otherEggs = eggs.and(brown.negate());
+      - Now, we are reusing the logic n the original Predicate variables to build two new ones.
+      - It's shorter and clearer what the relationship is between variables.
+      - We can also change the spelling of egg in one place and the other two objects will have new logic because they reference it.
+      - Moving on to Consumer, let's ta
+
 
       
