@@ -2798,4 +2798,78 @@ Implementing Consumer and BiConsumer:
             System.out.println(map); { chicken="Cluck", chick="Tweep" }
             This shows that a BiConsumer can use the same type for both the T and U generic parameters.
 
+Implementing Predicate and BiPredicates:
+
+      - Predicate s often used when filtering or matching. Both are common operations.
+      - A BiPredicate is just like a Predicate, except that it takes two parameters instead of one.
+      - The interfaces are defined as follows:
+            @FunctionalInterface
+            public interface Predicate<T> {
+                  boolean test(Test t);
+            }
+            @FunctionalInterface
+            public interface BiPredicate<T, U> {
+                  boolean test(T t, U u);
+            }
+      - You can use predicate to testthe condition
+            Predicate<String> p1 = String::isEmpty;
+            Predicate<String> p2 = x -> x.isEmpty();
+            System.out.println(p1.test(""));
+            System.out.println(p2.test(""));
+
+            BiPredicate<String, String> b1 = String::startsWith;
+            BiPredicate<String, String> b2 = (string, prefix) -> string.startsWith(prefix);
+            System.out.println(b1.test("Chicken","Chick")); // true
+            System.out.println(b2.test("Chicken","Chick")); // true
+      - The method reference includes both the instance variable and parameter for startsWith().
+
+Implementing Function and BiFunction
+
+      - A Function is responsible for turning one parameter into a value of a potentially different type and returning it.
+      - Similarly, a BiFunction is responsible for turning two parameters into a value and returning it. 
+      - The interfaces are defined as follows:
+            @FunctionalInterface
+            public interface Function<T, R>{
+                  R apply(T t);
+            }
+            @FunctionalInterface
+            public interface BiFunction<T, U, R> {
+                  R apply(T t, U u);
+            }
+            Function<String, Integer> f1 = String::length;
+            Function<String, Integer> f2 = x -> x.length();
+            System.out.println(f1.apply("cluck"));
+            System.out.println(f2.apply("cluck"));
+      - This function turns a String into an Integer. Technically, it turns the String into an int, which is autoboxed into an Integer.
+      - These types don't have to be different. The following combines two String objects and produces another String.
+            BiFunction<String, String, String> b1 = String::concat;
+            BiFunction<String, String, String> b2 = (String, toAdd) -> string.concat(toAdd);
+            System.out.println(b1.apply("baby ", "chick")); // baby chick
+            System.out.println(b2.apply("baby ", "chich")); // baby chick
+      - The first two type in the BiFunction are the input types. The third is the result type. 
+      - For the method reference, the first parameter is the instance that concat() is called on, and the second is passed to concat()
+
+
+Implementing UnaryOperator and BinaryOperator
+
+      - UnaryOperator and BinaryOperator are special cases of a Function.
+      - They require al type parameters to be the same type.
+      - A UnaryOperator transforms its value into one of the same type.
+      - For example, incrementing by one is a unary operation.
+      - Infact, UnaryOperator extends Function. 
+      - A BinaryOperator merges two values into one of the same type.
+      - Adding two numbers is a binary operation. Simiarly, BinaryOperator extends BiFunction. 
+      - The interfaces are defined as follows:
+            @FunctionalInterface
+            public interface UnaryOperator<T> extends Function<T, T> {}
+            @FunctionalInterface
+            public interface BinaryOperator<T> extends BiFunction<T, T, T>{}
+            T apply(T t); // unary operator
+            T apply(T t1, T t2) // BinaryOperator
+      - In te JavaDoc, you will notice that these methods are inherited from the Function/BiFunction superclass.
+      - The generic declarations on the subclass are wat force the type to be the same.
+            UnaryOperator<String> u1 = String::toUpperCase();
+            UnaryOperator<String> u2 = x -> x.toUpperCase();
+            BinaryOperator<String> b1 = String::concat;
+            BinaryOperator<String> b2 = (string, toAdd) -> string.concat(toAdd);
 
