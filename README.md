@@ -2764,4 +2764,38 @@ Implementing Supplier:
       - Our test class is named BuiltIns and it is in a package that we created named functionalinterface.
       - Then comes $$ which means that the class doesn't exists in a class file on the file system. It exists only in memory.
 
+Implementing Consumer and BiConsumer:
+
+      - You use a Consumer when you want to do something with a parameter but not return anything.
+      - BiConsumer does the same thing except that it takes two parameters.
+      - The interfaces are defined as follows:
+            @FunctionalInterface
+            public interface Consumer<T> {
+                  void accept(T t);
+            }
+            @FunctionalInterface
+            public interface BiConsumer<T, U> {
+                  void accept(T t, U u);
+            }
+            Consumer<String> c1 = System.out::println;
+            Consumer<String> c2 = x -> System.out.println(x);
+            c1.accept("Annie"); // Annie
+            c2.accept("Annie"); // Annie
+      - BiConsumer is called with two parameters. They don't have to be the same type. For example, we can put a key and a value in a map using this interface.
+            var map = new HashMap<String, Integer>();
+            BiConsumer<String, Integer> b1 = map::put;
+            BiConsumer<String, Integer b2 = (k, v) -> map.put(k, v);
+            b1.accept("chicken", 7);
+            b2.accept("chick", 1);
+            System.out.println(map); { chicken=7, chick=1 }
+      - When declaring b1, we used an instance method reference on an object since we want to call a method on the local variable map. 
+      - The code to instantiate b1 is a good bit shorter than the code for b2.
+            var map = new HashMap<String, String>();
+            BiConsumer<String, String> b1 = map::put;
+            BiConsumer<String, String> b2 = (k, v) -> map.put(k,v);
+            b1.accept("chicken", "Cluck");
+            b2.accept("chick", "Tweep");
+            System.out.println(map); { chicken="Cluck", chick="Tweep" }
+            This shows that a BiConsumer can use the same type for both the T and U generic parameters.
+
 
