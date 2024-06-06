@@ -2689,4 +2689,79 @@ Reviewing Method References:
             After Colon: new
             example: String:🆕
 
+Working with Built-in Functional Interfaces:
+
+      - It would be inconvenient to write your own functional interface anytime you want to write a lambda.
+      - Luckily, a large number of general-purpose functional interfaces are provided for you.
+      - The core functional interfaces are provided in java.util.function package. <T> allows the interface to take an object of a specified type.
+      - If a second type parameter is needed, we use the next letter,U. If a distinct return type is needed, we choose R for return as the generic type.
+
+      Supplier<T>: 
+            Return Type - T
+            Method Name - get()
+            # of parameters- 0
+      Consumer<T>
+            Return Type- void
+            Method Name- accept(T)
+            # of parameters - 1
+      BiConsumer<T, U>
+            Return Type- void
+            Method name- accept(T, U)
+            # of parameters - 2
+      Predicate<T>
+            Return Type - boolean
+            Method Name: test(T)
+            # of parametes - 1
+      BiPredicate<T, U>
+            Return Type- boolean
+            Method Name: test(T, U)
+            # of parametes - 2
+      Function<T, R>
+            Return Type - R
+            MethodName: apply(T)
+            # of parameters: 1 (T)
+      BiFunction<T, U, R>
+            ReturnType - R
+            MethodName: apply(T, U)
+            # of parameters - 2
+      UanaryOperator<T>
+            ReturnType - T
+            MethodName- apply(T)
+            # of parameters - 1
+      BinaryOperators<T>
+            ReturnType - T
+            MethodName- apply(Y, T)
+            # of parametes - 2
+
+Implementing Supplier:
+
+      - A supplier is used when you want to generate or supply values without taking any input.
+      - The Suppler interface is defined as follows:
+            @FunctionalInterface
+            public interface Supplier<T> {
+                  T get();
+            }
+      - You can create a LocalDate object using the factory method now(). This example shows how to use a Supplier to call this factory.
+            Supplier<LocalDate> s1 = LocalDate::now;
+            Supplier<LocalDate> s2 = () -> LocalDate.now();
+            LocalDate d1 = s1.get();
+            LocalDate d2 = s2.get();
+      - The LocalDate::now method reference is used to create a Supplier to assign to an intermediate variable s1. 
+      - A Supplier is often used when constructing new objects. For example, we can print two empty StringBuilder objects.
+            Supplier<StringBuilder> s1 = StringBuilder::new;
+            Supplier<StringBuilder> s2 = () -> new StringBuilder();
+            System.out.println(s1.get()); // Empty String
+            System.out.println(s2.get());// Empty String
+      - This time, we need a constructor reference to create a new object. We have been using generics to declare what type of Supplier we are using.
+            Supplier<ArrayList<String>> s3 = ArrayList::new;
+            ArrayList<String> a1 = s3.get();
+            System.out.println(a1);
+      - We have a supplier of certain type. That happens to be ArrayList<String>. 
+      - Then calling get() creates a new instance of ArrayList<String> which is the generic type of Supplier - in other words, a generic that contains another generic.
+      - What if we print s3 directly without calling get() on it. It prints
+            functionalinterface.BuiltIn$$Lambda$1/0x0000000000000000000068640@4904908da
+      - Thats the result of calling toString() on a lambda. 
+      - Our test class is named BuiltIns and it is in a package that we created named functionalinterface.
+      - Then comes $$ which means that the class doesn't exists in a class file on the file system. It exists only in memory.
+
 
