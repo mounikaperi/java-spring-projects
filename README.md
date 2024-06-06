@@ -2873,3 +2873,30 @@ Implementing UnaryOperator and BinaryOperator
             BinaryOperator<String> b1 = String::concat;
             BinaryOperator<String> b2 = (string, toAdd) -> string.concat(toAdd);
 
+Checking Functional Interfaces:
+
+      - It's really important to know the number of parameters, types, return value and method name for each of the functional interfaces.
+      - What functional interface would you use in these three situations?
+            - Returns a String without taking any parameters
+            - Returns a Boolean and takes a String.
+            - Returns an Integer and takes two Integers.
+      - The first one is a Supplier<String> because it generates an object and takes zero parameters.
+      - The second one is a Function<String, Boolean> because it takes one parameter and returns another type.
+      - It's little tricky! Predicate<String> returns a boolean primitive and not a Boolean object.
+      - The third one is either a BinaryOperator<Integer> or a BiFunction<Integer, Integer, Integer>. 
+      - Since BinaryOperator is a special case of BiFunction, either is correct answer.
+      - BinaryOperator<Integer> is better answer of the two since it is more specific.
+            ________ <List> ex1 = x -> "".equals(x.get(0));
+            ________ <Long> ex2 = (Long l) -> System.out.println(l);
+            ________<String, String> ex3 = (s1, s2)-> false;
+      - The first one takes a parameter as an input and returns a boolean - This is Predicate
+      - The second one takes a parameter and returns nothing - This is Consumer
+      - The third one takes two parameters and returns a boolean - This is BiPredicate
+                  Function<List<String>> ex1 = x -> x.get(0); // Does not compile -
+                  UnaryOperator<Long> ex2 = (Long l) -> 3.14; // Does not compile
+      - First one claims to be a Function. A Function needs to specify two generic tyes- The input parameter type and the return value type.
+      - The return value type is missing at first line causing the code not to compile.
+      - Second Line is UnaryOperator returns same type as passed in. The example returns a double rather than a long causing the code not to compile.
+
+
+      
