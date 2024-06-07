@@ -3013,3 +3013,87 @@ Working with Variabes in Lambdas:
       - ObjDoubleConsumer<T>       -> (void)         ->  (accept)             ->  (2) T, double
       - ObjIntConsumer<T>          -> (void)         ->  (accept)             ->  (2) T, int
       - ObjLongConsumer<T>         -> (void)         ->  (accept)             ->  (2) T, long
+
+Listing Parameters:
+
+      - var can be used in place of a specific type. That means that all three of these statements are interchangeable
+            Predicate<String> p = x -> true;
+            Predicate<String> p = (var x) -> true;
+            Predicate<String> p = (String x) -> true;
+      - The exam might ask you to infer the type of the lambda parameter. In our example, the answer is String. How did we figure out?
+      - A lambda infers the types from the surrounding context.
+      - In our case, the lambda is assigned to a Predicate that takes String. 
+      - Can you figure out the type of x
+            public void whatAmI() {
+                  consume((var x) -> System.out.print(x), 123);
+            }
+            public void consumer(Consumer<Integer> c, int num) { c.accept(num); }
+      - The answer is Integer. The whatAmI() method creates a lambda to be passed to the consume() method.
+      - Since the consume() method expects an Integer as the generic, we know what is the infered type of x
+      - Since lambda parameters are just like method parameters, you can add modifiers to them. Specifically, we can add the final modifier or any annotation
+            public void counts(List<Integer> list) {
+                  list.sort((final var x, @Deprecated var y) -> x.compareTo(y));
+            }
+
+Parameter List Formats:
+
+      - You have three formats for specifying parameter types within a lambda: without types, with types and with var.
+      - The compiler requires all parameters in the lambda to use the same format. 
+            (var x, y) -> "Hello"; // Does not compile - Either remove var from x or add it to y
+            (var x, Integer y) -> true; // Does not compile- use the type var consistently
+            (String x, var y, Integer z) -> true; // Does not compile- use the type var consistently
+            (Integer x, y) -> "goodbye";-> Remove Integer from x or add it to y
+
+Using Local Variables inside a Lambda body
+
+      - While it is common for a lambda body to be a single expression, it is legal to define a block
+      - The block can have anything that is valid in a normal Java block, including local variable declarations.
+            (a, b) -> { int c = 0; return 5; }
+            (a, b) -> { int a = 0; return 5; } // Does not compile
+      - We tried redeclaring a, which is not allowed. Java doesn't let you create a local variable with the same name as one already declared in that scope.
+            public void variables(int a) {
+                  int b = 1;
+                  Predicate<Integer> p1 = a -> {
+                        int b = 0;
+                        int c = 0;
+                        return b==c;
+                  }
+            }
+      - There are three syntax errors. The variable a was already used in ths scope as a method parameter so it cannot be reused.
+      - The next syntax error comoneswhere the code reattempts to redeclare the local variable b
+      - The third syntax error occurs as p1 has no closing semicolon at the end. 
+
+Referencing variables from lambda body:
+
+      - Lambda bodies are allowed to reference some variables from the surrounding code. The following code is legal:
+            public class Crow {
+                  public void caw(String name) {
+                        String volume = "loudly";
+                        Consumer<String> consumer = s-> System.out.println(name + " says " + volume + " that she is " + color);
+                  }
+            }
+      - This shows that lambda can access an instance variable, method parameter or local variable under certain conditions
+      - Instance variables are always allowed
+      - The only thing lambdas cannot access are variables that are not final or effectively final.
+            public class Crow {
+                  private String color;
+                  public void caw(String name) {
+                        String volume = "loudly";
+                        name = "Catty";
+                        color = "black";
+                  }
+                  Consumer<String> consumer = s -> System.out.println(name + " says " + volume + " that she is " + color); // does not compile
+                  volume = "softly";
+            }
+      - In this example, the method parameter name is not effectively final becuase it is set. It is not a problem to assign a value to non-final variable. 
+      - However, once lambda trued to use it we have a problem. The variable is no longer effectively final, so the lambda is not allowed to use it
+      - The variable volume is not effectively final.
+
+Rules:
+
+      - Instance Variable - Allowed
+      - Static Variabe - Allowed
+      - Local variable - Allowed if final or effectively final
+      - Method parameter - Allowed if final or effectively final
+      - Lambda parameter: Allowed
+      - 
