@@ -2942,7 +2942,74 @@ Using Convenience Methods on Functional Interfaces:
       - Now, we are reusing the logic n the original Predicate variables to build two new ones.
       - It's shorter and clearer what the relationship is between variables.
       - We can also change the spelling of egg in one place and the other two objects will have new logic because they reference it.
-      - Moving on to Consumer, let's ta
+      - Moving on to Consumer, let's take a look at the andThen() method, which runs two functional interfaces in sequence.
+            Consumer<String> combined = c1.andThen(c2);
+            combined.accept("Annie"); 1: Annie, 2:Annie
+      - Notice how the same parameter is passed to both c1 and c2. This shows that the consumer instances are run in sequence and are independent of each other.
+      - By contrast, the compose() method on Function chains functional interface. It passed along the output of one to the input of another.
+            Function<Integer, Integer> before = x -> x + 1;
+            Function<Integer, Integer> after = x -> x * 2;
+            Function<Integer, Integer> combied = after.compose(before);
+            System.out.println(combined.apply(3); // 8
+      - This time, the before runs first, turning 3 into 4. Then the after runs, doubling the 4 to 8. 
 
+Learning Functional Interfaces for Primitives:
+Functional Interfaces for boolean:
 
+            - BooleanSupplier is a separate type. It has one method to implement:
+                  @FunctionalInterface
+                  public interface BooleanSupplier {
+                        boolean getAsBoolean();
+                  }
+                  BooleanSupplier b1 = () -> true;
+                  BooleanSupplier b2 = () -> Math.random() > .5;
+                  System.out.println(b1.getAsBoolean()); // true
+                  System.out.println(b2.getAsBoolean()); // false
+
+Functional Interfaces for double, int and long:
+
+      - Most of the functional interfaces are for double, int and long.
+      FunctionalInterface      ReturntType     Single Abstract Method    # of parameters
+      - DoubleSupplier       -> (double)       ->  (getAsDouble)       ->  (0)
+      - IntSupplier          -> (int)          ->  (getAsInt)          ->  (0)
+      - LongSupplier         -> (long)         ->  (getAsLong)         ->  (0)
+      - DoubleConsumer       -> (void)         ->  (accept)            ->  (1) double
+      - IntConsumer          -> (void)         ->  (accept)            ->  (1) int
+      - LongConsumer         -> (void)         ->  (accept)            ->  (1) Long
+      - DoublePredicate      -> (boolean)      ->  (test)              ->  (1) double
+      - IntPredicate         -> (boolean)      ->  (test)              ->  (1) int
+      - LongPredicate        -> (boolean)      ->  (test)              ->  (1) long
+      - DoubleFunction<R>    -> (R)            ->  (apply)             ->  (1) double
+      - IntFunction<R>       -> (R)            ->  (apply)             ->  (1) int
+      - LongFunction<R>      -> (R)            ->  (apply)             ->  (1) long
+      - DoubleUnaryOperator  -> (double)       ->  (applyAsDouble)     ->  (1) double
+      - IntUnaryOperator     -> (int)          ->  (applyAsInt)        ->  (1) int
+      - LongUnaryOperator    -> (long)         ->  (applyAsLong)       ->  (1) long
+      - DoubleBinaryOperator -> (double)       ->  (applyAsDouble)     ->  (2) double, double
+      - IntBinaryOperator    -> (double)       ->  (applyAsInt)        ->  (2) int, int
+      - LongBinayOperator    -> (long)         ->  (applyAsLong)       ->  (2) long, long
       
+      - Generics are gone from some of the interfaces, and instead the type name tells us what primitive type is involved. 
+      - In other cases, such as IntFunction, only the return type generic is needed because we are converting a primitive int into an object.
+      - The single abstract method is often renamed when a primitive type is returned.
+
+Working with Variabes in Lambdas:
+
+      - Variables can appear in theree places with respect to lambdas 
+      - the parameter list, local variables declared inside the lambda body, variables referenced inside lambda body.
+      FunctionalInterface            ReturnType     Single Abstract Method    # of parameters
+      - ToDoubleFunction<T>        -> (double)       ->  (applyAsDouble)      ->  (1) T
+      - ToIntFunction<T>           -> (int)          ->  (applyAsInt)         ->  (1) T
+      - ToLongFunction<T>          -> (long)         ->  (applyAsLong)        ->  (1) T
+      - ToDoubleBiFunction<T, U>   -> (double)       ->  (applyAsDouble)      ->  (2) T, U
+      - ToIntBiFunction<T, U>      -> (int)          ->  (applyAsInt)         ->  (2) T, U
+      - ToLongBiFunction<T, U>     -> (long)         ->  (applyAsLong)        ->  (2) T, U
+      - DoubleToIntFunction        -> (int)          ->  (applyAsInt)         ->  (1) double
+      - DoubleToLongFunction       -> (long)         ->  (applyAsLong)        ->  (1) double
+      - IntToDoubleFunction        -> (double)       ->  (applyAsDouble)      ->  (1) int
+      - IntToLongFunction          -> (long)         ->  (applyAsLong)        ->  (1) int
+      - LongToDoubleFunction       -> (double)       ->  (applyAsDouble)      ->  (1) long
+      - LongToIntFunction          -> (int)          ->  (applyAsInt)         ->  (1) long
+      - ObjDoubleConsumer<T>       -> (void)         ->  (accept)             ->  (2) T, double
+      - ObjIntConsumer<T>          -> (void)         ->  (accept)             ->  (2) T, int
+      - ObjLongConsumer<T>         -> (void)         ->  (accept)             ->  (2) T, long
