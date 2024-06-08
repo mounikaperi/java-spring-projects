@@ -3411,4 +3411,20 @@ Converting from List to an Array:
             list.clear();
             System.out.println(objectArray.length); // 2
             System.out.println(stringArray.length); // 2
-      
+
+Using the Set Interface:
+
+      - You use a Set when you don't want to allow duplicate entries. You aren't concerned with the order in which you see these animals but there isn't time to see them more than once.
+      - The main thing that all Set implementations have in common is that they do not allow duplicates.
+
+Comparing Set Implementations:
+
+      - A HashSet stores its elements in a hash table, which means the keys are a hash and the values are an Object.
+      - This means that the HashSet uses the hashCode() method of the objects to retrieve them more efficienty.
+      - Remember that a valid hashCode() doesn't mean every object will get a unique value, but the method is often written so that hash values are spread out over a large range to reduce collisions. 
+      - The main benefit is that adding elements and checking whether an element is in the set both have constant time.
+      - The trade-off is that you lose the order in whcih you inserted the element.
+      - Most of the time, you aren't concerned with this in a Set anyway, making HashSet most the common set.
+      - A TreeSet stores its elements in a sorted tree structure. The main benefit is that the set is always in sorted order.
+      - The trade-off is that adding and checking whether an element exists takes longer than with a HashSet especially as the tree goes larger.
+
