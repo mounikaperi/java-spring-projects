@@ -3139,5 +3139,142 @@ Using the Diamond Operator:
                   }
 Adding Data:
 
-      - The add() method
+      - The add() method inserts a new element into the Collection and returns whether it was successful or not.
+                  public boolean add(E element)
+      - Remember that the Collection Framework uses generics. You will see E appear frequently.
+      - It means the generic type that was used to create the collection.
+      - For some collection types, add() always returns true. For other types, there is a logic as to whether the add() call was successful.
+                  Collection<String> list = new ArrayList<>();
+                  System.out.println(list.add("Sparrow")); // true
+                  System.out.println(list.add("Sparrow"))l // true
+
+                  Collection<String> set = new HashSet<>();
+                  System.out.println(set.add("Sparrow")); // true
+                  System.out.println(set.add("Sparrow")); // false
+      - A List allows duplicates making the return value true each time. 
+      - A Set does not allow duplicates. Hence, the second add statement returns false.
+
+Removing data:
+
+      - The remove() method removed a single matching value in the Collection and returns whether it was successful. 
+                  public boolean remove(Object object)
+      - This time, the boolean return value tells us whether a match was removed. The following shows how to use this method:
+                  Collection<String> birds = new ArrayList<();
+                  birds.add("hawk");
+                  birds.add("hawk");  // [ "hawk","hawk" ]
+                  System.out.println(birds.remove("cardinal")); // false
+                  System.out.println(birds.remove("hawk")); // true
+                  System.out.println(birds); ["hawk"]
+
+Counting Elements:
+
+      - The isEmpty() and size() methods look at how many elements are in the Collection. 
+                  public boolean isEmpty()
+                  public int size()
+      - The following shows how to use these methods:
+                  Collection<String> birds = new ArrayList<>();
+                  System.out.println(birds.isEmpty()); // true
+                  System.out.println(birds.size()); // 0
+                  birds.add("hawk");
+                  birds.add("hawk");  // [ "hawk", "hawk"]
+                  System.out.println(birds.isEmpty()); // false
+                  System.out.println(birds.size()); // 2
+
+Clearing the Collection:
+
+      - The clear() method provides an easy way to discard all elements of the Collection 
+                  public void clear()
+      - The following shows how to use this method:
+                  Collection<String> birds = new ArrayList<>();
+                  birds.add("hawk");
+                  birds.add("hawk");
+                  System.out.println(birds.isEmpty()); // false
+                  System.out.println(birds.size()); // 2
+                  birds.clear(); // []
+                  System.out.println(birds.isEmpty()); // true
+                  System.out.println(birds.size()); // 0
+      - After calling clear(), birds is back to being an empty ArrayList of size 0
+
+Check Contents:
+
+      - The contains() method checks whether a certain value is in the Collection. The method signature is as follows:
+            public boolean contains(Object object)
+      - The following shows how to use this method:
+                  Collection<String> birds = new ArrayList<>();
+                  birds.add("hawk");
+                  System.out.println(birds.contains("hawk")); // true
+                  System.out.println(birds.contains("robin")); // false
+      - The contains() method calls equals() on elements of the ArrayList to see whether there are any matches.
+
+Removing with Conditions:
+
+      - The removeIf() method removed all elements that match a condition. We can specify what should be deleted using a block of code or even a method reference.
+      - The method signature looks like the following: [ We explain what the ? super means in the "Working with Generics" section ].
+                  public boolean removeIf(Predicate<? super E> filter)
+      - It uses a Predicate, which takes one parameter and returns a boolean. 
+                  Collection<String> list = new ArrayList<>();
+                  list.add("Magician");
+                  list.add("Assistant");
+                  System.out.println(list); // ["Magician", "Assistant"]
+                  list.removeIf(s->s.startsWith("A")); 
+                  System.out.println(list); ["Magician"]
+      - Above line, shows how to remove all of the String values that begin with the letter A. This allows us to makr the Assistant disappear. 
+                  Collection<String> set = new HashSet<>();
+                  set.add("Wand");
+                  set.add("");
+                  set.removeIf(String::isEmpty); // s -> s.isEmpty();
+                  System.out.println(set); // [Wand]
+      - Above line, we remove any empty String objects from set. The comment on the line shows equivalent of the method reference. 
+
+Iterating:
+
+      - There is a forEach() method that you can call on a Collection instead of writing a loop. 
+      - It uses a Consumer that takes a single parameter and doesn't return anything.
+      - The method signature is as follows:
+                  public void forEach(consumer<? super T> action)
+      - Cats like to explore, so let's print out two of them using both method references and lambdas:
+                  Collection<String> cats = List.of("Annie", "Ripley");
+                  cats.forEach(System.out::println);
+                  cats.forEach(c -> System.out.println(c));
+      - The cats have discovered how to print their names.
+
+Other Iteration Approaches:
+
+      - There are other ways to iterate through a Collection. 
+                  for (String element: collection)       
+                        System.out.println(element);
+      - You may see another older approach used:
+                  Iterator<String> iterator = collection.iterator();
+                  while (iterator.hasNext()) {
+                        String string = iterator.next();
+                        System.out.println(string);
+                  }
+      - Pay attention to the difference between these techniques. The hasNext() method checks whether there is a next value. 
+      - In other words, it tells you whether next() will execute without throwing an exception.
+      - The next() method actually moves the iterator to the next element.
+
+Determining Equality:
+
+      - There is a custom implementation of equals() so you can compare two Collections to compare the type and contents.
+      - The implementation will vary. For example, ArrayList checks order, while HashSet does not.
+                  boolean equals(Object object)
+      - The following shows an example:
+                  var list1 = List.of(1, 2);
+                  var list2 = List.of(2, 1);
+                  var set1 = Set.of(1, 2);
+                  var set2 = Set.of(2, 1);
+                  System.out.println(list1.equals(list2)); // false
+                  System.out.println(set1.equals(set2)); true
+                  System.out.println(list1.equals(set1)); // false
+
+Unboxing nulls:
+
+      - Java protects us from many problems with Collections. However, it is still possible to write a NullPointerException
+                  var heights = new ArrayList<Integer>();
+                  heights.add(null);
+                  int h = heights.get(0); // NullPointerException
+      - we add null to list. This is legal because a null reference can be assigned to any reference variable.
+      - We try to unbox that null to an int primitive.
+      - This is a problem. Java tries to get the int value of a null. Since calling any method on null gives a NullPointerException, that is just what we get. 
+      - Be careful when you see null in relation to autoboxing.
       
