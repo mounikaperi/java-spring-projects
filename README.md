@@ -3460,5 +3460,98 @@ Working with Set methods:
 
             The elements are printed out as their natural sorted order. 
             Numbers implement the Comparable interface in Java which is used for Sorting.
+
+Using the Queue and Deque Interfaces:
+
+      - You use a Queue when elements are added and removed in specific order. You can think of Queue as a line.
+      - When you want to enter a stadium and someone is waiting in line, you get in line behind that person. 
+      - This is a FIFO (first-in, first out) queue.
+      - A deque (double-ended queue) often promotes as deck in different from a regular queue in that you can insert and remove elements from both the front(head) and back(tail). 
+      - Supporting we are using this as a FIFO queue.
+      - All queues have specific requirements for adding and removing the next element. 
+      - Beyond that, they each offer different functionality. 
+
+Comparing Deque Implementations:
+
+      - We saw LinkedList. In addition to being a list, it is a Deque. 
+      - The main benefit of a LinkedList is that it implements both the List and Deque interfaces. 
+      - The trade-off is that it isn't as efficient as a "pure" queue. You can use the ArrayDeque class if you don't need the List methods.
+
+Working with Queue and Deque Methods:
+
+      - The Queue interface contains six methods. there are three peices of functionality and versions of the methods that throw an exception or use the return type such as null for all the information.
+
+      - Add to back                   public boolean add(E e)      
+                                      public boolean offer(E e)
+      - Read from front               public E element()
+                                      public E peek()
+      - Get and remove from front     public E remove()
+                                      public E poll()
+                                    
+      Queue<Integer> queue = new LinkedList<>();
+      queue.add(10);
+      queue.add(4);
+      System.out.println(queue.remove()); // 10
+      System.out.println(queue.peek()); // 4
+
+      Next, we move on to the Deque interface. Since the Deque interface supports double ended queues, it inherits all Queue methods and adds more so that it is clear if we are working with the front or back of the queue. 
+
+      - Add to front                   public void addFirst(E e)
+                                       public boolean offerFirst(E e)
+      - Add to back                    public void addLast(E e)
+                                       public boolean offerLast(E e)
+      - Read from front                public E getFirst()
+                                       public E peekFirst()
+      - Read from back                 public E getLast()
+                                       public E peekLast()
+      - Get and remove from front      public E removeFirst()
+                                       public E pollFirst()
+      - Get and remove from back       public E removeLast()
+                                       public E pollLast()
+
+      Let's try an example taht works with both ends of the queue:
+            Deque<Integer> deque = new LinkedList<>();
+      This is more complicated
+
+            Line 13 and 14 successfully add an element to the front and back of the queue respectively.
+            Some queues are limited in size, which would cause offering an element to the queue to fail.
+            Line 15 looks at the first element in the queue, but ut does not remove it.
+            Line 16 and 17 remove the elements from the queue one from each end.
+            This results in an empty queue.
+            Line 18 and 19 try to look at the first element of the queue, which results in null.
+
+            13: deque.offerFirst(10);  // true     10
+            14: deque.offerLast(4);    // true     10------4
+            15: deque.peekFirst();     // 10       10------4
+            16: deque.pollFirst();     // 10       4
+            17: deque.pollLast();      // 4        
+            18: deque.pollFirst();     // null
+            19: deque.peekFirst();     // null
+
+      In addition to FIFO queues, there are LIFO(last-in, first out) queues, which are commonly referred to as stacks. 
+      Picture a stack of plates.
+      You always add to or remove from the top of the stack to avoid a mess.
+      Luckily, we can use the same double-ended queue implementations
+
+            - Add to the front/top                   -> public void push(E e)
+            - Remove from the front/top              -> public void pop(E e)
+            - Get Firt element                       -> public E peek()
+
+      Let's try another using the Deque as stack:
+
+            Deque<Integer> stack = new ArrayDeque<>();
+
+      - When using a Deque, it is really important to determine if it is being used as a FIFO queue, a LIFO stack or double-ended queue
+      - To review, a FIFO queue is like a line of people. You get on in the back and off in the front.
+      - A LIFO stack is like a stack of plates. You put the plate on the top and take it off the top.
+      - A double-ended queue uses both ends.
+
+            stack.push(10);            10
+            stack.push(4);             4 ---------- 10
+            stack.peek();   // 4       4 ---------- 10
+            stack.poll();   // 4       10
+            stack.poll();   // 10
+            stack.peek();   // null
             
+      
             
