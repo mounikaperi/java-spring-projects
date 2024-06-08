@@ -3428,3 +3428,37 @@ Comparing Set Implementations:
       - A TreeSet stores its elements in a sorted tree structure. The main benefit is that the set is always in sorted order.
       - The trade-off is that adding and checking whether an element exists takes longer than with a HashSet especially as the tree goes larger.
 
+Working with Set methods:
+
+      - Like a List, you can create an immutable Set in one line or make a copy of an existing one.
+            Set<Character> letters = Set.of('z','o','o');
+            Set<Character> copy = Set.copyOf(letters);
+      - Those are the only extra methods you need to know for the Set interface for the exam
+      - You do have to know how sets behave with respect to the traditional Collection methods.
+      - You also have to know the differences between the type of sets
+            Set<Integer> set = new HashSet<>();
+            boolean b1 = set.add(66); // true
+            boolean b2 = set.add(10); // true
+            boolean b3 = set.add(66); // false
+            boolean b4 = set.add(8);  // true
+            set.forEach(System.out::println);
+
+            Output: 66 8 10
+            In this case, it happen not to be sorted order or the order in which we added the elements.
+
+            Remember that the equals() method is used to determine equality. 
+            The hashCode() method is used to know which bucket to look in so that Java doesn't have to look through whole set to find out whether an object is there. The best case is that hash codes are unique and Java has to call equals() on only one object. The worst case is that all implementations return the same hashCode() and Java has to call equals() on every element of the set anyway.
+
+            Set<Integer> set = new TreeSet<>();
+            boolean b1 = set.add(66); // true
+            boolean b2 = set.add(10); // true
+            boolean b3 = set.add(66); // false
+            boolean b4 = set.add(8); // true
+            set.forEach(System.out::println);
+
+            Output: 8 10 66
+
+            The elements are printed out as their natural sorted order. 
+            Numbers implement the Comparable interface in Java which is used for Sorting.
+            
+            
