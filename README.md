@@ -3334,6 +3334,81 @@ Creating a List with a Factory:
             System.out.println(Arrays.toString(array)); // [x, b, c]
             copy.add("y"); // UnsupportedOperationException
 
+Creating a List with a Constructor:
 
+      - Most Collections have two constructors that you need to know for the exam. The following shows them for LinkedList:
+                  var linked1 = new LinkedList<String>();
+                  var linked2 = new LinkedList<String>(linked1);
+      - The first says to create an empty LinkedList containing all the defaults.
+      - The second tells Java that we want to make a copy of another LinkedList. Granted, linked1 is empty in this example, so it isn't particulary interesting.
+      - ArrayList has an extra constructor you need to know. We now show the three constructors:
+                  var list1 = new ArrayList<String>();
+                  var list2 = new ArrayList<String>(list1);
+                  var list3 = new ArrayList<String>(10);
+      - The first two are the common constructors you need to know for all the Collections. 
+      - The final example says to create ArrayList containing a specific number of slots, but again not to assign any.
 
+Using var with ArrayList:
+
+      - Consider this code, which mixes var and generics:
+
+            var strings = new ArrayList<String>();
+            strings.add("a");
+            for (String s: strings) {}
+      - The type of var is ArrayList<String>. This means you can add a String or loop through the String objects. What if we use the diamond operator with var?
+            var list = new ArrayList<>();
+      - This does compile. The type of the var is ArrayList<Object>. Since there isn't a type specified for the generic.
+      - Java has to assume the ultimate superclass. 
+            var list = new ArrayList<>();
+            list.add("a");
+            for (String s: list) {} // Does not compile
+      - The type of the var is ArrayList<Object>. Since there isn't a type in the diamond operator, Java has to assume the most generic option it can.
+      - Therefore it picks Object, the ultimate superclass. 
+      - Adding a String to the list is fine. You can add any subclass of Object. However, in the loop, we need to use the Object type rather than the String.
+
+Working with List methods:
+
+      - public boolean add (E element)                                     -> Adds element to end (available on all Collection APIs)
+      - public void add(int index, E element)                              -> Adds element at the index and moves the rest towards the end
+      - public E get(int index)                                            -> Returns element at index.
+      - public E remove(int index)                                         -> Removes element at the index and moves the rest towards front.
+      - public default void replaceAll(UnaryOperator<E> op)                -> Replaces each element in list with result of operator.
+      - public E set(int index, E e)                                       -> Replaces element at index and return original. Throws IndexOutOfBoundsException if index is valid.
+      - public default void sort(Comparator<? super E> c)                  -> Sorts list.
+
+      The following statements demonstrate most of the methods for working with a List:
+
+            List<String> list = new ArrayList<>();
+            list.add("SD");                   // ["SD"]
+            list.add(0, "NY");                // ["NY","SD"]
+            list.set(1, "FL");                // ["NY", "FL"]
+            System.out.println(list.get(0));  //  "NY"
+            list.remove("NY");                // ["FL"]
+            list.remove(0);                   // []
+            list.set(0, "?");                 // IndexOutOfBoundsException
+
+            var numbers = Arrays.asList(1, 2, 3);
+            numbers.replaceAll(x -> x*2);
+            System.out.println(numbers); // [ 2, 4, 6]
+
+Overloaded remove() Methods:
+
+      - We have now seen two overloaded remove() methods. The one from Collection removes an object that matches the parameter.
+      - By contrast, the one from List removes an element at a specified index.
+                  var list = new LinkedList<Integer>();
+                  list.add(3); list.add(2); list.add(1);
+                  list.remove(2); list.remove(Integer.valueOf(2));
+                  System.out.println(list); 
+
+Converting from List to an Array:
+
+      - Since an array can be passed as vararg. 
+            List<String> list = new ArrayList<>();
+            list.add("hawk");
+            list.add("robin");
+            Object[] objectArray = list.toArray();
+            String[] stringArray = list.toArray(new String[0]);
+            list.clear();
+            System.out.println(objectArray.length); // 2
+            System.out.println(stringArray.length); // 2
       
