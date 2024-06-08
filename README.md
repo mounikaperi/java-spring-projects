@@ -3096,4 +3096,48 @@ Rules:
       - Local variable - Allowed if final or effectively final
       - Method parameter - Allowed if final or effectively final
       - Lambda parameter: Allowed
-      - 
+
+Using Common Collection APIs:
+
+      - A collection is a group of objects obtained in a single object.
+      - The Java Collection Framework is a set of classes in java.util for storing collections. There are four main interfaces in the Java Collection Framework
+            List: A list is an ordered collection of elements that allows duplicate entries. Elements in a list can be accessed by an int index.
+            Set: A set is a collection that doesn't allow duplicate entries.
+            Queue: A queue is a collection that orders its elements in a specific order for processing. 
+                  Dequeu: A Deque is a subinterface of Queue that allows access at both the ends.
+            Map: A map is a collection that maps keys to values, with no duplicate keys allowed. The elements in map are key/value pairs.
+      - Map doesn't implement Collection interface. It is considered as part of Java Collections Framework even though it isn't technically a Collection.
+      - It is a collection though in that it contains a group of objects. The reason maps are treated differently is that they need different methods due to key/value pairs.
+
+                                                Collection(I) -> List(I) -> ArrayList (C)
+                                                                         -> LinkedList (C)
+                                                              -> Queue(I) -> Deque(I) 
+                                                              -> Set (I)  -> HashSet (C)
+                                                                          -> TreeSet (C)
+                                                Map (I) -> HashMap(c)
+                                                        -> TreeMap(C)
+
+      - Let's discuss the common methods that the Collections API provides to the implementing classes.
+      - Many of these methods are convenience methods that could be implemented in other ways but make your code easier to read and write.
+
+Using the Diamond Operator:
+
+      - When constructing a Java Collections framwework, you need to specify the type that wil go inside. 
+            List<Integer> list = new ArrayList<Integer>();
+      - You might even have generics that contains other generics such as this
+            Map<Long, List<Integer>> mapLists = new HashMap<Long, List<Integer>>();
+      - That's a lot of duplicate code to write. 
+      - Luckily, the diamond operator <> is a shorthand notation that allows you to omit the generic type from the right side of a statement when the type can be inferred.       - It is called the diamond operator becuase <> looks like a diamond.
+            List<Integer> list = new ArrayList<>();
+            Map<Long, List<Integer>> mapOfLists = new HashMap<>();
+      - To the compiler, both these declarations and our previous ones are equivalent.
+      - The diamond operator cannot be used as the type in a variable declaration. 
+      - It can be used only on the right side od an assignment operator.
+                  List<> list = new ArrayList<Integer>(); // Does not compile
+                  class InvalidUse {
+                        void use(List<> data) {} // Does not compile
+                  }
+Adding Data:
+
+      - The add() method
+      
