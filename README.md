@@ -3277,4 +3277,63 @@ Unboxing nulls:
       - We try to unbox that null to an int primitive.
       - This is a problem. Java tries to get the int value of a null. Since calling any method on null gives a NullPointerException, that is just what we get. 
       - Be careful when you see null in relation to autoboxing.
+
+Using the List Interface:
+
+      - Now that we are familiar with some common Collection interface methods, let's move on to specific interfaces.
+      - You use a list when you want an ordered collection that can contain duplicate entries.
+      - For example, a list of names may contain duplicates as two animals can have the same name.
+      - Items can be retrieved and inserted at specific positions in the list based on an int index, much like an array.
+      - Unlike an array, though many List implementations can change in size after they can be declared.
+      - Lists are commony used becuase they are many situations in programming where you need to keep track of a list of objects.
+
+Comparing List Implementations:
+
+      - An ArrayList is like a resizable array. When elements are added, the ArrayList automatically grows. When you aren't sure which collection to use, use an ArrayList.
+      - The main benefit of an ArrayList is that you can look up any element in constant time.
+      - Adding or removing an element is slower than accessing an element. 
+      - This makes an ArrayList a good choice when you are reading more often than or the same anount as writing to the ArrayList.
+      - A LinkedList is special because it implements both List and Dequeue.
+      - It has all the methods of a List. It also has additional methods to facilitate adding or removing from the beginning and/or end of the List.
+      - The main benefit of a LinkedList are that you can access, add to, and remove from the beginning and end of the list in constant time.
+      - The trade-off is that dealing with an arbitary index takes linear time.
+      - This makes a LinkedList a good coice when you will be uing it as Dequeue.
+
+Creating a List with a Factory:
+
+      - When you create a List of type ArrayList or LinkedList you know the type. 
+      - There are a few special methods where you get a List back but you don't know the type.
+      - These methods let you create a List including data in one ine using a factory method.
+      - This is convenient, especially when testing. ome of these methods return an immutable object.
+
+      - Arrays.asList(varargs) 
+            - Returns a fixed size list backed by an array.
+            - can add elements? NO
+            - can replace elements ? YES
+            - can delete elements? NO
+      - List.of(varargs)
+            - Returns immutable list.
+            - Can add elements? No
+            - Can replace elements? No
+            - Can delete elements - No
+      - List.copyOf(collection)
+            - Returns immutable list with copy of original collection's values
+            - Can add elements? No
+            - Can replace elements? No
+            - Can delete elements? No
+
+            String[] array = new String[] {"a", "b", "c"};
+            List<String> asList = Arrays.asList(array); // [a, b, c]
+            List<String> of = List.of(array); // [a, b, c]
+            List<String> copy = List.copyOf(asList); [ a, b, c]
+            array[0] = 'z';
+            System.out.println(asList); // [z, b, c]
+            System.out.println(of); // [a,b,c]
+            System.out.println(copy); // [a,b,c]
+            asList.set(0, 'x'); 
+            System.out.println(Arrays.toString(array)); // [x, b, c]
+            copy.add("y"); // UnsupportedOperationException
+
+
+
       
