@@ -3768,11 +3768,43 @@ Behaviour of merge() method:
 		- then mapping function is not called
   		- adds Key with value parameter to map directly without calling the mapping function.
 
-    
-       	
-      	
-	
-		
+Comparing Collection Types:
 
+	List
+ 		- Can contain duplicate elements - YES
+   		- Elements always ordered - YES ( by index)
+     		- Has keys and values? 	NO
+       		- Must add/remove in specific order - NO
+	Map
+ 		- Can contain duplicate element - YES( for values)
+   		- Elements always ordered - No
+     		- Has keys and values - Yes
+       		- Must add/remove in specific order? YES
+	Queue
+ 		- Can contain duplicate elements- YES
+   		- Elements always ordered - Yes (retrieved in defined order)
+     		- Has keys and values - No
+       		- Must add/remove in specific order? Yes
+	Set
+ 		- Can contain duplicate elements - NO
+   		- Elements alwys ordered  No
+     		- Has keys and values - No
+       		- Must add/remove in specific order- No
 
+	Type 			Java Collections Framework Interface	Sorted?		Calls hashCode?		Calls compareTo?
+ 	ArrayDeque		Deque					No		No			No
+  	ArrayList		List					No		No			No
+   	HashMap			Map					No		Yes			No
+    	HashSet			Set					No		Yes			No
+     	LinkedList		List, Deque				No		No			No
+      	TreeMap			Map					Yes		No			Yes
+       	TreeSet			Set					Yes		No			Yes
 
+ Older Collections:
+
+ 	There are few collection that are no longer on the exam but you might come across in the older code. All three were early Java data structures
+  		- Vector - Implements List
+    		- HashTable- Implements Map
+      		- Stack - Implements Queue
+
+ 
