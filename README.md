@@ -3553,5 +3553,120 @@ Working with Queue and Deque Methods:
             stack.poll();   // 10
             stack.peek();   // null
             
-      
-            
+Using the Map Interface:
+
+	- You use a Map when you want to identify values by a key. For Eg, when you use the contact list in your phone, you lookup person name and his contact number.
+	- The main thing that all Map classes have in common is that they have keys and values.
+	- Beyond that, they each offer different functionality. 
+
+Map.of() and Map.copyOf()
+	
+	- Just like List and Set, there is a factory method to create a Map.
+	- You pass any number of pairs of keys and values
+		Map.of("key1", "value1", key2", "value2");
+	- Unlike List and Set, this is less than ideal. Passing keys and values is harder to read because you have to keep track of which parameter is which.
+	- Luckily, there is a better way. Map also provides a method that lets you supply key/value pairs.
+		Map.ofEntries(Map.entry("key1", "value1"), Map.entry("key2", "value2"));	
+	- Now, we can't	forget to pass a value. If we leave out a parameter, the entry() method wont compile. 
+	- Conveniently, Map.copyOf(map) works just like the List and Set interface copyOf methods
+
+ Comparing Map Implementations:
+
+	- A HashMap stores the keys in a hashtable. This means that it uses the hashCode() method of the keys to retrieve their values more efficiently.
+	- The main benefit is that adding elements and retrieving the element by key both have constant time.
+	- The trade-off is thatyou lose the order in which you insert the elements.
+	- Most of the time, you aren't concerned with this in a map anyway.
+	- A TreeMap stores the keys in a sorted tree structure. The main benefit I that the keys are always in sorted order. 
+	- Like a TreeSet, the trade-off is that adding and checking whether a key is present takes longer as the tree grows larger.
+
+Working with Map methods:
+
+	- Given that Map doesn't extend Collections, more methods are specified on the Map interface.
+	- Since there are both keys and values, we need generic type parameters for both.
+	- The class uses K for key and V for value.
+	
+	- public void clear() 						            -> Removes all keys and values from map.
+	- public boolean containsKey(Object key)			            -> Returns whether key is in map
+	- public Boolean containsValue(Object value)			      -> Returns whether value is in map
+	- public Set<Map.Entry<K, V>> entrySet()			            -> Returns Set of key/value pairs
+	- public void forEach(BiConsumer<K key, V value>)		      -> Loop through each key/value pair.
+	- public V get(Object key)					            -> Returns value mapped by key or null if none is mapped.
+	- public V getOrDefault(Object key, V defaultValue)		      -> Returns value mapped by key or default value if none is mapped.
+	- public Boolean isEmpty()					            -> Returns whether map is empty
+	- public Set<K> keyset()					            -> Returns set of all keys
+	- public V merge(K key, V value, Function<V, V, V> func))	      -> Sets value if key not set. Runs function if key is set, to determine new value. Removes                                                                              if value is null
+	- public V put(K key, V value)					      -> Adds or replaces key/value pair. Returns previous value or null
+	- public V putIfAbsent(K key, V value)				      -> Adds value if key not present and returns null. Otherwise, returns existing value.
+	- public V remove(Object key)					            -> Removes and returns value mapped to key. Returns null if none.
+	- public V replace(K key, V value)				            -> Replace value for given key if key is set. Returns original value or null if none.
+	- public void replaceAll(BiFunction<K, V, V> func)		      -> Replaces each value with results of function
+	- public int size()						            -> Returns number of entries 
+	- public Collection<V> values()					      -> Returns collection of all values
+
+ Calling Basic Methods:
+
+	Lets start out by comparing the same code with two Map types. First up is HashMap:
+
+		Map<String, String> map = new HashMap<>();
+		map.put("koala", "bamboo");
+		map.put("lion", "meat");
+		map.put("giraffe", "leaf");
+		String food = map.get("koala"); // bamboo
+		for(String key: map.keySet()) 	
+			System.out.print(key+ ","); // koala, giraffe, lion
+
+	Here, we use the put() method to add key/value pairs to the map and get() to get a value given a key.
+	We also use the keyset() method to get all the keys.
+	Java uses the hashCode() of the key to determine the order. The order here happens not to be sorted order or the order in which we typed the values.
+
+		Map<String, String> map = new TreeMap<>();
+		map.put("koala", "bamboo");
+		map.put("lion", "meat");
+		map.put("giraffe", "leaf");
+		String food = map.get("koala"); // bamboo
+		for(String key: map.keySet()) 	
+			System.out.print(key+ ","); // giraffe,koala, lion
+
+	TreeMap sorts the keys as we would expect. If we called values() instead of keyset() the order of the values would correspond to the order of the keys	
+	With our same map, we can try some Boolean checks:
+	
+		System.out.println(map.contains("lion")); // does not compile
+		System.out.println(map.containsKey("lion")); // true
+		System.out.println(map.containsValue("lion")); // false
+		System.out.println(map.size()); // 3
+		map.clear();
+		System.out.println(map.size()); // 0
+		System.out.println(map.isEmpty()); // true
+
+	The first line is little tricky! The contains() method is on Collection interface but not Map interface.
+	The next two lines show that keys and values are checked separately.
+	We can see that there are three key/value pairs in our map.
+	Then we clear out the contents of the map and see that there are zero elements and it is empty.
+
+ Iterating through a Map:
+
+	forEach() works differently on a Map. 
+	This time, the lambda used by the forEach() method has two parameters, the key and the value.
+	
+		Map<Integer, Character> map = new HashMap<>();
+		map.put(1, 'a');
+		map.put(2, 'b');
+		map.put(3, 'c');
+		map.forEach((k,v) -> System.out.println(v));
+	
+	The lambda has both key and value as parameters. It happens to print out the value but could do anything with the key and/or value.
+	Interestingly, since we don't care about the key, this particular code could have been written with the values() method and a method reference instead.
+	
+		map.values().forEach(System.out::println);
+
+	Another way of going through all the data in a map is to get the key/value pairs in a Set.
+	Java has a static interface inide Map called Entry.
+	It provides methods to get the key and value of each pair.
+
+		map.entrySet().forEach(e -> System.out.println(e.getKey() + " " + e.getValue());
+
+
+
+
+
+
