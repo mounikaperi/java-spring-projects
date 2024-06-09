@@ -3936,7 +3936,47 @@ Keeping compareTo() and equals() consistent:
    	- The compareTo() method does not have to be consistent with equals.
     	- One way to fix that is to use a Comparator to define the sort elsewhere.
 
+Comparing data with a Comparator:
 
+	- Sometimes you want to sort an object that did not impleent Comparable, or you want to sort objects in different ways in different times. Suppose that we add weight to our Duck class:
+		import java.util.ArrayList;
+  		import java.util.Collections;
+    		import java.util.Comparator;
+      		public class Duck implements Comparable<Duck> {
+			private String name;
+   			private int weight;
+      			// Assume getter, setters and Constructors are provided
+	 		public String toString() { return name; }
+    			public int compareTo(Duck d) { return name.compareTo(d.name); }
+       			public static void main(String[] args) {
+	  			Comparator<Duck> byWeight = new Comparator<Duck>() {
+      					public int compare(Duck d1, Duck d2) {
+	   					return d1.getWeight()-d2.getWeight();
+	 				}
+      				};
+	  			var ducks = new ArrayList<Duck>();
+      				ducks.add(new Duck("Quack", 7));
+	  			ducks.add(new Duck("Puddles", 10));
+      				Collections.sort(ducks);
+	  			System.out.println(ducks); // [Puddles, Quack]
+      				Collections.sort(ducks, byWeight);
+	  			System.out.println(ducks); // [Quack, Puddles]
+      			}
+	 	}	
+   	- Here, first notice that this program imports java.util.Comparator.
+    	- Call the attention to the fact that Comparable and Comparator are in different packages(java.lang and java.util respectively).
+     	- That means Comparable can be used without an import statement while Comparator cannot.
+      	- The Duck class itself can define only one compareTo() method.
+       	- In this case,name was chosen. If we want to sort by something else, we have to define that sort order outside the compareTo() method using a separate class or lambda expresson.
+	- Comparator is a functional interface since there is only one abstract method to implement.
+ 	- This means that we can rewrite the Comparator using a lambda expression as below:
+  		Comparator<Duck> byWeight= (d1, d2) -> d1.getWeight()-d2.getWeight();
+	- Alternatively, we can use a method reference and a helper method to specify that we want to sort by weight.
+ 		Comparator<Duck> byWeight = Comparator.comparing(Duck::getWeight);
+   	- In this example, Comparator.comparing() is a static interface method that creates a Comparator given a lambda expression or method reference.
+
+
+  	
      				
     	
  	
