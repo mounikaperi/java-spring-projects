@@ -3665,8 +3665,114 @@ Working with Map methods:
 
 		map.entrySet().forEach(e -> System.out.println(e.getKey() + " " + e.getValue());
 
+Getting values safely:
 
+	- The get() method returns null if the requested key is not in the map.
+ 	- Sometimes you prefer to have a different value returned.
+  	- Luckily, the getOrDefault() method makes this easy.
+   	- Let's compare two methods
 
+    		Map<Character, String> map = new HashMap<>();
+      		map.put('x', "spot");
+		System.out.println("X marks the " + map.get("x"));
+  		System.out.println("X marks the " + map.getOrDefault('x', ""));
+		System.out.println("Y marks the " + map.get('y'));
+  		System.out.println("Y marks the " + map.getOrDefault('y', ""));
+
+    	Output:
+     		X marks the spot
+       		X marks the spot
+	 	Y marks the null
+   		Y marks the
+
+     	- The getOrDefault() returns the empty string we passed as a parameter.
+
+  Replacing Values:
+
+	- These methods are similar to the List version, except a key is involved:
+
+   		Map<Integer, Integer> map = new HashMap<>();
+     		map.put(1, 2);
+       		map.put(2, 4);
+	 	Integer ordinal = map.replace(2, 10); // 4
+   		System.out.println(map); // {1=2, 2=10}
+     		map.replaceAll((k,v) -> k + v);
+       		System.out.println(map); // {1=3, 2=12}
+
+Putting if Absent:
+
+ 	- The putIfAbsent() method sets a value in the map but skips it if the value is already set to a non-null value.
+  		Map<String, String> favourites = new HashMap<>();
+    		favourites.put("Jenny", "Bus Tour");
+      		favourites.put("Tom", null);
+		favourites.putIfAbsent("Jenny", "Tram");
+  		favourites.putIfAbsent("Sam", "Tram");
+    		favourites.putIfAbsent("Tom", "Tram");
+      		System.out.println(favourites); // {Tom=Tom, Jennu= "Bus Tour", Sam="Tram"}
+	- As you can see Jenny's value is not updated because one was already present.
+ 	- Sam wasn't there at all, so he was added.
+  	- Tom was present as a key but has a null value.
+
+Merging Data:
+
+	The merge() method adds logic of what to choose. Suppose we want to choose the ride with the longest name. 
+ 	We can write code to express this by pasing a mapping function to the merge() method.
+
+    		BiFunction<String, String, String> mapper = (v1, v2) -> v1.length() > v2.length() ? v1: v2;
+    		Map<String, String> favourites = new HashMap<>();
+      		favourites.put("Jenny", "Bus Tour");
+		favourites.put("Tom", "Tram");
+  		String jenny = favourites.merge("Jenny", "Skyride", mapper);
+    		String tom = favourites.merge("Tom", "Skyride", mapper);
+  		System.out.println(favourites); // {Tom="Skyride", Jenny="Bus Tour"}
+
+	The merge() method also has logic for what happen if null values or missing keys are involved.
+ 	In this case, it doesn't call the BiFunction at all, and it simply uses the new value.
+
+  		BiFunction<String, String, String> mapper = (v1, v2) -> v1.length() > v2.length() ? v1 : v2;
+    		Map<String, String> favourites = new HashMap<>();
+      		favourites.put("Sam", null);
+		favourites.merge("Tom", "Skyride", mapper);
+  		favourites.merge("Sam", "Skyride", mapper);
+		System.out.println(faourites); // {Tom="Skyride", Jenny="Skyride"}
+
+    	Notice that the mapping function isn't called. If it were, we would have a NullPointerException.
+     	The mapping function is used only when there are two actual values to decide between.
+      	The final thing to know about merge() is what happens when the mapping function is called and returns null.
+	The key is removed from the map when this happens:
+
+   		BiFunction<String, String, String> mapper = (v1, v2) -> null;
+     		Map<String, String> favourites = new HashMap<>();
+       		favourites.put("Jenny", "Bus Tour");
+	 	favourites.put("Tom", "Bus Tour");
+   		favourites.merge("Jenny", "Skyride", mapper);
+     		favourites.merge("Sam", "Skyride", mapper);
+       		System.out.println(favourites); // { Tom= "Bus Tour", Sam="Skyride"}
+
+  	Tom was left alonw since there was no merge() call for that key. 
+   	Sam was added since that key was not in the original list. 
+    	Jenny was removed because the mapping function returned null.
+
+Behaviour of merge() method:
+
+	If the requested key has a null value in map
+ 		- and mapping function returns:N/A (mapping function is not called)
+   		- then Update key's value in map with value parameter.
+     	If the requested key has a non-null value in map
+      		- and mapping function returns null
+		- then remove key from map
+  	If the requested key has a non-null value in map
+   		- and mapping function returns a non-null value
+     		- then Set key to mapping function result
+       	If the requested key is not in map
+		- then mapping function is not called
+  		- adds Key with value parameter to map directly without calling the mapping function.
+
+    
+       	
+      	
+	
+		
 
 
 
