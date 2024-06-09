@@ -3975,6 +3975,74 @@ Comparing data with a Comparator:
  		Comparator<Duck> byWeight = Comparator.comparing(Duck::getWeight);
    	- In this example, Comparator.comparing() is a static interface method that creates a Comparator given a lambda expression or method reference.
 
+Is Comparable a Functional Interface?
+
+	- We said that Comparator is a functional interface because it has a single abstract method.
+ 	- Comparable is also a functional interface since it also has a single abstract method.
+  	- However using a lambda for a Comparable would be silly.
+   	- The point of Comparable is to implement it using the object being compared.
+
+Comparing Comparable and Comparator:
+
+	- There are several differences between Comparable and Comparator.
+
+  	Difference						Comparable		Comparator
+   	- PackageName						java.lang		java.util
+    	- Interface must be implemented by class comparing?	Yes			No
+     	- Method name in interface				compareTo()		compare()
+      	- Number of parameters					1			2
+       	- Common to declare using a lambda			No			Yes
+
+ 		var byWeight = new Comparator<Duck>() { // Does not compile
+   			public int compareTo(Duck d1, Duck d2) {
+      				return d1.getWeight()-d2.getWeight();
+	  		}
+     		};
+       	- The method name is wrog. A Comparator must implement a method named compare().
+	- Pay special attention to method names and the number of parameters when you see Comparator and Comparable in questions.
+
+Comparing Multiple Fields:
+
+ 	- When writing a Comparator that compares multiple instance variables, the code gets little messy.
+  	- Suppose that we have a Squirrel class
+   		public class Squirrel {
+     			private int weight;
+			private String species;
+   			// Assume getters/setters/constructors provided
+      		}
+	- We want to write a Comparator to sort by species name. If two squirrels are from the same species, we want to sort the one that weighs the least first. We could do this with code that looks like this:
+ 		public class MultiFieldComparator implements Comparator<Squirrel> {
+   			public int compare(Squirrel s1, Squirrel s2) {
+      				int result = s1.getSpecies().compareTo(s2.getSpecies());
+	  			if (result != 0) return result;
+      				return s1.getWeight()-s2.getWeight();
+	  		}
+     		}
+       - This works assuming no species names are null. It checks one field.
+       - If they don't match, we are finished sorting.
+       - If they do match, it looks at the next field. Changing != to == breaks the sort completely.
+       - Alternatively, we can use method references and build the Comparator.
+       		Comparator<Squirrel> c = Comparator.comparing(Squirrel::getSpecies).reversed();
+
+  Helper methods for building Comparator:
+
+  	- comparing(function): Compare by results of function that returns any Object or primitive autoboxed into Object.
+   	- comparingDouble(function): Compare by results of function that returns double.
+    	- comparingInt(function): Compare by results of function that returns int
+     	- comparingLong(function): Compare by results of functon that returns long
+      	- naturalOrder(): Sort using order specified by the Comparable implementation on Object itself.
+       	- reverseOrder(): Sort using reverse of order specified by Comparable implementation on Object itself
+
+ Helper default ethods for building Comparator:
+
+ 	- reversed(): Reverse order of chained Comparator
+  	- thenComparing(function): If previous Comparator returns 0 use this comparator that returns Object or can be autoboxed into one.
+   	- thenComparingDouble(function): If previous Comparator returns 0, use this comparator that returns double. Otherwise, return value from previous Comparator.
+    	- thenComparingInt(function): If previous Comparator returns 0, use this comparator that returns int. Otherwise, return value from previous Comparator.
+     	- thenComparingLong(function): If previous Comparator returns 0, use this comparator that returns long. Otherwise, return value from previous Comparator.
+
+      - You have probably notice by now that we often ignore null values in checking equality and comparing objects. 
+
 
   	
      				
