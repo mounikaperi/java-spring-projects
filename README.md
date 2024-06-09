@@ -3807,4 +3807,137 @@ Comparing Collection Types:
     		- HashTable- Implements Map
       		- Stack - Implements Queue
 
+Sorting Data:
+
+	- We discussed "order" for the TreeSet and TreeMap classes.
+ 	- For numbers, order is obviously it is numerical order.
+  	- For Strings, order is defined according to the unicode character mapping.	
+   	- When working with a String, remeber that numbers sort before letters, uppercase letters sort before lowercase letters.
+    	- We use Collections.sort() in many of these examples. It returns void because the method parameter is what gets sorted.
+     	- You can also sort objects what you create yourself! Java provides an intrface called Comparable.
+      	- If your class implements Comparable, it can be used in data structures that require comparision.
+       	- There is also a class called Comparator, which is used to specify that you want to use a different order than the object itself provides.
+	- Comparable and Comparator are similar enough to be tricky.
+
+ Creating a Comparable class:
+
+ 	- The Comparable interface has only one method. In fact, this is the entire interface:
+  		public interface Comparable<T> {
+    			int compareTo(T o);
+       		}
+	 - The generic T lets you implement this method and specify the type of your object.
+  	 - This lets you avoid a cast when implementing compareTo().
+    	 - Any object can be Comparable.
+      		import java.util.*;
+		public class Duck implements Comparable<Duck> {
+  			private String name;
+     			public Duck(String name) {	
+				this.name = name;
+    			}
+       			public String toString() { return name; }
+	  		public int compareTo(Duck d) {
+     				return name.compareTo(d.name); // Sorts ascendingly by name
+	 		}
+    			public static void main(String[] args) {
+       				var ducks = new ArrayList<Duck>();
+	   			ducks.add(new Duck("Quack"));
+       				ducks.add(new Duck("Puddles"));
+	   			Collections.sort(ducks);
+       				System.out.println(ducks); // [Puddles, Quack]
+	   		}
+      		}
+	- Without implementing the interface, all we have is method named compareTo() but it wouldn't be a Comparable object. We could also implement Comparable<Object> or some other class for T, but this wouldn't be as useful for sorting a group of Duck objects.
+	- The Duck class overrides the toString() method from Object.
+ 	- The override provides useful output when printing out ducks.
+  	- Finally, the Duck class implements compareTo().
+   	- Since Duck is comparing objects of type String and the String class already has compareTo() method, it can just delegate. 
+    	- We still need to know what the compareTo() method returns so that we can write our own.
+     	- There are three rules to know:
+      		- The number 0 is returned when the current object is equivalent to the argument to compareTo(). 	
+		- A negative number (less than 0) is returned when the current object is smaller than the argument to compareTo()
+  		- A positive number (greater than 0) is returned when the current object is larger than the argument to compareTo()
+	- Let's look at the implementation of compareTo() that compares numbers instead of String object:
+ 		public class Animal implements Comparable<Animal> {
+   			private int id;
+      			public int compareTo(Animal a){
+	 			return id - a.id; // sorts ascending by id
+			}
+   			public static void main(String[] args) {		
+      				var a1 = new Animal();
+	  			var a2 = new Animal();
+      				a1.id = 5;
+	  			a2.id = 7;
+      				System.out.println(a1.compareTo(a2)); -2
+	  			System.out.println(a1.compareTo(a2)); 0
+      				System.out.println(a1.compareTo(a2)); // 2
+	  		}
+     		}
+       - Creates two animal objects. then sets their id values. 
+       - This is not a good way to set instance variables. It would be better to use a constructor or setter method.
+       - This is one way to compare two int values. We could have used Integer.compare(id, a.id) instead.
+       - Remember that id-a.id sorts in ascending order and a.id-id sorts in descending order.
+       - The first compareTo compares a smaller id to a larger one and therefore prints a negative number.
+       - Next compareTo() compares animals wth the same id and therefore it prints 0.
+       - Next compareTo() compares a larger id to a smaller one and therefore it returns a positive number.
+
+Casting the compareTo() argument:
+
+	- When dealing with legacy code or code that does not use generics, the comareTo() method requires a cast since it is passed as an Object.
+ 		public class LegacyDuck implements Comparable {
+   			private String name;
+      			public int compareTo(Object obj) {
+	 			LegacyDuck d = (LegacyDuck) obj; // cast because no generics
+     				return name.compareTo(d.name);
+	 		}
+		}
+  	- Since we don't specify a generic type for Comparable. 
+   	- Java assumes that we want an Object, which means that we have to cast to LegacyDuck before accessing instance variables.
+
+Checking for null:
+
+	- When working with Comparable and Comparator, we tend to assume the data has values, but this is not always the case. When writing your own compare methods, you should check the data before comparing if it is not validated ahead of time.
+ 	public class MissingDuck implements Comparable<MissingDuck> {
+  		private String name;
+    		public int compareTo(MissingDuck duck) {
+      			if (duck == null) {
+	 			throw new IllegalArgumentException("Poorly formed duck!!");
+     			}
+			if (this.name == null && duck.name == null) {
+   				return 0;
+       			} else if(this.name == null) return -1;
+	  		else if(duck.name == null) return 1;
+     			else return name.compareTo(duck.name);
+		}
+  	}
+   	This method throws an exception if it is passed a null MissingDuck object.
+
+Keeping compareTo() and equals() consistent:
+
+	- If you write a class that implements Comparable, you introduce a new business logic for determining equality. 
+ 	- The compareTo() method retutns 0 if two objects are equal while your equals() method returns true if two objects are equal.
+  	- A natural ordering that uses compareTo() is said to be consistent with equals if and only if x.equals(y) is true whenever x.compareTo(y) equals 0.
+   	- Similarly, x.equals(y) must be false whenever x.compareTo(y) is not 0.
+    	- You are strongly encouraged to make your Comparable classes consistent with equals because not all collection classes behave predictably if the compareTo() and equals() method are not consistent.
+     	- For example, the following Product class defines a compareTo() method that is not consistent with equals():
+      		public class Product implements Comparable<Product> {
+			private int id;
+   			private String name;
+      			public int hashCode() { return id; }
+	 		public boolean equals(Object obj) {
+    				if (!(obj instanceof Product)) return false;
+				var other = (Product) obj;
+    				return this.id == other.id;
+			}
+   			public int compareTo(Product obj) {
+      				return this.name.compareTo(obj.name);
+	  		}
+		}
+  	- You might be sorting Product objects by name, but names may not be unique.
+   	- The compareTo() method does not have to be consistent with equals.
+    	- One way to fix that is to use a Comparator to define the sort elsewhere.
+
+
+     				
+    	
+ 	
  
