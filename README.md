@@ -4162,6 +4162,31 @@ Overloading a Generic method:
 	- The second method compiles as well. However, it is an overloaded method because one of the method arguments i a List and the other is an ArrayList.
 	- When working with generic methods, it's important to consider the underlying type.
 
+Return Generic types:
+
+	- When you are working with overridden methods that return generics, the return values must be covariant. 
+	- In terms of generics, this means that the return type of the class or Interface declared in the overriding method must be a subtype of the class defined in the parent class.
+	- The generic parameter type must match its parent's type exactly.
+	- Given the following declaration for the Mammal class, which of the two subclasses Monkey and Goat compile?
+		public class Mammal {
+			public List<CharSequence> play() {...}
+			public CharSequence sleep() {...}
+		}
+		public class Monkey extends Mammal {
+			public ArrayList<CharSequence> play() {...}
+		}
+		public class Goat extends Mammal {
+			public List<String> play() {...} // Does not compile
+			public String sleep() {...}
+		}
+	- The Monkey class compiles because ArrayList is a subtype of List. 
+	- The play() method in the Goat class does not compile, though. 
+	- For the return types to be covariant, the generic type parameter must match.
+	- Even though String is a subtype of CharSequence, it does not match the generic type defined in the Mammal class. Therefore, this is considered an invalid override.
+	- Notice that the sleep() method in the Goat class does compile since String is a subtype of CharSequence. This example shows that covariance applies to the return type, just not the generic parameter type.
+	- Once you have determined which methods are overridden and which are being overloaded, work backward, making sure the generic types match for overridden methods.
+	- And remember, generic methods cannot be overloaded by changing the generic parameter type only.
+
 
 
 
