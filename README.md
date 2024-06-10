@@ -4033,7 +4033,7 @@ Comparing Multiple Fields:
       	- naturalOrder(): Sort using order specified by the Comparable implementation on Object itself.
        	- reverseOrder(): Sort using reverse of order specified by Comparable implementation on Object itself
 
- Helper default ethods for building Comparator:
+ Helper default methods for building Comparator:
 
  	- reversed(): Reverse order of chained Comparator
   	- thenComparing(function): If previous Comparator returns 0 use this comparator that returns Object or can be autoboxed into one.
@@ -4043,8 +4043,33 @@ Comparing Multiple Fields:
 
       - You have probably notice by now that we often ignore null values in checking equality and comparing objects. 
 
+---- sorting---------
 
-  	
+
+Working with Generics:
+
+ 	-Imagine if we weren't specifying the type of our lists and merely hoped the caller didn't put in something that we weren't specifying the type of our lists and merely hoped the caller didn't put in something that we didn't expect.
+		static void printNames(List list) {
+			for (int i=0; i<list.size(); i++) {
+				String name = (String) list.get(i); // ClassCastException
+				System.out.println(name);
+			}
+		}
+		public static void main(String[] args) {
+			List names = new ArrayList();
+			names.add(new StringBuilder("Webby");
+			printNames(names);
+		}
+	- This code throws a ClassCastException. Here, we add a StringBuilder to list. This is legal because a non-generic list can contain anything. 
+	- However, it is written to expect a specific class to be in there. It casts to a String reflecting this assumption.
+	- Since the assumption is incorrect, the code throws a ClassCastException that java.lang.StringBuilder cannot be cast to java.lang.String
+	- Generics fix this by allowing you to write and use parameterized types.
+	- Since we specify that we want an ArrayList of String objects, the compiler has enough information to prevent this problem in the first place.
+		List<String> names = new ArrayList<String>();
+		names.add(new StringBuilder("Webby")); // Does not compile
+	- Getting a compiler error is good. You will know right away that something is wrong rather than hoping to discover it later.
+
+  
      				
     	
  	
