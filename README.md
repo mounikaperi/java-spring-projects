@@ -4069,8 +4069,53 @@ Working with Generics:
 		names.add(new StringBuilder("Webby")); // Does not compile
 	- Getting a compiler error is good. You will know right away that something is wrong rather than hoping to discover it later.
 
+Creating Generic Classes:
+
+	- You can introduce generics into your own classes. The syntax for introducing a generic is to declare a formal type parameter in angle brackets.
+	- For example, the following class named Crate has a generic type variable declared after the name of the class.
+			public class Crate<T> {
+				private T contents;
+				public T lookInCrate() {
+					return contents;
+				}
+				public void packCrate(T contents) {
+					this.contents = contents;
+				}
+			}
+	- The generic type T is available anywhere within the Crate class. When you instantiate the class, you tell the compiler what T should be for that particular instance.
+
+Naming Conventions for Generics:
+		
+	- A type parameter can be named anything you want. The convention is to use single upper case letters to make it obvious that they aren't real class names.
+	- The following are common letters to use:
+		- E for an Element
+		- K for a map key
+		- V for a map value
+		- N for a number
+		- T for a generic data type
+		- S, U, V and so forth for multiple generic types
+	- For example, suppose an Elephant class exists, and we are moving our elephant to a new and larger enclosure in our Zoo.
+		Elephant elephant = new Elephant();
+		Crate<Elephant> crateforElephant = new Crate<>();
+		crateForElephant.packCrate(elephant);
+		Elephant inNewHome = crateForElephant.lookInCrate();
+	- To be fair, we didn't pack the Crate so much as the elephant walk into it.
+	- This probably doesn't seem particularly impressive. We could have just typed in Elephant instead of T when coding Crate. 
+	- What if we wanted another animal instead of Elephant
+		Crate<Zebra> crateForZebra = new Crate<>();
+	- Now we couldn't have simply hard-coded Elephant in the Crate class since a zebra is not an Elephant. However, we could have created an Animal superclass or interface and used that in Crate.
+	- Generic classes become useful when the classes used as the type parameter can be absolutely nothing to do with each other. 
+	- Generic classes aren't limited to having a single type parameter. This class shows two generic parameters:
+		public class SizeLimitedCrate<T, U> {
+			private T contents;
+			private U sizeLimit;
+			public SizeLimitedCrate(T contents, U sizeLimit) {
+				this.contents = contents;
+				this.sizeLimit = sizeLimit;
+			}
+		}
   
-     				
+
     	
  	
  
