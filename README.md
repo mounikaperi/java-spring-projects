@@ -4114,7 +4114,56 @@ Naming Conventions for Generics:
 				this.sizeLimit = sizeLimit;
 			}
 		}
-  
+
+  Understanding Type Erasure:
+
+	- Specifying a generic type allows the compiler to enforce proper use of the generic type. 
+	- Behind the scenes, the compiler replaces all references to T in Crate with Object.
+	- In other words, after the code compiles, your generics are just Object types. 
+	- The Crate class looks like the following at runtime.
+		public class Crate {
+			private Object contents;
+			public Object lookInCrate() {
+				return contents;
+			}
+			public void packCrate(Object contents)  {
+				this.contents = contents;
+			}
+		}
+	- This means there is only one class file. There aren't different copies for different parameterized type. 
+	- This process of removing the generics syntax from your code is referred to as type erasure.
+	- Type Erasure allows your code to be compatible with older versions of Java that do not contain generics.
+	- The compiler adds the relevant casts for your code to work with this type of erased class.
+		Robot r = crate.lookInCrate();
+	- The compiler turns it into the following:
+		Robot r = (Robot) crate.lookInCrate();
+
+
+Overloading a Generic method:
+
+	- Only one of these two methods is allowed in a class because type erasure will reduce both sets of arguments to (List input)
+		public class LongTailAnimal {
+			protected void chew(List<Object> input) {}
+			protected void chew(List<Double> input) {} // Does not compile
+		}
+	- For the same reason, you also can't overload a generic method from a parent class
+		public class LongTailAnimal {
+			protected void chew(List<Object> input) {}
+		}
+		public class Anteater extends LongTailAnimal {
+			protected void chew(List<Double> input) {} // does not compile
+		}
+	- Both of these examples fail to compile because of Type Erasure. In the compiled form, the generic type is dropped, and it appears as a invalid overloaded method.
+		public class Anteater extends LongTailAnimal {
+			protected void chew(List<Object> input) {}
+			protected void chew(ArrayList<Double> input) {}
+		}
+	- The first chew() method compiles because it uses the same generic type in the overridden method as the one defined in the parent class. 
+	- The second method compiles as well. However, it is an overloaded method because one of the method arguments i a List and the other is an ArrayList.
+	- When working with generic methods, it's important to consider the underlying type.
+
+
+
 
     	
  	
