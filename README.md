@@ -4279,7 +4279,18 @@ Is Optional the same as null?
     	- On Contrast, returning an Optional is a clear statement in the API that there might not be a value
      	- Another advantage of Optional s that you can use a functional programming style with ifPresent() and the other methods rather than needing an if statement.
       	
-     	
+Using Streams:
+
+	- An stream in Java is a sequence of data.
+ 	- A stream pipeline consists of the operations that run on a stream to produce a result.
+  	- With streams, the data isn't generated upfront. It is created when needed. 
+   	- This is an example of lazy evalutation, which delays execution until necessary.
+    	- In functional programming, these are called stream operations. Just like with the assembly line, operations occur in a pipeline. 
+     	- Someone has to start and end the work, and there can be any number of stations in between.
+      	- There are three parts to a stream pipeline
+       		Source: Where the stream comes from
+	 	Intermediate Operations: Transforms the stream into another one. There can be as few or as many intermediate operations as you would like. Since streams use lazy evaluation, the intermediate operations do not run unril the terminal operation runs.
+   		Terminal Operation: Produces a result. Since streams can be used only once, the stream is no longer valid after a terminal operation completes.
    	
 
     	
