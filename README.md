@@ -4188,7 +4188,75 @@ Return Generic types:
 	- And remember, generic methods cannot be overloaded by changing the generic parameter type only.
 
 
+----------------------------------------------------------------------------------------------------------------------------------------------------
 
+Returning an Optional:
+
+	- An Optional is created using a factory.
+ 	- You can either request an empty Optional or pass a value for the Optional to wrap. 
+
+Creating an Optional:
+
+ 	public static Optional<Double> average(int... scores) {
+  		if (scores.length == 0) return Optional.empty();
+    		int sum = 0;
+      		for (int score: scores) sum += score;
+		return Optional.of((double) sum / scores.length);
+  	}
+   	- Line 2 returns an empty Optional when we can't calculate an average.
+    	- Line 3 and Line 4 add up the scores.
+     	Calling the method shows what is in our two boxes:
+      		System.out.println(avergae(90, 100)); // Optional[95.0]
+		System.out.println(average()); // Optiona.empty
+  	- You can see that one Optional contains a value and the other is empty.
+   	- Normally, we want to check whether a value is there and/or get it out of the box.
+    		Optional<Double> opt = average(90, 100);
+      		if (opt.isPresent()) 
+			System.out.println(opt.get());
+   	- First, we check whether the Optional contains a value. 
+    		Optional<Double> opt = average();
+      		System.out.println(opt.get()); // NoSuchElementException
+	- We would get an exception since there is no value inside the Optional.
+ 		java.util.NoSuchElementException: No Value present
+   	- When creating an Optional, it is common to want to use empty() when the value is null.
+    	- You can do this with an if statement or ternary operator.
+     		Optional o = (value == null) ? Optional.empty(): Optional.of(value);
+       - If value is null, o is assigned the empty Optional. Otherwise, we wrap the value. 
+       - Since this si such a comon pattern, Java provides a factory method to do the same thing
+       		Optional o = Optional.ofNullable(value);
+
+Common Optional instance methods:
+
+	Method				When Optional is empty				When Optional contains value
+ 	get()				Throws exception				Returns value
+  	ifPresent(Consumer c)		Does nothing					Calls Consumer with Value
+   	ifPresent()			Returns false					Returns true
+    	orElse(T other)			Returns other parameter				Returns value
+     	orElseGet(Supplier s)		Returns result of calling Supplier		Returns value
+      	orElseThrow()			Throws NoSuchElementException			Returns value
+       	orElseThrow(Supplier s)		Throws Exception created by calling Supplier	Returns value
+
+	- The other methods allow you to write code that uses an Optional in one line without having to use the ternary operator. 
+ 	- This makes the code easier to read. Instead of using an if statement, which we used when checking the average earlier, we can specify a Consumer to be run when there is a value inside the Optional.
+  	- When there isn't, the method simply skips running the Consumer.
+   		Optional<Double> opt = average(90, 100);
+     		opt.ifPresent(System.out::println);
+       - Using ifPresent() better expresses our intent.
+
+Dealing with an Empty Optional:
+
+	- The remaining methods allow you to specify what to do if a value isn't present.
+ 	- There are a few choices. The first two allow you to specify a return value either directly or using a Supplier.
+  		Optional<Double> opt = average();
+    		System.out.println(opt.orElse(Double.NaN));
+      		System.out.println(opt.orElseGet(() -> Math.random()));
+	- Line2 shows that you can return a specific value or variable.
+ 	- In our case, we print the "not a number" value
+  	- Line3 shows using a Supplier to generate a value at runtime to return instead.
+   	- ALternatively, we can have the code throw an exception if the Optional is empty.
+    		Optional<Double> opt = average();
+      		System.out.println(opt.orElseThrow());
+	- Without specifying a Supplier for the exception, Java will throw a NoSuchElementException.
 
     	
  	
