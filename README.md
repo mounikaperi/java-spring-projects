@@ -4257,6 +4257,30 @@ Dealing with an Empty Optional:
     		Optional<Double> opt = average();
       		System.out.println(opt.orElseThrow());
 	- Without specifying a Supplier for the exception, Java will throw a NoSuchElementException.
+ 	- ALternatively, we can have the code throw a custom exception if the Optional is empty.
+  	- Remember that the stacktrace looks weird because the lambdas are generated rather than the named classes.
+   		Optional<Double> opt = average();
+     		System.out.println(opt.orElseThrow(() -> new IllegalStateException));
+       	- Line 2 shows using a Supplier to create an exception that should be thrown.
+	- Notice that we do not write throw new IllegalStateException(). The orElseThrow() ethod takes care of actually throwing the exception when we run it. 
+ 		System.out.println(opt.orElseGet(() -> new IllegalStateException()); // Does not compile
+   	- The opt variable is an Optional<Double>. This means that the Supplier must return a Double.
+    	- Since this Supplier returns an exception, the type does not match.
+     		Optional<Double> opt = average(90, 100);
+       		System.out.println(opt.orElse(Double.NaN)); // 95.0
+	 	System.out.println(opt.orElseGet(() -> Math.random())); // 95.0
+   		System.out.println(opt.orElseThrow()); //95.0
+
+Is Optional the same as null?
+
+ 	- An alternative to Optional is to return null.
+  	- There are a few shortcomings with this approach.
+   	- One is that there isn't a clear way to express that null might be a special value.
+    	- On Contrast, returning an Optional is a clear statement in the API that there might not be a value
+     	- Another advantage of Optional s that you can use a functional programming style with ifPresent() and the other methods rather than needing an if statement.
+      	
+     	
+   	
 
     	
  	
