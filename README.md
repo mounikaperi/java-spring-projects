@@ -4326,6 +4326,46 @@ Creating Stream sources:
       		Stream<String> fromList = list.stream();
 	- Line 2 shows that it is a simple method call to create a stream from list. This is helpful since such conversions are common.
 
-    	
+Creating a Parallel Stream:
+
+	var list = List.of('a','b','c');
+ 	Stream<String> fromListParallel = list.parallelStream();
+  	- This is a great feature because you can write code that uses concurrency before even learning what a thread is. 	
+   	- Using parallel streams is like setting up multiple tables of workers who can do the same task.
+
+Creating Infinite Streams:
+
+	- We can't create an infinite list though, which makes streams more powerful.
+ 		Stream<Double> random = Stream.generate(Math::random);
+   		Stream<Integer> oddNumbers = Stream.iterate(1, n->n+2);
+     	- Line 1 generates a stream of random numbers. How many random numbers? Until you kill it. 
+      	- Line 2 gives you more control. The iterate() method takes a seed or starting value as the first parameter. This is the first element that will be part of the stream.
+       	- The other parameter is a lambda expression that is passed the previous value and generates next value. 
+
+ Printing a Stream Reference:
+
+ 	- If you try to call System.out.print(stream) you wil get something like the following:
+  		java.util.stream.ReferencePipeline$3@4517d9a3
+    	- This is different from a Collection where you see the contents. 
+     	- What if you wanted just odd numbers less than 100. There is an overloaded version of iterate() that helps:
+      		Stream<Integer> oddNumbersUnder100 = Stream.iterate(1, n->n<100, n->n+2);
+	- This method takes three parameters. Notice how they are seperated by commas, just like in all other methods.
+
+Reviewing Stream Collection Methods:
+							
+ 	- Stream.empty()					
+  		Creates a Finite Stream with zero elements
+  	- Stream.of(varargs)				
+   		Creates a Finite Stream with elements listed
+   	coll.stream():
+    		Creates a Finite Stream from collection
+    	coll.parallelStream():
+     		Creates a Finite Strea from collection where stream can run in parallel
+     	Stream.generate(supplier):			
+      		Creates an Infinite stream by calling Suppler for each element upon request
+      	Stream.iterate(seed, unaryOperator):
+       		Creates an Infinte stream by using seed for first element and then calling UnaryOperator for each subsequent element upon request
+       	Stream.iterate(seed, predicate, unaryOperator):
+		Creates Finite/Infinte stream by using seed for first element and then calling UnaryIperator for each subsequent element upon request. Stops if predicate returns false.
  	
  
