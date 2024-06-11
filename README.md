@@ -4291,7 +4291,40 @@ Using Streams:
        		Source: Where the stream comes from
 	 	Intermediate Operations: Transforms the stream into another one. There can be as few or as many intermediate operations as you would like. Since streams use lazy evaluation, the intermediate operations do not run unril the terminal operation runs.
    		Terminal Operation: Produces a result. Since streams can be used only once, the stream is no longer valid after a terminal operation completes.
-   	
+
+Intermediate vs Terminal Operations:
+
+	Scenario				Intermediate Operation		Terminal Operation
+ 	Required part of useful pipeline?	No				Yes
+  	Can exist multiple times in pipeline?	yes				No
+   	Return type is stream type?		yes				No	
+    	Executed upon method call?		no				yes
+     	Stream valid after call?		yes				no
+
+	- A factory typically has a foreperson who oversees the work.
+ 	- Java serves as the foreperson when working with stream pipeline.
+  	- This is really important role, especially when dealing with lazy evaluatioon and infinte streams.
+   	- Think of declaring the stream as giving instructions to the foreperson.
+    	- As the foreperson finds out what needs to be done, they set up the stations and tell workers what their duties will be. However, thw workers do not start until the foreperson tells them to begin.
+     	- The foreperson waits untill they see the terminal operation to kickoff.
+
+Creating Stream sources:
+
+	- In Java, the streams we have been talking about are represented by the Stream<T> interface defined in the java.util.stream package.
+
+ Creating Finite Streams:
+
+ 	- For simplicity, we start with finite streams. There are few ways to create them.
+  		Stream<String> empty = Stream.empty();
+    		Stream<Integer> singleElement = Stream.of(1);
+      		Stream<Integer> fromArray = Stream.of(1, 2, 3);
+	- Line 1 shows how to create an empty stream.
+ 	- Line 2 shows how to create a stream with a single element.
+  	- Line 3 shows how to create a stream from varargs.
+   	- Java also provides a convenient way of converting a Collection to a Stream.
+    		var list = List.of('a','b','c');
+      		Stream<String> fromList = list.stream();
+	- Line 2 shows that it is a simple method call to create a stream from list. This is helpful since such conversions are common.
 
     	
  	
