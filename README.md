@@ -4367,5 +4367,21 @@ Reviewing Stream Collection Methods:
        		Creates an Infinte stream by using seed for first element and then calling UnaryOperator for each subsequent element upon request
        	Stream.iterate(seed, predicate, unaryOperator):
 		Creates Finite/Infinte stream by using seed for first element and then calling UnaryIperator for each subsequent element upon request. Stops if predicate returns false.
- 	
- 
+
+Using Common Terminal Operations:
+
+	- You can perform a terminal operation without any intermediate operations but not the other way around. This is why we talk about terminal operations first. 
+ 	- Reductions are a special type of terminal operation where all of the contents of the stream are combined into a single primitive or Object.
+
+ 	Method		What happens for Infinte streams	Return Value	Reduction
+	- count()	Does not terminate			long		Yes
+ 	- min()		Does not terminate			Optional<T>	Yes
+  	- max()
+ 	- findAny()	Terminates				Optional<T>	No
+  	- findFirst()	
+   	- allMatch()	Sometimes terminates			boolean		No
+    	- anyMatch()
+     	- noneMatch()
+      	- forEach()	Does not terminate			void		No	
+       	- reduce()	Does not terminate			varies		yes
+	- collect() 	Does not terminate			varies		yes
