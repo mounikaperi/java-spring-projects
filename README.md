@@ -4588,3 +4588,25 @@ Mapping:
   		s.map(String::length).forEach(System.out.print) // 676
     	- Remember that the String::length is shorthand for the lambda x -> x.length() which clearly shows it is a function that turns a String into an Integer.
  			
+Using flatMap()
+
+	- The flatMap() method takes each element in the stream and makes any elements it contains top-level elements in a single stream.
+ 	- This is helpful when you want to remove empty elements from a stream or combine a stream of lists.
+  		public <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R?? mapper)
+    	- It returns a Stream of the type that the function contains at a lower level. 
+     		List<String> zero = list.of();
+       		var one = List.of("Bonobo");
+	 	var two = List.of("Mama Gorilla", "Baby Gorilla");
+   		Stream<List<String>> animals = Stream.of(zero, one two);
+     		animals.flatMap(m -> m.stream()).forEach(System.out::println);
+       Output: Bonobo Mama Gorilla Baby Gorilla
+
+Concatenating Streams:
+
+	- While flatMap() is good for the general case, there is a more convenient way to concatenate two streams:
+ 		var one = Stream.of("Bonobo");
+   		var two = Stream.of("Mama Gorilla", "Baby Gorilla");
+     		Stream.concat(one, two).forEach(System.out::println);
+       	- This produces the same three lnes as the previous example. The two streams are concatenated and the terminal operation, forEach() is called.
+
+ 
