@@ -4385,3 +4385,76 @@ Using Common Terminal Operations:
       	- forEach()	Does not terminate			void		No	
        	- reduce()	Does not terminate			varies		yes
 	- collect() 	Does not terminate			varies		yes
+
+ Counting
+
+ 	- The count() method determines the number of elements in a finite stream. 
+  	- For an infinite stream, it never terminates.
+   	- The count() method is a reduction because it looks at each element in the stream and returns a single value. 
+    		public long count()
+      	- This example shows calling count() on a finite stream.
+       		Stream<String> s = Stream.of("monkey", "gorilla", "bonobo");
+	 	System.out.println(s.count());
+
+   Finding the minimum and maximum:
+
+   	- The min() and max() methods allows you to pass a custom comparator and find the smallest or largest value in finite stream according to that sort order.
+    	- Like the count() method, the min() and max() hand on an infinite stream because they cannot be sure that a smaller or larger vlaue isn't coming later in stream
+     	- Both methods are reductions becuase they return a single value after looking at the entire stream.
+      		public Optional<T> min(Comparator<? super T> comparator)
+		public Optional<T> max(Comparator<? super T> comparator)
+  	- This examoke finds the animal with the fewest letters in its name:
+   		Stream<String> s = Stream.of("monkey","ape","bonobo");
+     		Optional<String> min = s.min((s1, s2) -> s1.length() - s2.length());
+       		min.ifPresent(System.out::println);
+	 - Notice that the code returns an Optional rather than the value. This allows the method to specify that no minimum or maximum was found.
+  	 - We use the Optional method ifPresent() and a method reference to print out the minimum only if one is found.
+    	 - As an examle of where there isn't a minimum. Let's look at an empty stream
+      		Optional<?> minEmpty = Stream.empty().min((S1, s2) -> 0);
+		System.out.println(minEmpty.isPresent()); // false
+  	 - Since the stream is empty, the comparator is never called, and no value s present in the Optional.
+
+Finding a Value:
+
+    	- The findAny() and findFirst() methods return an element of the stream unless the stream is empty.
+     	- If the stream is empty, then return an empty Optional.
+      	- This is the method that can terminate with an infinite stream,
+        - Since Java generates only the amount of stream you need, the infinite stream needs to generate only one element.
+	- As the name implies, the findAny() method can return any element of the stream.
+ 	- These methods are termina operations but not reductions. The reason is that they sometimes return without processing all of the elements.
+  	- This means that they return a value based on the stream but do not reduce the entire stream into one value.
+		public Optional<T> findAny()
+  		public Optional<T> findFirst()
+    	- Stream<String> s = Stream.of("monkey", "gorilla","bonobo");
+     	  Stream<String> infinite - Stream.generate(() -> "Chimp");
+	  s.findAny().ifPresent(System.out::println);
+   	  infinite.findAny().ifPresent(System.out::println)l
+      	- Finding any one match is more useful. Sometimes we just want to sample the results and get a representative element but we don't need to waste the processing generating them all.
+
+
+Matching:
+
+	- The allMatch(), anyMatch() and noneMatch() methods search a stream and return information about how the stream pertains to the predicate.
+ 	- These may or may not terminate for infinite strams.
+  	- It deends on the data.
+   	- Like the find methods, they are not reductions because they donot necessarily look at all of the elements.
+    		The method signatures are as follows:
+      		public boolean anyMatch(Predicate <? super T> predicate)
+		public boolean allMatch(Predicate <? super T> predicate)
+  		public boolean noneMatch(Predicate <? super T> predicate)
+    	- var list = List.of("monkey", "2", "chimp");
+     	  Stream<String> infinite = Stream.generate(() -> "chimp");
+	  Predicate<String> pred = x -> Character.isLetter(x.charAt(0));
+   	  System.out.println(list.stream().anyMatch(pred)); // true
+          System.out.println(list.stream().allMatch(pred)); // false
+	  System.out.println(list.stream().noneMatch(pred)); // false
+   	  System.out.println(infinite.anyMatch(pred));// true
+      	- This shows tat we can reuse the same predicate, but we need a different stream each time.
+       	- The anyMatch() method returns true because two of the three elements match.
+	- The allMatch() method returns false becuase one doesn't match.
+ 	- The noneMatch() method also returns false becuase at least one matches.
+  	- On the infinte stream, one match is found, so the call terminates. If we called allMatch() run unril we killed the program.
+   	- The allMatch(), anyMatch() and noneMatch() return a boolean. By contrast, the find methods return an Optiona because they return an element of the stream.
+
+    
+   
