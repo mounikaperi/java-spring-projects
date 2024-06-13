@@ -4515,3 +4515,34 @@ Iterating:
 
 
  Collecting:
+
+ 	- The collect() method is a special type of reduction called a mutable reduction.
+  	- It is more efficient than a regular reduction because we use the same mutable object while accumulating.
+   	- Common mutable objects include StringBuilder and ArrayList.
+    	- This s really useful method, because it lets us get data out of streams and into another form.
+     		public <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> acumulator, BiConsumer<R, R> combiner)
+       		public <R, A> R collect(Collector<? super T, A, R> collector)
+	 - Let's start with the first signature, which is used hen we want to code specifically how collecting should work. 
+  		Stream<String> stream = Stream.of("w", "o", "l", "f");
+    		StringBuilder word = stream.collect(StringBuilder::new, StringBuilder::append, StringBuilder::append);
+      		System.out.println(word); // wolf
+	- The first parameter is the supplier, which creates the object that will store the results as we collect the data. 
+ 	- Remember, that a Supplier doesn't take any parameters and returns a value. In this case, it constructs a new StringBuilder.
+  	- The second parameter is the accumulator, which is a BiConsumer that takes two parameters and doesn't return anything. It is responsible for adding one or more element to the data collection. 
+   	- The final parameter is the combiner, which is another BiConsumer. It is responsible for taking two data collections and merging them.
+    	- This is usefu when we are processing in parallel. Two smaller collections are formed and then merged into one. 
+     	- This would work with StringBuilder only if we didn't care about the order of the letters.
+      		Stream<String> stream = Stream.of("w","o","l","f");
+		TreeSet<String> set = stream.collect(TreeSet::new, TreeSet::add, TreeSet::addAll);
+  	- The collector has three parts as before. The supplier creates an empty TreeSet. The accumulator adds a single String from the Stream to the TreeSet.
+   	- The combiner adds all of the elements of one TreeSet to another in the case the operations were done in parallel and need t be merged.
+    	- We started with the long signature because that's how you implement your own collector.
+     		Stream<String> stream = Stream.of("w","o","l","f");
+       		TreeSet<String> set = stream.collect(Collectors.toCollection(TreeSet::new));
+	 	System.out.println(set);
+   	- If we didn't need the set to be sorted, we could make the code even shorter
+    		Stream<String> stream = Stream.of("w","o","l","f");
+      		Set<String> set = stream.collect(Collectors.toSet());
+		System.out.println(set);
+
+  
