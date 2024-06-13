@@ -4609,4 +4609,31 @@ Concatenating Streams:
      		Stream.concat(one, two).forEach(System.out::println);
        	- This produces the same three lnes as the previous example. The two streams are concatenated and the terminal operation, forEach() is called.
 
- 
+ Sorting:
+
+ 	- The sorted() method returns a stream with the elements sorted. Just like sortiing arrays, Java uses natura ordering unless we specify a comparator. The method signatures are as follows:
+  		public Stream<T> sorted()
+    		public Stream<T> sorted(Comparator<? super T> comparator)
+      	- Calling the first signature uses the default sort order:
+       		Stream<String> s = Stream.of("brown-", "bear-");
+	 	s.sorted().forEach(System.out::print); // bear-brown-
+   	- We can optionally use a Comparator implementation via a method or a lambda. In this example, we are using a method
+    		Stream<String> s = Stream.of("brown bear-", "grizzly-");
+      		s.sorted(Comparator.reverseOrder().forEach(System.out::print)); // grizzly-brown bear-
+	- HEre we pass a Comparator to specify that we want to sort in the reverse of natural sort order.
+ 		Stream<String> s = Stream.of("brown-bear-", "grizzly");
+   		s.sorted(Comparator::reverseOrder); // Does not compile
+     	- Above, takes the Comparator, which is a functional interface that tales two parameters and returns an int. However, Comparator::reverseOrder doesn't do that.
+      	- Because, reverseOrder() takes no arguments and returns a value, the method reference is equivalent to () -> Comparator.reverseOrder() which is really a Supplier<Comparator>. This is not compatible with sorted().
+
+
+Taking a Peek:
+
+	- The peek() method is our final intermediate operation. It is useful for debugging because it allows us to perform a stream operation without changing the stream
+ 		public Stream<T> peek(Consumer<? super T> action)
+   	- You might notice the intermediate peek() operation takes the same argument as the terminal forEach() operation.
+    	- Think of peek() as an intermediate version of forEach() that returns the original stream to you.
+     	- The most common use for peek() is to output the contents of the stream as it goes by.
+      		var stream = Stream.of("black bear", "brown bear", "grizzly");
+		long count = stream.filter(s -> s.startsWith("g")).peek(System.out::println).count(); // grizzly
+  		System.out.println(count);
