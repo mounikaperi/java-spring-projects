@@ -4545,4 +4545,46 @@ Iterating:
       		Set<String> set = stream.collect(Collectors.toSet());
 		System.out.println(set);
 
-  
+  Using Common Intermediate Operations:
+
+  	- Unlike a terminal operation, an intermediate operation produces a stream as its result. 
+   	- An intermediate operation can also deal with an infinite stream simply by returning another infinite stream.
+
+Filtering
+
+	- The filter() method returns a Stream with elements that match a given expression. Here is the method signature:
+ 		public Stream<T> filter(Predicate<? super T> predicate)
+   	- This operation is easy to remember and powerful because we can pass any Predicate to it. 
+    		Stream<String> s = Stream.of("monkey", "gorilla", "bonobo");
+      		s.filter(x-> x.startsWith("m")).forEach(System.out::println);
+
+Removing Duplicates:
+
+	- The distinct() method returns a stream with duplicate values removed.
+ 	- The duplicates do not need to be adjacent to be removed. 
+  		public Stream<T> distinct()
+    	- Stream<String> s = Stream.of("duck","duck","goose");
+     	  s.distinct().forEach(System.out::print);
+
+ Restricting by Position:
+
+   	- The limit() and skip() methods can make a Stream smaller or limit() could make a finite stream out of an infinite stream. 
+    		public Stream<T> limit(long maxSize)
+      		public Stream<T> skip(long n)
+	- The following code creates an infinite stream of numbers counting from 1. 
+ 	- The skip() operation returns an infinite stream starting with the numbers.
+  	- The limit() call takes the first two of those. 
+   		Stream<Integer> s = Stream.iterate(1, n -> n + 1);
+     		s.skip(5).limit(2).forEach(System.out::print); // 67
+
+Mapping:
+
+  	- The map() method creates a one-to-one mapping from the elements in the stream to the elements of the next step in the stream.
+   		public <R> Stream<R> map(Function? super T, ? extends R> mapper)
+     	- This one looks more complicates than the others you have seen. It uses the lambda expression to figure out te ype passed to that functon and the one returned.
+      	- The return type is the stream that is returned.
+       	- The map() method on streams is for transforming data. 
+		Stream<String> s = Stream.of("monkey", "gorilla", "bonobo");
+  		s.map(String::length).forEach(System.out.print) // 676
+    	- Remember that the String::length is shorthand for the lambda x -> x.length() which clearly shows it is a function that turns a String into an Integer.
+ 			
