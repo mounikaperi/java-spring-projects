@@ -4456,5 +4456,62 @@ Matching:
   	- On the infinte stream, one match is found, so the call terminates. If we called allMatch() run unril we killed the program.
    	- The allMatch(), anyMatch() and noneMatch() return a boolean. By contrast, the find methods return an Optiona because they return an element of the stream.
 
-    
-   
+
+Iterating:
+
+	- As in the Java Collections Framework, it is common to iterate over the elements of a stream.
+ 	- As expected, calling forEach() on an infinite stream does not terminate. 
+  	- Since there is no return value, it is not a reduction. 
+   	- Before you use it, consider if another approach would be better. 
+    		public void forEach(Consumer<? super T> action)
+      	- Notice that this is the only terminal operation with a return type of void. 
+       		Stream<String> s = Stream.of("Monkey", "Gorilla", "Bonobo");
+	 	s.forEach(System.out.print);
+
+   Reducing:
+
+    	- The reduce() method combines a stream into a single object. It is a reduction, which means it processes all the elements. 
+     	- The three method signatures are these:
+      		public T reduce(T identity, BinaryOperator<T> accumulator)
+		public Optional<T> reduce(BinaryOperator<T> accumulator)
+  		public <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner)
+    	- Let's take them one at a time. The most common way of ding a reduction is to start with an initial value and keep merging it with the next value.
+     	- Think about how you would concatenate an array of String objects into a single String without functional programming. 
+      		var array = new String[] {"w", "o", "l", "f"};
+		var result = "";
+  		for (var s: array) result = result + s;
+    		System.out.println(result);
+	- The identity is the initia value of the reduction, in the case an empty String.
+ 	- The accumulator combines the current result with the current value in the stream. 
+  	- With lambdas, we can do the same thing with a stream and reduction.
+   		Stream<String> stream = Stream.of("w", "o", "l", "f");
+     		String word = stream.reduce("", (s, c) -> s + c);
+       		System.out.println(word);
+
+  		Stream<Integer> stream = Stream.of(3, 5, 6);
+    		System.out.println(stream.reduce(1, (a, b) -> a+b));
+
+	- We set the identity to 1 and the accumulator to multiplication. When you don't specify an identity, an Optional is returned because there might not be any data. There are three choices for what is in the Optional.
+ 		- If the stream is empty, an empty Optional is returned
+   		- If the stream has one element, it is returned
+     		- If the stream has multiple elements, the accumulator is applied to combine them.
+       	- The following illustrates each of these scenarios:
+		BinaryOperator<Integer> op = (a, b) -> a + b;
+  		Stream<Integer> empty = Stream.empty();
+    		Stream<Integer> oneELement = Stream.of(3);
+      		Stream<Integer> threeElements = Stream.of(3, 5, 6);
+		empty.reduce(op).ifPresent(System.out::println); // no output
+  		oneElement.reduce(op).ifPresent(System.out::println); // 3
+    		threeElements.reduce(op).ifPresent(System.out::println) // 90
+      - Why are there two similar methods? Why not just always require the identity? Java could have done that. 
+      - However, sometimes it is nice to differentiate the case where the stream is empty rather than the case where there is a value that happens to match the identity being returned from the calculation. The signature returning Optional lets you differentiate these cases.
+      	- The third method signature is used when we are dealing with different types. It allows Java to create intermediate reductions and then combine them at the end.
+       		Stream<String> stream = Stream.of("w","o","l","f");
+	 	int length = stream.reduce(0, (i,s) -> i+s.length(), (a,b) -> a+b);
+   		System.out.println(length);
+     	- The first parameter(0) is the value of the initializer. If we had an empty stream, this would be the answer.
+      	- The second parameter is the accumulator. Unlike the accumulators you saw previously, this one handles mixed data types.
+       	- The three argument reduce() operation is useful when working with parallel streams because it allows the stream to be decomposed and reassembled by separate threads.
+
+
+ Collecting:
