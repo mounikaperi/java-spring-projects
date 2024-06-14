@@ -4847,3 +4847,60 @@ Summarizing Statistics:
   		getMin(): Returns the smallest number as a double, int or long depending on the type of the stream. If the stream is empty, returns the largest numeric value based on the type.
     		getMax(): Returns the largest number(maximum) as a double int or long depending on the type of the stream. If the stream is empty, returns the smallest numeric value based on the type.
  
+Working with Advanced Stream Pipeline Concepts:
+
+Linking Streams to the underlying data:
+
+	var cats = new ArrayList<String>();
+ 	cats.add("Annie");
+  	cats.add("Ripley");
+   	var stream = cats.stream();
+    	cats.add("KC");
+     	System.out.println(stream.count()); // 3
+      	- Streams are lazily evaluated. This means the stream isnt created on line 4. An object is created that knows where to look for the data when it is needed.
+       	- lne5, the list gets new element line6 stream pipeline runs. First, it looks at the source and then sees three elements.
+
+ Chaining Optionals:
+
+ 	- By now, you are familiar with the benefits of chaining operations in a stream pipeline. A few of the intermediate operations for streams are available for Optional. Suppose that you are given an Optional<Integer> and asked to print the value, but only if it is a three-digit number 
+  		private static void threeDigit(Optional<Integer> optional) {
+    			if (optional.isPresent()) {
+	    			var number = optional.get();
+	       			var string = "" + num;
+		  		if (string.length() == 3) 	
+	     				System.out.println(string);
+	  		}
+	 	}
+	- It works, but it contains nested if statements. That's extra complexity.
+ 		private static void threeDigit(Optional<Integer> optional) {
+   			optional.map(n -> "" + n).filter(s -> s.length() == 3).ifPresent(System.out::println);
+      -  Optional<Integer> result = optional.map(ChainingOptionals::calculator)' // Does not compile
+      		The problem is that the calculator returns Optional<Integer>. The map() method adds another Optional, giving us Optional<Optional<Integer>>
+	- Well that's not a good solution. The solution is to use flatMap() instead
+ 		Optional<Integer> result = optional.flatMap(ChainingOptionals::calculator);
+   	- This one works because flatMap removes the unncessary layer. In other words, in flattens the result
+    	- Chaining calls to flatMap() is useful when you want to transform one Optional type to another.
+
+
+Checked Exceptions and Functional Interfaces:
+
+	- You might have noticed by now that most functional interfaces do not declare checked exceptions. 
+ 	- However, it is a problem when working with methods that declare checked exceptions.
+  		import java.io.*;
+    		import java.util.*;
+      		public class ExceptionCaseStudy {
+			private static List<String> create() throws IOException {
+   				throw new IOException();
+       			}
+	  	}
+    	- Now we use it in a stream:
+     		public void good() throws IOException {
+       			ExceptionCaseStudy.create().stream().count();
+	  	}
+    	- The create() method throws a checked exception. The calling method handles or declares it. 
+     		public void bad() throws IOException {
+       			Supplier<List<String>> s = ExceptionCaseStudy::create;
+	  	}
+    	- The problem is that the lambda to which this method reference expands does not declare an exception. The Supplier interface does not allow checked exceptions.
+     	- There are two approaches to get around this problem. One is to catch the exception and turn it into an unchecked exception.
+      	
