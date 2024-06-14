@@ -4637,3 +4637,65 @@ Taking a Peek:
       		var stream = Stream.of("black bear", "brown bear", "grizzly");
 		long count = stream.filter(s -> s.startsWith("g")).peek(System.out::println).count(); // grizzly
   		System.out.println(count);
+    	- peek() looks only at the first element when working with a Queue. In a stream, peek() looks at each element that goes through that part of the stream pipeline.
+
+Changing state with peek():
+
+	- Remember that peek() is intended to perform an operation without changing the result. 
+ 		var numbers = new ArrayList<>();
+   		var letters = new ArrayList<>();
+     		numbers.add(1);
+       		letters.add('a');
+	 	Stream<List<?>> stream = Stream.of(numbers, letters);
+   		stream.map(List::size).forEach(System.out::print); // 11
+     	- Now we add a peek call and note that Java doesn't prevent us from writing bad peek code
+      		Stream<List<?>> bad = Stream.of(numbers, letters);
+		bad.peek(x -> x.remove(0)).map(List::size).forEach(System.out::print); // 00
+  	- This example is bad because peek() is modifying the data structure that is used in the stream which causes the result of the stream pipeline to be different than if the peek wasn't present.
+
+
+Putting together the Pipeline:
+
+	- Streams allow you to use chaining and express what you want to accomplish rather than how to do so. 
+ 	- Let's say that we wanted to get the first two names of our friends alphabetically that are four characters long.
+  	- Without streams, we would have to write something like the following:
+   		var list = List.of("Tobby","Anna","Leroy", "Alex");
+     		List<String> filtered = new ArrayList<>();
+       		for(String name: list) {
+	 		if (name.length() ==4) {
+    				filtered.add(name);
+			}
+   		}
+     		Collections.sort(filtered);
+       		var iter = filtered.iterator();
+	 	if(iter.hasNext()) System.out.println(iter.next());
+   		if(iter.hasNext()) System.out.println(iter.next());
+	- With streams, equivalent code is:
+ 		var list = List.of("Tobby","Anna","Leroy", "Alex");
+   		list.stream().filter(n->n.length() == 4).sorted().limit(2).forEach(System.out::println);
+
+Examples:
+
+	Stream.generate(() -> "Elsa")
+ 		.filter(n -> n.length() == 4)
+   		.sorted()
+     		.limit(2)
+       		.forEach(System.out::println);
+	 It hangs until you kill the program, or it throws an exception after running out of memory. 
+  	 The foreperson has instructed sorted() to wait until everything to sort is present.
+    	 That never happens because there is an infinite stream.
+      	 Stream.generate(() -> "Elsa")
+		.filter(n-> n.length() == 4)
+  		.limit(2)
+    		.sorted()
+      		.forEach(System.out::println);
+	This one prints Elsa twice. The filter sets elements through and limit() stops the earlier operations after two elements. 
+ 	Now sorted() can sort because we have a finite list.
+  	Finally, what do you think this does?
+   	Stream.generate(() -> "Olaf Lazisson").filter(n->n.length() ==4).limit(2).sorted().forEach(System.out::println);
+    	This one hangs as well until we kill the program. The filter doesn't allow anything though, so limit() never sees two elements.
+     	This means we have to keep waiting and hope they show up.
+
+
+    
+     	
