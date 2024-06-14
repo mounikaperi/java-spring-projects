@@ -4696,6 +4696,54 @@ Examples:
     	This one hangs as well until we kill the program. The filter doesn't allow anything though, so limit() never sees two elements.
      	This means we have to keep waiting and hope they show up.
 
+Working with Primitive Streams:
 
-    
+	- Up until now, all of the strams we have created using the Stream interface with a generic type, like Stream<String>, Stream<Integer> and so on.
+ 	- For numeric values, we have been using wrapper classes. We did this with the CollectionsAPI.
+  	- Java actually includes other stream classes besides Stream that you can use to work with select primitives: int, double, long
+   		Stream<Integer> stream = Stream.of(1, 2, 3);
+     		System.out.prntln(stream.reduce(0, (s,n)->s+n)); // 6
+       	- There is another way of doing that
+		Stream<Integer> stream = Stream.of(1, 2, 3);
+  		System.out.println(stream.mapToInt(x -> x).sum()); // 6
+    	- This time we converted our Stream<Intege> to an IntStream and asked the IntStream to calculate the sum for us.
+     	- An IntStream has many of the same intermediate and terminal methods as a Stream but includes specialized methods for working with numeric data. 
+      	- The primitive streams know how to perform certain common operations automatically.
+       		IntStream intStream = IntStream.of(1, 2, 3);
+	 	OptionalDouble average = intStream.average();
+   		System.out.println(average.getAsDouble()); // 2.0
+
+
+Creating Primitive Streams:
+
+	- Here are the three types of primitive streams:
+ 		- IntStream: Used for the primitive types int, short, byte, char
+   		- LongStream: Used for the primitive type long
+     		- DoubleStream: Used for the primitive types Double and Float
+	- Common Primitive Stream Methods:
+
+  	OptionalDouble average()				IntStream		Arithmetic mean of elements
+   								LongStream
+	   							DoubleStream
+   	Stream<T> boxed()					IntStream		Stream<T> where T is wrapper class associated with primitive value
+    								LongStream
+	    							DoubleStream
+    	OptionalInt max()					IntStream		Maximum element of stream
+     	OptionalLong max()					LongStream
+      	OptionalDouble max()					DoubleStream
+       	OptionalInt min()					IntStream		Minimum element of stream
+	OptioanalLong min()					LongStream
+ 	OptionalDouble min()					DoubleStream
+  	IntStream range(int a, int b)				IntStream		Returns primitive strea from a(inclusive) to b(exlusive)
+   	LongStream range(long a, long b)			LongStream
+    	IntStream rangeClosed(int a, int b)			IntStream		Returns primitive stream from a (inclusive) to b(inclusive)
+     	LongStream rangeClosed(long a, long b)			LongStream
+      	int sum()						IntStream		Returns sum of elements
+       	long sum()						LongStream
+	double sum()						DoubleStream		
+ 	IntSummaryStatistics summaryStatistics()		IntStream		Returns object containing numerous stream statistics such as average, min, max
+  	LongSummaryStatistics summaryStatistics()		LongStream
+   	DoubleSummaryStatistics summaryStatistics()		DoubleStream
+
+	
      	
