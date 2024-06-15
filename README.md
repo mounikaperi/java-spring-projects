@@ -5002,4 +5002,50 @@ Grouping, Partitioning, Mapping:
         This is very flexible. What if we want to change the type of Map returned but leave the type of values alone as a List? 
 		 TreeMap<Integer, List<String>> map = ohMy.collect(Collectors.groupingBy(String::length, TreeMap::new, Collectors.ToList()));
 
+
+ 	Partitioning is a special case of grouping. With partitioning, there are only two possible groups: true and false
+  	Partitioning is like splitting a list into two parts
+   		var ohMy = Stream.of("lions", "tigers", "bears");
+     		Map<Boolean, List<String>> map = ohMy.collect(Collectors.partitioningBy(s-> s.length() <= 5));
+        Here we pass a Predicate with the logic for which group each animal name belongs in. 
+		Map<Boolean, List<String>> map = ohMy.collect(Collectors.partitioningBy(s-> s.length() <=7));
+  	Notice that there are still two keys in the map - one for each boolean value. It so happens that one of the values is an empty list, bit it is still there.
+   	As with groupingBy() we can change the type of List to something else
+    		Map<Boolean, Set<String>> map = ohMy.collect(Collectors.partitioningBy(s -> s.length() <= 7, Collectors.toSet()));
+      	Unline groupingBy(), we cannot change the type of Map that is returned. However, there are only two keys in the map, so does it really matter which Map type we use?
+       	Instead of using the downstream collector to specify the type, we can use any of the collectors. 
+		Map<Integer, Long> map = ohMy.collect(Collectors.groupingBy(String::length, Collectors.counting()));
+
+  Debugging Complicated Generics:
+
+  	- When working with collect() there are often many levels of generics, making compiler errors unreadable. 
+   		- Start over with a simple statement, and keep adding to it By making one tiny change at a time, you will know which code introduced the error.
+     		- Extract arts of the statement into separate statements. For Examle, try writign Collectors.groupingBy(String::length, Collectors.counting());
+       		- If it compiles you know that the problem lies elsewhere. If it doesn't compile you have a much shorter statement to trouleshoot.
+	 	- Use generic wildcards for the return type of the final statement: For example: Map<?, ?> 
+   		- if that change alone allows the code to compile you will know that the problem lies with the return type not being what you expect
+
+
+     	- Finally, there is a mapping() collector that lets us go down a level and add another collector.
+      		Map<Integer, Optional<Character>> map = ohMy.collect(Collectors.groupingBy(String::length, 
+			Collectors.mapping(s -> s.charAt(0), Collectors.mnBy((A,b)->a-b)));
+
+   		var map = ohMap.collect(groupingBy(String::length, mapping(s -> s.charAt(0), minBy((a,b) -> a-b)));
+
+
+Teeing Collectors:
+
+	- Suppose you want to return two things. As we have learned, this is problematic with streams becuase you only get one pass.
+ 	- The summary statistics are good when you want those operations.
+  	- Luckily you can use teeing() to return multiple values of your own
+   	- First, define the return type. We use a record here
+    		record Separations(String spaceSearated, String commaSeparated) {}
+      	- Now we write the stream. As you read, pay attention to the number of Collectors:
+       		var list = List.of("x", "y", "z");
+	 	Separations result = list.stream().collect(Collectors.teeing(Collectors.joining(" "), Collectors.joining(","), (s,c) -> new Separations(s,c)));
+   	- WHen executed prints
+    		Separations[spaceSeparated- x y z, commaSeparated=x,y,z]
+      	- There are three Collectors in this code. Two of them are for joining() and roduce the values we want to return.
+       	- The third is teeing() which combines the results into the single object we want to return.
+	- This way, java is happy because only one object is returned, and we are happy because we don't have to go through the stream twice.
    
