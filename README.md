@@ -4962,3 +4962,44 @@ Collecting Results:
     		System.out.println(result);
       
 	
+Collecting into Maps:
+
+	- Code using Collectors involving maps can get quite long. We will build it up slowly. 
+ 		var ohMy = Stream.of("lions", "tigers", "bears");
+   		Map<String, String> map = ohMy.collect(Collectors.toMap(s -> s, String::length));
+     	- When creating a map, you need to specify two functions. The first function tells the collector how to create the key. The second function tells the collector how to create the value.
+      	- Returning the same value passed into a lambda is a common operation, so Java provides a method for it. You can rewrite s->s as Function.Identity(). 
+        - Now we want to do the reverse and map the length of the animal name to the name itself. Our first incorrect attempt:
+		var ohMy = Stream.of("lions", "tigers", "bears");
+  		Map<Integer, String> map = ohMy.collect(Collectors.toMap(String::length, k->k);
+    		// Exception in thread "main" java.lang.IllegalStateException - Duplicate key 5
+      	- Whats wrong? Two of the animal names are the same length. We didn't tell Java what to do? Should the collector choose the first one it encounters?
+       	  The last one it encounters? Concatenate the two? Since the collector has no idea what to do it solves the problem by throwing the exception. 
+	  	var ohMy = Stream.of("lions","tigers","bears");
+    		Map<Integer, String> map = ohMy.collect(Collectors.toMap(String::length, k->k, (S1, s2) -> s1 + " " + s2));
+      		System.out.println(map);
+		System.out.println(map.getClass()); // class java.util.HashMap
+  	- It so happens that the Map returned is a HashMap. This behavior is not guaranteed. Sippose that we want to mandate the code return a TreeMap instead.
+   	- We would just add a constructor reference as a parameter.
+    		var ohMy = Stream.of("lions", "tigers", "bears");
+      		TreeMap<Integer, String> map = ohMy.collect(Collectors.toMap(String::length, k -> k, (s1, s2) -> s1 + " " + s2, TreeMap::new));
+
+Grouping, Partitioning, Mapping:
+
+	- Suppose that we want to get groups of names by their length. We can do that by saying that we want to group by length
+ 		var ohMy = Stream.of("lions","tigers","bears");
+   		Map<Integer, List<String>> map = ohMy.collect(Collectors.groupingBy(String::length));
+     		System.out.println(map); // 5=[lions, bears], 6=[tigers]
+       - The groupingBy() collector tells the collect() that it should group all of the elements in the stream into a Map. 
+       - The function determines the keys in the Map. Each value in the Map is a List of all entries that match the key.
+       - Now that the function you call in groupingBy() cannot return null. It does not allow null keys.
+       - Suppose that we don't want a List as the value in the map and prefer a Set instead. There is another method signature that lets us pass a downstream collector.
+       - This is a second collector that does something special with the values.
+       		var ohMy = Stream.of("lions", "tigers", "bears");
+	 	Map<Integer, Set<String>> map = ohMy.collect(Collectors.groupingBy(String::length, Collectors.toSet()));
+   	We can even change the type of map returned through yet another parmater
+    		TreeMap<Integer, Set<String>> map = ohMy.collect(Collectors.groupingBy(String::length, TreeMap::new, Collectors.toSet()));
+        This is very flexible. What if we want to change the type of Map returned but leave the type of values alone as a List? 
+		 TreeMap<Integer, List<String>> map = ohMy.collect(Collectors.groupingBy(String::length, TreeMap::new, Collectors.ToList()));
+
+   
