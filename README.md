@@ -4904,3 +4904,61 @@ Checked Exceptions and Functional Interfaces:
     	- The problem is that the lambda to which this method reference expands does not declare an exception. The Supplier interface does not allow checked exceptions.
      	- There are two approaches to get around this problem. One is to catch the exception and turn it into an unchecked exception.
       	
+Using a Spliterator:
+
+	- A Spliterator starts with a Collection or a stream. The characteristics of a Spliterator depends on the underlying data source. 
+ 	- A collection data source is a basic Spliterator.
+  	- By Constrast, when using a Stream data source, the Spliterator can be parallel or even infinite. 
+   	- The Stream itself is executed lazily rather than when the Spliterator is created.
+    	- Spliterator methods:
+
+       		Spliterator<T> trySplit()		Returns Spliterator containing ideally half of the data which is removed from the current Spliterator.
+	 						This method can be called multiple times and will eventually return null when data is no longer splittable.
+		void forEachRemaining(Consumer<T> c)	Processes remaining elements in Spliterator
+  		boolean tryAdvance(Consumer<T> c)	Processes single element from Spliterator if any remain. Returns whether element was processed.
+
+    		var stream = List.of("bird-", "bunny-", "cat-", "dog-", "fish-", "lamb-", "mouse-");
+      		Spliterator<String> originalBagOfFood = stream.spliterator();
+		Spliterator<String> emmasBag = originalBagOfFood.trySplit();
+  		emmasBag.forEachRemaining(System.out::print); // bird-bunny-cat-
+    		Spliterator<String> jillsBag = originalBagOfFood.trySplit();
+      		jillsBag.tryAdvance(System.out::print); //dog-
+		jillsBag.forEachRemaining(System.out::print); // fish-
+
+    		originalBagOfFood.forEachRemaining(System.out::print); // lamb-mouse-
+
+      	- Line 1 and Line 2 we define a List.. Line 3 and Lne 4 create two Spliterator references. The first is original bag, which contains all seven elements.
+       	- The second is our split of the original bag, putting roughly half of the elements at the front into Emma's bag. 
+	- We then print the three contents of Emma's bag on line4.
+ 	- Our original bag of food now contains four elements. We create a new Spliterator on line 6 and put the first two elements into Jill's bag. 
+  	- We use tryAdvance() on line 6 to output a single element, and then line 7 prints all remaining elements. 
+
+     		var originalBag = Stream.iterate(1, n->++n).spliterator();
+       		Spliterator<Integer> newBag = originalBag.trySplit();
+	 	newBag.tryAdvance(System.out::print) // 1
+   		newBag.tryAdvance(System.out::print) // 2
+     		newBag.tryAdvance(System.out::print) // 3
+
+       - The Spliterator recognized that the stream is infinite and doesn't attempt to give you half.
+       - Instead, newBag Contains a large number of elements. We get the first three since we call tryAdvance() three times. 
+       - It would be a bad idea to call forEachRemaining() on an infinite stream.
+
+
+Collecting Results:
+
+	- The collect() terminal operation. There are many predefined collectors. These collectors are available via static methods on the Collectors class.
+ 		var ohMy = Stream.of("lions","tigers","bears");
+   		String result = ohMy.collect(Collectors.joining(", "));
+     		System.out.println(result); // lions, tigers, bears
+       	- Notice how the predefined collectors are in the Collectors class rather than the Collectors interface similar to Collection vs Collections.
+	- We pass the predefined joining() collector to the collect() and it performs the average for us. 
+ 		Double result = ohMy.collect(Collectors.averagingInt(String::length);
+   		System.out.println(result);
+     	- The pattern is the same. We pass a collector to collecT() and it performs the avergae for us.
+      	- This time we needed to pass a function to tell the Collector what is the average. 
+       	- We used a method reference which returns an int upon execution. With primitive streams, the result of an avergae was always a double, regardless of what type is being averaged. For collectors, it is a Double since those need an Object.
+		var ohMy = Stream.of("lions", "tigers","bears");
+  		TreeSet<String> result = ohMy.filter(s -> s.startsWith("t")).collect(Collectors.toCollection(TreeSet::new));
+    		System.out.println(result);
+      
+	
