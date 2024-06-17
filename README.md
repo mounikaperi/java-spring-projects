@@ -5269,4 +5269,78 @@ RuntimeException classes:
        	NumberFormatException			Subclass of IllegalArgumentException. Thrown when attempt is made to convert String 						to numeric type but String doesn't have appropriate format.
 
  
-  
+  ArithmeticException
+
+  	- Trying to divide an int by zero gives an undefined result. When this occurs, the JV will thow an ArithmeticException
+		int answer = 11/0;
+  	  Running the code results in the following output:
+     	  Exception in thread "main" java.lang.ArithmeticException: /byZero
+
+ArraysIndexOutOfBoundsException:
+
+	- You know by now that array indexes start with 0 and go up by 1 less than the length of the array which means this code will throw an ArrayIndexOutOfBoundsException
+ 		int[] countsOfMoose = new int[3];
+   		System.out.println(countsOfMosse[-1]); // ArrayIndexOutOfBoundsException
+     	- This is a problem becuase there is no such thing as a negative array index.
+
+ClassCastException:
+
+	- Java tries to protect you from impossible casts. This code doesn't compile because Integer is not a subclass of String.
+ 		String type = "moose";
+   		Integer number = (Integer) type; // ClassCastException
+     	- More complicated code Java thwarts Java's attempt to protect you. When the cast fails at runtme, Java will throw a ClassCastException
+      		String type = "mosse";
+		Integer number = (Integer) obj;
+  	- The compiler sees as cast from Object to Integer. The compiler doesn't realize there is a String in that Object. 
+   	- Java tells you both types that were involved in the problem
+
+NullPointerException
+
+	- Instance variables and methods must be called on a non-null reference. If the reference is null, the JVM will throw a NullPointerException.
+ 		public class Frog {
+   			public void hop(String name, Integer jump) {
+      				System.out.print(name.toLowerCase() + " " + jump.intValue());
+	  		}
+     			public static void main(String[] args) {
+				new Frog().hop(null, 1);
+    			}
+       		}
+	 - Running this code results in the following output:
+  		Exception in thread "main" java.lang.NullPointerException: Cannot invoke "String.toLowerCase()" because "<parameter1>" is null.
+    	 - If you are new to Java17, you should have noticed something special about the output. The JVM now tells you the object reference that triggered the NullPointerException! This new feature is called Helpful NullPointerExceptions.
+      		new Frog().hop("kermit", null);
+	- By default, a NullPointerException on a local variable or method parameter is printed with a number indicating the order in which it appears in the method, such as <local2> or <parameter4>.
+
+Enabling/Disabling Helpful NullPointerExceptions
+
+	- When helpful NullPointerExceptions were in added in Java14, the feature was disabled by default and had to be enabled via a command-line argument ShowCodeDetailsInExceptionMessages in JVM
+ 		java -XX:+ShowCodeDetailsInExceptionMessages Frog
+   	- In Java 15 and above, the default behavior was changed so that it is enabled by default, although it can still be disabled via the command-line argument
+    		java ++XX:-ShowCodeDetailsInExceptionMessages Frog
+
+IllegalArgumentException:
+
+	- IllegalArgumentException is a way for your program to protected itself.
+ 	- You want to tell the caller that something is wrong- preferably in an obvious way that the caller can't ignore so the programmer will fix the problem
+  		public void setNumberEggs(int numberEggs) {
+    			if (numberEggs < 0)
+    				throw new IllegalArgumentException("# eggs must not be negative");
+			this.numberEggs = numberEggs;
+   		}
+
+NumberFormatException:
+
+	- Java provides methods to convert strings to numbers. 
+ 	- When these are passed an invalid value, they throw a NumberFormatException.
+  	- The idea is similar to IllegalArgumentException. Since, this is a common problem. Java gives it a separate class.
+   	- In fact, NumberFormatException is a subclass of IllegalArgumentException. 
+    		Integer.parseInt("abc");
+      		Output:
+		Exception in thread "main"
+  		java.lang.NumberFormatException: For input string: "abc"
+    	- NumberFormatException is a subclass of IllegalArgumentException.
+
+
+Checked Exception Classes
+     	
+   	
