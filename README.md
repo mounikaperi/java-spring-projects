@@ -5150,3 +5150,107 @@ Reviewing Exception types:
   	Error			Subclass of Error		No				No
 	     	
 
+Throwing an Exception:
+
+	- Any Java code can throw an exception, this includes code you write.
+ 	- Some exceptions are provided with Java.
+  		String[] animals = new String[0];
+    		System.out.println(animals[0]); // ArrayIndexOutOfBoundsException
+      	- This code throws an ArrayIndexOutOfBoundsException since the array has no elements. 
+       	- That means questions about exceptions can be hidden in questions that appear to be something else.
+	- The second way for code to result in an exception is to especially request Java to throw one.
+ 		throw new Exception();
+   		throw new Exception("Ow! I fell.");
+     		throw new RuntimeException();
+       		throw new RuntimeException("Ow! I fell.");
+	- The throw keyword tells Java that you want some part of the code to deal with the exception. 
+
+throw vs throws:
+
+	- The throw keyword is used as a statement inside a code block to throw a new exception or rethrow an existing exception
+ 	- The throws keyword is used only at the end of a method declaration to indicate what exception it supports.
+  	- When creating an exception, you can usually pass a String parameter with a message, or you can pass no parameters and use the defaults. We can usually because this is a convention. Someone has declared a constructor that takes a String. 
+   	- Additionally, you should know that an Exception is an Object. This means you can store it in an object reference.
+    		var e = new RuntimeException();
+      		throw e;
+	- The code instantiates an exception on one line and then throws on the next. 
+ 	- The exception can come from anywhere, even passed into a method. As long as t is a valid exception, it can be thrown.
+  		throw RuntimeException(); // Does not compile
+    	- This is because of missing keyword. The exception is never instantiated with the new keyword.
+     		try {
+       			throw new RuntimeException();
+	  		throw new ArrayIndexOutOfBoundsException(); // Does not compile
+     		} catch(Exception e) {}
+       - Line 2 throws an exception and line 3 can never be reached during runtime. The compiler recognizes this and reports an unreachable code error. 
+
+
+Calling methods that throw exceptions:
+
+	- When you are calling a method that throws an exception, the rules are the same as within a method. 
+ 		class NoMoreCarrotsException extends Exception {}
+   		public class Bunny {
+     			public static void main(String[] args) {
+				eatCarrot(); // Does not compile
+    			}
+       			private static void eatCarrot() throws NoMoreCarrotsException {}
+	  	}
+    	- The problem is that NoMoreCarrotsException is a checked exception. Checked Exceptions must be handled or declared. 
+     	- The code would compile if you changed the main() method to either of these:
+      		public static void main(String[] args) throws NoMoreCarrotsException {
+			eatCarrot(); 
+   		}
+     		public static void main(String[] args) {
+       			try {
+	  			eatCarror();
+      			} catch (NoMoreCarrotsException ex) {
+	 			System.out.print("Sad Rabbit");
+     			}
+		}
+  	- When you see a checked exception declared inside a catch block make sure the code in the associated try block is capable of throwing an exception or a subclass of the exception. 
+   	- If not, the code is unreachable and does not compile. This does not extend to unchecked exceptions or exceptons declared in a method signature.
+
+
+Overriding Methods with Exceptions:
+
+	- An overridden method may not declare any new or broader checked exceptions than the method it inherits. 
+ 		class CanNotHopException extends Exception {}
+   		class Hopper { public void hop(); }
+     		class Bunny extends Hopper { public void hop() throws CanNotHopException{}} // does not compile
+       - Java knows hop() isn't allowed to throw any checked exceptions becuase the hop() method in the superclass Hopper doesn't declare any. Imagine what would happen if the subclasses versions of the method could add checked exceptions- you could write code that calls Hopper's hop() method and not handle any exceptions. 
+       - An overridden method in a subclass is allowed to declare fewer exceptions than the superclass or interface. 
+       - This is legal because callers are already handling them
+       		class Hopper {
+	 		public void hop() throws CanNotHopException {}
+    		}
+      		class Bunny extends Hopper {
+			public void hop() {} // this is fine
+   		}
+     	- An overridden method not declaring one of the exceptions thrown by the parent method is similar to the method declaring that it throws an exception it never actually throws. 
+      	- This is perfectly legal. Similarly, a class is allowed to declare a subclass of an exception type. 
+       	- The superclass or interface has already taken care of a broaden type.
+
+ Printing an Exception:
+
+ 	- There are three ways to print an exception. You can let Java print it out, print just the message, or print where the stacktrace comes from. 
+  		public static void main(String[] args) {
+    			try {
+       				hop();
+	   		} catch (Exception ex) {
+      				System.out.println(ex + "\n"); 
+	  			System.out.println(ex.getMessage() + "\n");
+      				ex.printStackTrace();
+	  		}
+     		}
+       		public static void hop() {
+	 		throw new RuntmeException("Cannot hop");
+    		}
+      Output:
+      java.lang.RuntimeException: cannot hop
+      cannot hop
+      java.lang.RuntimeException: cannot hop
+      	at Handling.hop(Handling.java:15)
+       	at Handling.main(Handling.java:7)
+
+ 
+
+  
