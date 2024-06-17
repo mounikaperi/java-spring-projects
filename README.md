@@ -5769,4 +5769,127 @@ Formatting Dates and Times:
   		date.format(DateTimeFormatter.ISO_LOCAL_TIME); // RuntimeException
     		time.format(DateTimeFormatter.ISO_LOCAL_DATE); // RuntimeException
 
-      
+Customizing the Data/Time format:
+
+	If you don't want to use one of the predefined formats, DateTimeFormatter supports a custom format using a date format strng
+		var f = DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm");
+  		System.out.println(dt.format(f)); // October 20, 2022 at 11:12
+
+Learning the standard Date/Time Symbols:
+
+	You should be familiar enough with the various symbols that you can look at a date/time String and have a good idea of what the output will be
+
+  	Symbol 			Meaning			examples
+   	y			Year			22, 2022
+    	M 			Month			1, 01, Jan, January
+     	d 			Day 			5, 05
+      	h			hour			9, 09
+       	m			Minute			45
+	S			Second			52
+ 	a			a.m/p/m			AM, PM
+  	z			Time zone name		Eastern Standard Time, EST
+   	Z 			Tme zone offset		-0400
+
+    	var dt = LocalDateTime.of(2022, Month.OCTOBER, 20, 6, 15, 30);
+     	var formatter1 = DateTimeFormatter.ofPattern("MM/dd/yyyy", "hh:mm:ss");
+      	System.out.println(dt.format(formatter1));
+       	var formatter2 = DateTimeFormatter.ofPattern("MM_yyyy_-_dd");
+	System.out.println(dt.format(formatter2)); // 10_2022_-_20
+ 	var formatter3 = DateTimeFormatter.ofPattern("h:mm z");
+  	System.out.println(dt.format(formatter3)); // DateTimeException
+
+    	- The first example prints the date with the month before the day, followed by the time.
+     	- The second example prints the date in a weird format with extra characters that are just displayed as part of the output.
+      	- The third example throws an exception at runtime becuase the underlying LocalDateTime does not have a time zone specified.
+       	- If ZonedDateTme were used instead, the code would complete successfully and prints something like 06:15 EDT depending on the time zone.
+	- Make sure you know which symbols are compatible with which date/time types.
+
+Selecting a format() method:
+
+	- The date/time classes contain a format() method that will take a formatter, while the formatter classes contain a format() method that will take a date/time value. The result is that either of the following is acceptable
+ 		var dateTime = LocalDateTime.of(2022, Month.OCTOBER, 20, 06, 15, 30);
+   		var formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy hh:mm:ss");
+     		System.out.println(dateTime.format(formatter));
+       		System.out.println(formatter.format(dateTime));
+	 - These statements print the same value at runtime.
+
+Adding Custom Text Values:
+
+	- What if you want your format to include some custom text values?
+ 	- If you just type them as part of the format String, the formatter will interpret each character as date/time symbol.
+  	- In the best case, it will display weird data based on extra symbols you enter.
+   	- In thw worst case, it will throw an exception because the characters contain invalid symbols. 
+    	- One way to address this would be to break the formatter into multiple smaller formatters and then concatenate the results.
+     		var dt = LocalDateTime.of(2022, Month.OCTOBER, 20,6,15,30);
+       		var f1 = DateTimeFormatter.ofPattern("MMMM dd, yyyy");
+	 	var f2 = DateTimeFormatter.ofPattern("hh:mm");
+   		System.out.println(dt.format(f1) + "at" + dt.format(f2));
+     	- While this works, it could become difficult if a lot of text values and date symbols are intermixed.
+      	- Luckily, Java includes a much simpler solution. You can escape the text by surrounding it with a parit of single quotes.
+       	- Escaping text instructs the formatter to ignore the values inside the single quotes and just insert them as part of final value.
+		var f = DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm");
+  		System.out.println(dt.format(f));
+
+
+ Supporting Internationalization and Localization
+
+ 	- Many applications need to work in different countried and with different languages.
+  	- Internationalization is the process of designing your program so it can be adapated. 
+   	- This involves placing strings in a properties file and ensuring that the proper data formatters are used.
+    	- Localization means supporting multiple locales or geographic regions.
+     	- You can think of a locale as being like a language and country pairing. 
+      	- Localization includes translating strings to a different langiages. 
+       	- It also includes outputting dates and numbers in the correct format for that locale.
+	- Initially, your program does not need to support multiple locales.
+ 	- The key is to future-proof your application by these techniques. 
+  	- This way, when your product becomes successful, you can add support for new languages or regions without rewriting everything.
+
+Picking a Locale:
+
+	- While Oracle defines a locale as a specific geographical, political or cultural region. You will only see languages and countries on the exam. Oracle certainly isn't going to delve into political regions that are not countries.
+ 	- The Locale class is in the java.util package. The first useful Locale to find is the user's current locale.
+  	- Try running the following code on your computer
+   		Locale locale = Locale.getDefault();
+     		System.out.println(locale);
+       	- When you run it prints en_US. It might be different for you. This default output tells us that our computers are using English and are sitting in the United States.
+	- First comes the lowercase language code. The language is always required. Then comes an underscore followed by the upper case country code. The country is optional. 
+ 	- Locale formats: Locale (language) 	Locale(language, country)
+  				fr 			en_US
+      			LowerCase LanguageCode	LowercaseLanguageCode_Uppercase CountryCode
+	 - As practice, make sure that you understand why each of these Locale identifiers is invalid:
+  		US	// Cannot have country without language
+    		enUS	// Missing underscore
+      		US_en   // The country and language are reversed
+		EN      // Language must be lowercase
+  	- The corrected versions are en and en_US
+   	- You donot need to memorize language or country codes. You do need to recognize valid and invalid formats.
+    	- Pay attention to uppercase/lowercase and the underscore.
+     	- For example, if you see a locale expressed as es_CO, then you should know that the language is es and country s CO, even if you didn't know that they represent Spanish and Columbia respectively.
+
+      - As a developer, you often need to write code that selects a locale other than the default one.
+      - There are three common ways of doing this. The first is to use the built-in constants in the Locale class
+      		System.out.println(Locale.GERMAN); // de
+		System.out.println(Locale.GERMANY); // de_DE
+      - The first example selects the German language, which is spoken in many countries, including Austria (de_AT) and Liechtenstein(de_LI). The second example selects both German the language and Germany the country.
+      - The second way of selecting a Locale is to use the constructors to create a new object. You can pass just a language or both a language and country
+      		System.out.println(new Locale("fr"));		// fr
+		System.out.printn(new Locale("hi", "IN")); 	// hi_IN
+      - The first is the language French, and the second is Hindi in India.
+      - Again, you don't need to memorize the codes. There is another constructor that lets you be even more specific about locale.
+      - Java will let you create a Locale with an invalid language or country such as xx_XX.
+      - However, it will not match the Locale that you want to use and your progra will not behave as expected.
+      - There is a third way to create a Locale that is more flexible. The builder design pattern lets you set all of the properties that you care about and then build the Locale at the end.
+      - This means that you can specify the properties in any order. The following two Locale values both represent en_US
+      		Locale l1 = new Locale.Builder().setLanguage("en").setRegion("US").build();
+		Locale l2 = new Locale.Builder().setRegion("US").setLanguage("en").build();
+      - When testing a program, you might need to use a Locale other than your computer's default.
+      		System.out.println(Locale.getDefault()); // en_US
+		Locale locale = new Locale("fr"); 
+  		Locale.setDefault(locale);
+    		System.out.println(Locale.getDefault()); // fr
+      - The Locale changes for only that one Java program. It does not change any settings on your computer It does not even change future executions of the same program.
+
+
+Localizing Numbers:
+
+	- 
