@@ -5049,3 +5049,70 @@ Teeing Collectors:
        	- The third is teeing() which combines the results into the single object we want to return.
 	- This way, java is happy because only one object is returned, and we are happy because we don't have to go through the stream twice.
    
+
+Understanding Exceptions:
+
+	- A program can fail for just about any reason. Here are just few possibilities:
+ 		- The code tries to connect to a website, but the internet connection is down.
+   		- You made a coding mistake and tried to access an invalid index in an array.
+     		- One method calls another with a value that the method doesn't support.
+       	- As you can see, some of these are coding mistakes. Others are completey beyond your control. Your program can't help it if the Internet connection goes down.
+
+ The Role of Exceptions:
+
+ 	- An exception is Java's way of daying: "I give up, I don't know what to do right now. You deal with it".
+  	- When you write a method, you can either deal with the exception or make it the calling code's problem.
+   	- There are the two approaches Java uses when dealing with exceptions. A method can handle the exception case itself or make it the caller's responsibility.
+
+Return Codes vs Exceptions:
+
+ 	- Exceptions are used when "something goes wrong". Howeber, the word wrong is subjective. 
+  	- The following code returns -1 instead of throwing an exception if no match is found:
+   		public int indexOf(String[] names, String name) {
+     			for (int i=0; i<names.length; i++) {
+				if (names[i].equals(name))
+    					return i;
+	 		}
+    			return -1;
+       		}
+	 - While common for certain tasks for searching, return codes should generally be avoided. After all, Java provided an exception framework, so you should use it.
+
+Understanding Exception types:
+
+	- An exception is an event that alters program flow. 
+ 	- Java has a Throwable class for all objects that represent these events.
+  	- Not all of them have the word exception in their class name, which can be confusing.
+   		java.lang.Throwable <-------- java.lang.Exception <----------- java.lang.RuntimeException
+     				    <-------- java.lang.Error
+
+Checked Exceptions:
+
+	- A checked exception is an exception that must be declared or handed by the application code where it is thrown. 
+ 	- In Java, checked exceptions all inherit Exception but not RuntimeException.
+  	- Checked exceptions tend to more anticipated - for example trying to read a file that doesn't exist.
+   	- Checked exceptions also include any class that inherits Throwable but not Error or RuntimeException.
+    	- Checked Exceptions? What are we checking? Java has a rule called the handle or declare rule.
+     	- The handle or declare rule means that all checked exceptions that could be thrown within a methor are either wrapped in compatible try and catch blocks or declared in the method signature.
+      	- Because checked exceptions tend to be anticipated. Java enforces the rule that the programmer must do something to show that the exception was thought about. 
+       	- May be it was handled in the method. Or maybe the method declares that it can't handle the exception and someone else should.
+		void fall(int distance) throws IOException {
+  			if (distance > 10) {
+     				throw new IOException();
+	 		}
+    		}
+      	- Notice that you are using two different keywords here. 
+       	- The throw keyword tells Java that you want to throw an Exception, while the throws keyword simply declares that the method might throw an Exception. It also might not.
+	- Now that you know how to declare an exception, how to handle it? The following alternate version of the fall() method handles the exception:
+ 		void fall(int distance) {
+   			try {
+      				if (distance > 10)
+	  				throw new IOException();
+       			} catch (Exception ex) {
+	  			ex.printStackTrace();
+      			}
+	 	}
+   	- Notice that the catch statement uses Exception, not IOException. Since IOException is a subclass of Exception, the catch block is allowed to catch it. 
+
+
+
+	     	
