@@ -5113,6 +5113,40 @@ Checked Exceptions:
 	 	}
    	- Notice that the catch statement uses Exception, not IOException. Since IOException is a subclass of Exception, the catch block is allowed to catch it. 
 
+Unchecked Exceptions:
 
+	- An unchecked exception is any exception that does not need to be declared or handled by the application code where it is thrown. Unchecked exceptions are often referred to as runtime exceptions, although in Java, unchecked exceptions include any class that inherits RuntimeException or Error.
+ 	- It is permissibe to handle or declare an unchecked exception. That said, it is better to document the unchecked exceptions callers should know about in a Javadoc comment rather than declaring an unchecked exception.
+  	- A runtime excetion is define as the RuntimeException class and its subclasses.
+   	- Runtime exceptions tend to be unexpected but not necessarily fatal.
+    	- For example, accessing an invalid array index is unexpected. Even though they do inherit the Excetion class, they are not checked exceptions.
+     	- An unchecked exception can occur on nearly any line of code, as it is not required to be handled or declared. For example, a NullPointerException can be thrown in the body of the following method if the input reference is null
+      	void fall(String input) {
+       		System.out.println(input.toLowerCase());
+	 }
+  	- We work with objects in Java so frequently that a NullPointerException can happen almost anywhere. 
+   	- If you had to declare unchecked exceptions everywhere, every single method would have that clutter!
+    	- The code will compile if you declare an unchecked exception. However, it is redundant.
 
+Error and Throwable:
+
+	- Error means something went so horribly wrong that your program should not attempt to recover from it.
+ 	- For example, the disk drive "disappeared" or the program ran out of memory.
+  	- These are abnormal conditions that you aren't likely to encounter and cannot recover them.
+   	- Throwable is the parent class of all exceptions including the Error class.
+    	- While you can handle Throwable and Error exceptions, it is not recommended you do so in your application code.
+     	- When we refer to exceptions, we generally mean any class that inherits Throwable, although we are almost always working with the Exception class or subclasses of it. 
+
+Reviewing Exception types:
+
+	- Throwable is either an Exception or an Error. 
+ 	- You should not catch Throwable directly in your code.
+
+  	Type 			How to recognize		Okay for program to catch?	Is program required to hanfle/declare
+   												
+	Unchecked exception	Subclass of RuntimeException	Yes				Yes
+ 	Checked Exception	Subclass of Exception but not 	Yes				Yes
+  				subclass of RuntimeException	
+  	Error			Subclass of Error		No				No
 	     	
+
