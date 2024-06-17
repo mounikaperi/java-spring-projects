@@ -5892,4 +5892,127 @@ Picking a Locale:
 
 Localizing Numbers:
 
-	- 
+	- Formatting or parsing currency and number values can change depending on your locale.
+ 	- For example, in the UnitedStates, the dollar sign is prepended before the value along with the decimal point for the value less than one dollar such as $2.15. In Germany, though, the euro symbol is appended to the value along with a comma for values less than one euro such as 2,15 e
+  	- Luckily, the java.text package includes classes to save the day
+   	- The first step to format or parse data is the same: obtain an instance of a NumberFormat. Once you have the NumberFormat instance, you can cal format() to turn a number into a String, or you can use parse() to turn a String into a number.
+    	- The format classes are not thread safe. Do not store them in instance variables or static variables. 
+
+Factory methods to get a NumberFormat:
+
+	Description					Using default Locale and a specified Locale
+
+	General-purpose formatter		NumberFormat.getInstance()
+ 						NumberFormat.getInstance(Locale locale)
+       	Same as getInstance			NumberFormat.getNumberInstance()
+						NumberFormat.getNumberInstance(Locale locale)
+      	For formatting monetary amounts		NumberFormat.getCurrencyInstance()
+       						NumberFormat.getCurrencyInstance(Locale locale)
+	For formatting percentages		NumberFormat.getPercentInstance()
+ 						NumberFormat.getPercentInstance(Locale locale)
+       	Rounds decimal values			NumberFormat.getIntegerInstance()
+	before displaying			NumberFormat.getIntegerInstance(Locale locale)
+ 	Returns compact number formatter	NumberFormat.getCompactNumberInstance()
+  						NumberFormat.getCompactNumberInstance(Locale locale, NumberFormat.Style, formatStyle)
+
+
+ Formatting Numbers
+
+ 	When we format data, we convert it from a structured object or primitibe value into a String.
+  	The NumberFormat.format() method formats the given number based on locale associated with the NumberFormat object
+
+     		int attendeesPerYear = 3_200_000;
+       		int attendeesPerMonth = attendeesPerYear/12;
+	 	var us = NumberFormat.getInstance(Locale.US);
+   		System.out.println(us.format(attendeesPerMonth)); // 266,666
+     		var gr = NumberFormat.getInstance(Locale.GERMANY);
+       		System.out.println(gr.format(attendeesPerMonth)); // 266.666
+	 	var ca = NumberFormat.getInstance(Locale.CANADA_FRENCH);
+   		System.out.println(ca.format(attendeesPerMonth)); // 266 666
+
+	This shows how our US, German and French Canadian guests can all see the same information in the number format they are accustomed to using. In practice, we would just call NumberFormat.getInstance() and rely on the user's default locale to format.
+
+   		double price = 48;
+     		var myLocale = NumberFormat.getCurrencyInstance();
+       		System.out.println(myLocale.format(price)); 
+
+  	When run with the default locale of en_US for the UnitedStates, this code outputs $48.00. 
+   	On the other hand, when run with default locale of en_GB for Great Britain, it outputs e48.00
+
+    		double successRate = 0.802;
+      		var us = successRate.getPercentInstance(Locale.US);
+		System.out.println(us.format(successRate)); // 80%
+  		var gr = NumberFormat.getPercentInstance(Locale.GERMANY);
+    		System.out.println(gr.format(successRate)); // 80%
+
+Parsing Numbers
+
+	- When we parse data, we convert it from a String to a structured object or primitive value.
+ 	- The NumberFormat.parse() method accomplishes this and takes the locale into consideration.
+  	- The parse() method found in various types, declares a checked exception ParseException that must be handled or declared in the method in which it is called.
+
+    		String s = "40.45";
+      		var en = NumberFormat.getInstance(Locale.US);
+		System.out.println(en.parse(s)); // 40.45
+  		var fr = NumberFormat.getInstance(Locale.FRANCE);
+    		System.out.println(fr.parse(s)); // 40
+
+      	- In the United States, a dot is part of number and the number is parsed as you might expect.
+       	- France does not use a decimal point to separate numbers.
+	- Java parses it as a formatting character and it stops looking at the rest of the number.
+ 	- The parse() method is also used for parsing currency.
+
+    		String income = "$92,807.99";
+      		var cf = NumberFormat.getCurrencyInstance();
+		double value = (Double) cf.parse(income);
+  		System.out.println(value); // 92807.99
+
+     	- The currency string "$92,807.99" contains a dollar sign and comma. The parse method strips out the characters and converts the value to a number. The return value of parse is a Number object. 
+      	- Number is the parent class of all the java.lang Wrapper classes so the return value can be cast to its appropriate data type. The Number is cast to a Double and then automatically unboxed into a double.
+
+
+Formatting with CompactNumberFormat:
+
+	- The second class that inherits NumberFormat that you need to know is CompactNumberFormat.
+ 	- It is new to Java17. CompactNumberFormat is similar to DecimalFormat but it is designed to be used in places where print space may be limited. It is opinionated in the sense that it picks a format for you and locale specific in that output can change depending on your location.
+  	- Consider the following sample code that applies a CompactNumberFormat five times to two locales using a static import for Style
+
+   		var formatters = Stream.of(
+     			NumberFormat.getCompactNumberInstance(),
+			NumberFormat.getCompactNumberInstance(Locale.getDefault(), Style.SHORT),
+   			NumberFormat.getCompactNumberInstance(Locale.getDefault(), Style.LONG),
+      			NumberFormat.getCompactNumberInstance(Locale.GERMAN, Style.SHORT),
+	 		NumberFormat.getCompactNumberInstance(Locale.GERMAN, Style.LONG),
+    			NumberFormat.getNumberInstance());
+		formatters.map(s -> s.format(7_123_456).forEach(System.out::println);
+  		Output:
+    		7M
+      		7M
+		7 million
+  		7 Mio.
+    		7 Millionen
+      		7,123,456
+
+ 	- Notice that the first two lines are the same. If you don't secify a style, SHORT is used by default.
+  	- Next, notice that the values except the last one which doesn't use a compact number formatter are truncated.
+   	- There is a readon it is called a comact number formatter.
+    	- Also notice that the short form uses common labels for large values such as K for thousand.
+     	- Last, but not least, the output may differ for you when you run this, as it was run in en_US Locale.
+
+      		formatter.map(s -> s.format(314_900_000)).forEach(System.out::println);
+		Output:
+  		315M
+    		315M
+      		315 million
+		315 Mio.
+  		315 Millionen
+    		314,900,000
+
+	- Notice that the third digit is automatically rounded up for the entries that use a CompactNumberFormat.
+ 	- The following summarized the rules for CompactNumberFormat:
+  		- First it determines the highest range for the number such as thousand(K), million(M), billion(B), trillion(T)
+    		- It then returns up to the first three digits of that range rounding the last digit as needed
+      		- Finally, it prints an identifier. If SHORT is used, a symbol is returned. If LONG is used, a space followed by a word is returned.
+	
+ 			
+       		
