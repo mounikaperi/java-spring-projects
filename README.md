@@ -5343,4 +5343,345 @@ NumberFormatException:
 
 Checked Exception Classes
      	
-   	
+   	- Checked exceptions have Exception in their hierarchy but not RuntimeException.
+    	- They must be handled or declared. 
+
+     	Checked Exceptions				Description
+       	FileNotFoundException	Subclass of IOException. Thrown programmatically when code tries to reference file does not exist.
+	IOException		Thrown programmatically when program reading or writing file.
+ 	NotSerializableException Subclass of IOException. Thrown programmaticlaly when attempting to serialize or deserialize non serializable class
+  	ParseException		Indicates problem parsing input
+   	SQLException		Thrown when error related to accessing database
+
+
+Error Classes:
+
+	- Errors are unchecked exceptions that extend the Error class. They are shown by the JVM and should not be handled or declared
+ 	- Errors are rare, but you might see one
+
+   	Error					Description
+    	ExceptionInInitializerError		Thrown when static intilializer throws exception and doesn't handle it
+     	StackOverflowError			Thrown when method calls itself too many times called infinite recursion becuase method typically calls itself without end
+      	NoClassDefFoundError			Thrown when class that code uses is available at compile time but not runtime
+
+
+Handling Exceptions
+Using try and catch statements
+
+	- The code in the try block is run normally. If any of the statements throws an exception that can be caught by the exception type listed in the catch block, the try block stops running and execution goes to the catch statement.
+ 	- If none of the statements in the try block throws an exception that can be caught the catch clause is not run.
+  	- You probably noticed the words block and clause used interchangeably. Block is correct because there are braces present.
+   	- Clause is correct because it is part of a try statement.
+    	- There aren't a ton of syntax rules here. The curly braces are required for try and catch blocks.
+     		void explore() {
+       			try {
+	  			fall();
+      				System.out.println("Never get here");
+	  		} catch (RuntimeException ex) {
+     				getUp();
+	 		}
+    			seeAnimals();
+       		}
+	 	void fall() { throw new RuntimeException(); }
+
+Chaining catch Blocks:
+
+	class AnimalsOutForAWalk extends RuntimeException {}
+ 	class ExhibitClosed extends RuntimeException {}
+  	class ExhibitClosedForLunch extends ExhibitClosed {}
+   	- In tis example, there are three custom exceptions. All are unchecked exceptions because they directly or indirectly extend RuntimeException. Now we chain both types of exceptions with two catch blocks and handle tem by printing out the appropriate message
+    		public void visitPorcupine() {
+      			try {
+	 			seeAnimal();
+     			} catch(AnimalsOutForWalk e) {
+				System.out.print("try back later");
+    			} catch(ExhibitClosed e) {
+       				System.out.print("not today");
+	   		}
+      		}
+	- A rule exists for the order of the catch blocks. Java looks at them in the order they appear.
+ 	- If it is impossible for one of the catch blocks to be executed, a compiler error about unreachable code occurs.
+  	- For example, this happens when a superclass catch block appears before for a subclass catch block.
+   		public void visitMonkeys() {
+     			try {
+				seeAnimal();
+    			} catch (ExhibitClosedForLunch e) {  // subclass exception
+       				System.out.print("try back later");
+	   		} catch (ExhibitClosed e) { // superclass exception
+      				System.out.print("not today");
+	  		}
+     		}
+       - If the more specific ExhibitClosedForLunch exception is thrown, the first catch block runs. If not, Java checks whether the superclass ExhibitClosed exception is thrown and catches it. 
+       - This time, the order of the catch blocks does matter The reverse does not work
+       		public void visitMonkeys() {
+     			try {
+				seeAnimal();
+    			} catch (ExhibitClosed e) {  // superclass exception
+       				System.out.print("not today");
+	   		} catch (ExhibitClosedForLunch e) { // subclass exception
+      				System.out.print("try back later");
+	  		}
+     		}
+       - If the more specific ExhibitClosedForLunch exception is thrown, the catch block for ExhibitClosed runs - which means there is no way for the second catch block to ever run. Java correctly tells you there is an unreachable catch block.
+       		public void visitSnakes () {
+	 		try {
+    			} catch (IllegalArgumentException e) {
+       			} catch (NumberFormatException e) { // does not compile
+	  		}
+     	- Remember we said earlier that you needed to know that NumberFormatException is a subclass of IllegalArgumentException.
+      	- Since NumberFormatException is a subclass it will always be caught by the first catch block making the second catch block unreachable code that does not compile. 
+       	- Likewise, FileNotFoundException is the subclass of IOException and cannot be used in similar manner. 
+	- To review multiple catch blocks, atmost one catch block will run and it will be the first catch block that can handle the exception. Also, remember that an exception defined by the catch statement is only in scope for that catch block.
+ 		public void visitManatees() {
+   			try {
+      			} catch(NumberFormatException e1) {
+	 			System.out.println(e1);
+     			} catch(IllegalArgumentException e2) {
+				System.out.println(e2);
+    			}
+
+Applying a Multi-catch block
+
+	Often we want the result of an exception that is thrown to be the same regardess of which particular exception is thrown.
+ 		public static void main(String[] args) {
+   			try {
+      				System.out.println(Integer.parseInt(args[1]);
+	  		} catch (ArrayIndexOutOfBoundsException e) {
+     				System.out.println("Missing or invaid input");
+	 		} catch (NumberFormatException e) {
+    				System.out.println("Missing or invalid input");
+			}
+   		}
+     	Notice that we have the same println() statement for two different catch blocks. We can handle this more gracefully using a multi-catch block. A multi-catch block allows multiple exception types to be caught by the same catch block.
+      		public static void main(String[] args) {
+			try {
+   				System.out.println(Integer.parseInt(1));
+       			} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+	  			System.out.println("Missing or invalid input");
+      			}
+	 	}
+
+Examples:
+
+	catch(Exception1 e | Exception2 e | Exception3 e) // Does not compile
+ 	catch(Exception1 e1 | Exception2 e2 | Exception3 e3) // Does not compile
+  	catch(Exception1 | Exception2 | Exception3 e)
+
+    	The first line is incorrect as the variable name appears three times.
+     	Just because it happens to be the same variable name doesn't make it okay.
+      	The second line is incorrect because the variable name again appears three times. 
+       	Usng different variable names doesn't make it any better.
+	The third line does compile. It shows the correct syntax for specifying three exceptions.
+ 	Java intends multi-catch to be used for exceptions that aren't related and it prevents you from specifyinf redundant types in a multi-catch block. A multi-catch block allows multiple exception types to be caught by the same catch block. 
+  		public static void main(String[] args) {
+    			try {
+       				throw new IOException();
+	   		} catch (FileNotFoundException | IOException e) {
+      				System.out.println("Missing or invalid input");
+	  		}
+     		}
+       Since FileNotFoundException is a subclass of IOException, this code will not compile.
+       A multi-catch block follows rules similar to chaining catch blocks together.
+       The one difference between multicatch blcoks and chaining catch blocks is that order does not matter for a multi-catch block within a single catch expressions.
+       		try {
+	 		throw new IOException();
+    		} catch (IOException e) {}
+
+
+Adding a finally block:
+
+	- The try statement also lets you run code at the end with a finally clause, regardess of whether an exception is thrown. 
+ 	- There are two paths through code with both a catch and a finally.
+  	- If an exception is thrown, the finally block is run after the catch block.
+   	- If no exception is thrown, the finally block is run after the try block completes.
+
+System.exit()
+
+	- There is one exception to the finally block will always be executed rule. Java defines a method that you call as System.exit(). It takes an integer parameter that represents the status code that is returned.
+ 		try {
+   			System.exit(0);
+      		} finally {
+			System.out.print("Never going to get here"); 
+   	- System.exit() tells Java "stop! end the program right now. Do not pass.
+
+
+Automating Resource Management:
+
+	- Often, your application works with files, databased and various connection objects.
+ 	- Commonly, these external data sources are referred to as resources.
+  	- In many cases, you open a connection to the resource, whether it is over the network or within a file system.
+   	- You then readwrite the data you want. Finally, you close the resource to indicate that you are done with it. 
+    	- If you are connecting to a database, you could use up all available connections, meaning no one can talk to the database until you release your connections.
+     	- Although you commonly hear about memory leaks causing programs to fail, a resource leak is just as bad and occurs when program fails to release its connections to a resource resulting in the resource becoming inaccessibe. 
+      	- This could mean your program can no longer talk to the database - or even worse, all programs are unable to reach the database!
+       	- A resource is typically a file or database that requires some kind of stream or connection to read or write data.
+
+
+ Introducing try-with-resources:
+
+ 	public void readFile(String file) {
+  		FileInputStream is = null;
+    		try {
+      			is = new FileInputStream("myFile.txt");
+	 	} catch ( IOException ex) {
+   			ex.printStackTrace();
+      		} finally {
+			if ( is != null ) {
+   				try {
+       					is.close();
+	    			} catch (IOException ex) {
+					ex.printStackTrace();
+     				}
+	 		}
+    		}
+      	}
+       - To solve this, Java includes the try-with-resources statement to automatically close all resources opened in try clause.
+       - The feature is also known as automatic resource management because Java automatically takes care of closing
+       		public void readFile(String file) {
+	 		try (FileInputStream is = new FileInputStream("myFile.txt")) {
+    				// Read file data
+			} catch (IOException ex) {
+   				ex.printStackTrace();
+       			}
+	  	}
+    	- More importantly, though by using a try-with-resources statement we guarantee that as soon as a connection passes out of scope, Java will attempt to close it within the same method.
+     	- Behind the scenes, the compiler replaces a try-with-resources block with a try and finally block.
+      	- We refer to this "hidden" finally block as an implicit finally block since it is created and used by the compiler automatically. You can still create a programmer defined finally block when using a try-with-resources statement just be aware that the implict one will be called first.
+       	- Unlike garbage collection, resources are not automatically closed when they go out of the scope.
+	- Therefore, it is recommended that you close resources in the same block of code that opens them. 
+ 	- By using a try-with-resources statement to open all your resources this happens automatically.
+
+Basics of try-with-resources:
+
+	- One or more resources can be opened in the try clause.
+ 	- When multiple resources are opened, they are closed in the reverse of the order in which they are created.
+  	- Also, notice that parentheses are used to list those resources and semicolons are used to separate the declarations.
+   	- This works just like declaring multiple indexes in a for loop.
+    		try (var in = FileInputStream("data.txt"); var out = new FileOutputStream("output.txt"); ) {
+      			// Protected code
+	 	} catch (IOException ex) {
+   			// Exception Handler
+      		} finally {
+			// finally block
+   		}
+     	- What happened to the catch block. Well, it turns out a catch block is optional with a try-with-resources statement.
+      	- For example, we can rewrite the previous readFile() example so that the method declares the exception to make it even shorter.
+       		public void readFile(String file) throws IOException {
+	 		try (FileInputStream is = new FileInputStream("myfile.txt")) {
+    				// Read file data
+			} 
+   		}
+     	- A try-with-resources statement differs from a try statement in that neither of these is required, although a developers may add both.
+
+
+Constructing try-with-resources statements:
+
+	- Only classes that implement AutoCloseable interface can be used in a try-with-resources statement.
+ 	- The following does not compile as String does not implement the AutoCloseable interface:
+  		try (String reptile = "lizard") {}
+    	- Inheriting AutoCloseable requires implementing a compatible close() ethod
+     		interface AutoCloseable {
+       			public void close() throws Exception;
+	  	}
+    	- The implemented version of close() can choose to throw Exception or a subclass or not throw any exceptions at all.
+     	- Throughout the rest of this section, we use the following custom resource class that simply prints a message when the close() method is called:
+      		public class MyFileClass implements AutoCloseable {
+			private final int num;
+   			public MyFileClass(int num) {
+      				this.num = num;
+	  		}
+     			@Override
+			public void close() {
+   				System.out.println("Closing: " + num);
+       			}
+	  	}
+    	- You encounter resources that implement Closeable rather than AutoCloseable.
+     	- Since Closeable extends AutoCloseable they are both supported in try-with-resources statements.
+      	- The only difference between the two is that Closeable's close() method declares IOException, while AutoCloseable's close() method declares Exception.
+
+
+Declaring Resources:
+
+	- While try-with-resources does support declaring multiple variables, each variable must be declared in a separate statement. 
+ 		try (MyFileClass is = new MyFileClass(1), os = new MyFileClass(2)) {
+   		} // Does not compile
+     		try (MyFileClass ab = new MyFileClass(1), MyFileClass cd = new MyFileClass(2)) {
+       		} // Does not compile
+	- The first example does not compile becuase it is missing the data type and it uses a comma instead of semicolon.
+ 	- The second example does not compile because it also uses a comma instead of semicolon.
+  	- Each resource must include the data type and be separated by a semicolon.
+   	- You can declare a resource using var as the data type in a try-with-resources statement since resources are local variables.
+    		try (var f = new BufferedInputStream(new FileInputStream("it.txt"))) {
+      			// Process file
+	 	}
+   	- Declaring resources is a common situation where using var is quite helpful as it shortens the already long line of code.
+
+Scope of try-with-resources:
+
+	- The resources created in the try clayse are in scope only within the try block.
+ 	- This is another way to remember that the implicit finally runs before any catch/finally blocks that you code yourself.
+  	- The implicit code has run already, and the resource is no longer available.
+   		try (Scanner s = new Scanner(System.in)) {
+     			s.nextLine();
+		} catch (Exception e) {
+  			s.nextInt(); // Does not compile
+     		} finally {
+       			s.nextInt(); // Does not compile
+	  	}
+    	- The problem is that Scanner has gone out of scope at the end of try clause. Line 4, 6 do not have access to it.
+     	- This is a nice feature. 
+      	- You can't accidentally use an object that has been closed. 
+       	- In a traditional try statement, the variable has to be dclared before the try statement so both the try and finaly blocks can access it, which as the unpleasant side effect of making the variable in scope for the rest of the method, just inviting you to call it by accident.
+
+Following order of operations:
+
+	- When working with try-with-resources statement, it is important to know that resources are closed in the reverse of the order in which they are created.
+ 		public static void main(String... xyz) {
+   			try(MyFileClass bookReader = new MyFileClass(1); MyFileClass movieReader = new MyFileClass(2)) {
+      				System.out.println("Try block");
+	  			throw new RuntimeException();
+      			} catch (Exception e) {
+	 			System.out.println("Catch block");
+     			} finally {
+				System.out.println("Finally block");
+    			}
+       		}
+	 	Output:
+   		Try block
+     		Closing: 2
+       		Closing: 1
+	 	Catch Block
+   		Finally Block
+
+
+Applying Effectively Final
+
+	- While resources are often created in the try-with-resources statement, it is possible to declare them ahead of time, provided they are marked final or effectivey final. The syntax uses the resource name in place of the resource declaration separated by semicolon.
+ 		public static void main(String... xyz) {
+   			final var bookReader = new MyFileClass(4);
+      			MyFileClass movieReader = new MyFileClass(5);
+	 		try (bookReader; var tvReader = new MyFileClass(6); movieReader) {
+    				System.out.println("Try Block");
+			} finally {
+   				System.out.println("Finally Block");
+       			}
+	  	}
+    	- If you come across a question on the exam that uses try-with-resources statement with a variable not declared in the try clause, make sure it is effectively final. For example, the following does not compile
+     		var writer = Files.newBufferedWriter(path);
+       		try (writer) { // Does not compile
+	 		writer.append("Welcome to zoo!");
+    		}
+      		writer = null;
+	- The writer variable is reassigned on last line, resulting in the compiler not considering it effectively final.
+ 	- Since it is not an effectively final variable, it cannot be used in a try-with-resources 
+  		var writer = Files.newBufferedWriter(path);
+    		writer.append("This write is permitted byt a really bad idea!!");
+      		try (writer) {
+			writer.append("Welcome to the zoo");
+   		}
+     		writer.append("This write will fail"); // IOException
+       	- The code compiles but throws an exception at last line with the message Stream is closed. While it is possible to write to the resource before the try-with-resources statement it is not afterward.
+
+
+ Understanding Suppressed Exceptions:
+ 
