@@ -5685,3 +5685,88 @@ Applying Effectively Final
 
  Understanding Suppressed Exceptions:
  
+	- What happens if the close() method throws Exception?
+ 		public class TurkeyCage implements AutoCloseable {
+   			public void close() {
+      				System.out.println("Close gate");
+	  		}
+     			public static void main(String[] args) {
+				try (var t = new TurkeyCage()) {	
+    					System.out.println("Put turkeys in");
+	 			}
+     			}
+		}
+  	- If the TurkeyCage doesn't close, the turkeys could all escape. Clearly, we need to handle such condition.
+   	- We already know that the resources are closed before any programmer coded catch blocks are run.
+    	- This means we can catch the exception thrown by close() if we want to.
+     	- Alternatively, we can allow the caller to deal with it.
+      	- what happens if the try block also throws an exception? When multiple exceptions are thrown, all but the first are called suppressed exceptions. The idea is that Java treats the first exception as the primary one and tacks on any that come up while automatically closing.
+       	- Java remembers the supressed exceptions that go with a primary exception even if we don't handle them in code.
+	- If more than two resources throw an exception, the first one to be thrown becomes the primary exception and the rest are grouped as suppressed exceptions. 
+ 	- And since resources are closed in the reverse of the order in which they are declared, the primary exception will be on the last declared resource that throws an exception.
+  	- Keep in mind that suppressed exceptions apply only to exceptions thrown in the try clause. 
+   		public static void main(String[] args) {
+     			try (JammedTurkeyCage t = new JammedTurkeyCage()) {
+				throw new IllegalStateException("Turkeys ran off");
+    			} finally {
+       				throw new RuntimeException("and we couldn't find them");
+	   		}
+      		}
+	- Line 3 throws an exception. Then Java tries to close the resource and adds a suppressed exception to it. 
+ 	- The finally block runs after all this. Since Line 5 finally also throws an exception, the previous exception from line 3 is lost, with the code printing the following:
+  		Exception in thread "main" java.lang.RuntimeException:
+    			and we couldn't find the
+       			at JammedTurkeyCage.main(JammedTurkeyCage.java:9)
+	- This has always been and continuous to be bad programming practice. We don't want to lose exceptions!
+
+
+ Formatting values:
+
+ 	- For formatting, we introduce the NumberFormat interface which has two commonly used methods:
+  		public final String format(double number)
+    		public final String format(long number)
+      	- Since NumberFormat is an interface, we need the concrete DecimalFormat class to use it.
+       	- It includes a constructor that takes a pattern String
+		public DecimalFormat(String pattern)
+  	- The patterns can get quite complex.
+
+    	Symbol			Meaning						Examples
+     	#			Omit position if no digit exists for it 	$2.2
+      	0			Put 0 in position if no digit exists for it 	$002.20
+
+       		double d = 1234.567;
+	 	NumberFormat f1 = new DecimalFormat("###,###,###.0");
+   		System.out.println(f1.format(d)); // 1,234.6
+     		NumberFormat f2 = new DecimalFormat("000,000,000.00000");
+       		System.out.println(f2.format(d)); // 000,001,234.56700
+	 	NumberFormat f3 = new DecimalFormat("Your balance $#,###,###.##");
+   		System.out.println(f3.format(d)); // Your balance $1,234.57
+     	- # omits the extra positions 
+      	- 0 adds leading and trailing zeros to make the output to desired length.
+
+
+Formatting Dates and Times:
+
+	The date and time classes support many methods to get data out of them
+ 		LocalDate date = LocalDate.of(2022, Month.OCTOBER, 20);
+   		System.out.println(date.getDayOfWeek()); // THURSDAY
+     		System.out.println(date.getMonth()); // OCTOBER
+       		System.out.println(date.getYear()); // 2022
+	 	System.out.println(date.getDayOfYear()); // 293
+   	Java provides a class called DateTimeFormatter to display standard formats
+    		LocalDate date = LocalDate.of(2022, Month.OCTOBER, 20);
+      		LocalTime time = LocalTime.of(11, 12, 34);
+		LocalDateTime dt = LocalDateTime.of(date, time);
+  		System.out.println(date.format(DateTimeFormatter.ISO_LOCAL_DATE));
+    		System.out.println(time.format(DateTimeFormatter.ISO_LOCAL_TIME));
+      		System.out.println(dt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+		Output:
+  		2022-10-20
+    		11:12:34
+      		2022-10-20T11:12:34
+	The DateTieFormatter will throw an exception if it encounters an incompatible type.
+ 	For example, each of the following will produc an exception at runtime sice it attempts to format a date with a time value
+  		date.format(DateTimeFormatter.ISO_LOCAL_TIME); // RuntimeException
+    		time.format(DateTimeFormatter.ISO_LOCAL_DATE); // RuntimeException
+
+      
