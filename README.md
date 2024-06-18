@@ -6252,4 +6252,63 @@ Using the properties class:
        		props.get("open");
 	 	props.get("open", "The Zoo will open soon"); // Does not compile
       	
- 	 
+Introducing Modules:
+
+	- A real project will consist of hundreds or thousands of classes grouped into packages.
+ 	- These packages are grouped into Java archive (JAR) files.
+  	- A JAR is a ZIP file with some extra information and the extension is .jar
+   	- In addition to code written, most appications also use code written by others.
+    	- Open source is software with the code supplied and is often free to use. 
+     	- Java has a vibrant open source software OSS community, and those libraries are also supplied as JAR files.
+      	- For example, these are libraries to read files, connect to a database and much more.
+       	- Some open source projects even depend on functionality in other open source projects.
+	- For example, Spring is a commonly used framework, and Junit is commonly used testing library.
+ 	- To use either, you need to make sure you have compatible versions of all the relevant JAR's available at runtime.
+  	- This complex chain of dependencies and minimum versions is often referrred to by the community as JAR hell.
+   	- Hell is an excellent way of describing the wrong version of the class being loaded or even a ClassNotFoundException at runtime.
+	- The Java Platform Module System(JPMS) groups code at a higher level. The main purpose of a module is to provide groups of related packages that offer developers a particular set of functionality. 
+ 	- It's like a JAR file, except a developer chooses which packages are accessible outside the module.
+  	- The Java Platform Module System includes the following:
+   		- A format for module JAR files
+     		- Partitioning of the JDK into modules
+       		- Additional command-line options for the Java tools
+
+Exploring a Module:
+
+  	- A modue is a group of one or more packages plus a special file called module-info.java
+   	- The contents of this file are the module declaration. 
+
+Benefits of Modules:
+
+	- Modules look like another layer of things you need to know in order to program. While using modues is optional, it is important to understand the problems they are designed to solve:
+ 	- Better access control: In addition to the levels of access control, methods you can have packages that are only accessible to other packages in the module.
+  	- Clearer dependency management: Since modules specify what they rely on, Java can complain about a missing JAR when starting up the program rather than when it is first accessed at runtime.
+   	- Custom Java Builds: You can create a Java runtime that has only the parts of JDK that your program needs rather than the full one at over 150MB
+    	- Improved security: Since you can omit parts of the JDK from your custom build, you don't have to worry about vulnerabilities discovered in a part you don't use.
+     	- Improved performance: Another benefit of a smaller Java package is improved startup runtime and a lower memory requirement.
+      	- Unique package enforcement: Since modules specify exposed packages, Java can ensure that each package comes from only one module and avoid confusion about what is being run.
+
+
+Creating and Running a Modular Program:
+
+Creating files:
+
+ 	- First we have a really simple class that prints one line in a main() method. We know, that's not much of an implementation.
+  	- All those programmers we hired can fill it in with business logic.
+   		package zoo.animal.feeding;
+     		public class Task {
+       			public static void main(String... args) {
+	  			System.out.println("All fed!");
+      			}
+	 	}
+   	- Next comes the module-info.java file. This is the simplest possible one
+    		module zoo.animal.feeding {}
+      	- There are a few key differences between a module declaration and a regular Java class declaration:
+       		- The module-info.java file must be in the root directory of your module. Regular Java classes should be in packages
+	 	- The module declaration must use the keyword module instead of class, interface or enum
+   		- The module name follows the naming rules for package names. It often includes periods in its name.
+     		- Regular class and package names are not allowed to have dashes(-). Module names follow the same rule.
+       	- The next step is to make sure the files are n the right directory structure.
+
+ 
+
