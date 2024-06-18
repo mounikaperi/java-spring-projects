@@ -6230,6 +6230,26 @@ Formatting Messages:
      	Output:
 	Hello, Tammy and Henry
 
- 
+Using the properties class:
+
+	- When working with the ResourceBundle class, you may also come across the Properties class.
+ 	- It functions like the HashMap class except that it uses String values for the keys and values.
+  		import java.util.Properties;
+    		public class ZooOptions {
+      			public static void main(String[] args) {
+	 			var props = new Properties();
+     				props.setProperty("name", "Our zoo");
+	 			props.setProperty("open", "10am");
+     			}
+		}
+  	- The Properties class is commonly used in handling values that may not exist.
+   		System.out.println(props.getProperty("camel")); // null
+     		System.out.println(props.getProperty("camel", "Bob")); // Bob
+       - If a key were passed that actually existed, both statements would print it.
+       - This is commonly referred to as providing a default, or a backup value for missing key.
+       - The Properties class also includes a get() method, but only getProperty() allows for a default value.
+       - For example, the following call is invalid since get() takes only a single parameter
+       		props.get("open");
+	 	props.get("open", "The Zoo will open soon"); // Does not compile
       	
- 	- 
+ 	 
