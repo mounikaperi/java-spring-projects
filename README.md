@@ -6346,7 +6346,174 @@ Building Modules:
    	- These build tools suggest directories in which to place the class files, like target/classes.
     	- It is likely that the only time you need to know the syntax of these commands. 
 
+Running our first module:
 
+	- Before we package our module, we should make sure it works while running.
+ 	- To do that, we need to learn the full syntax. Suppose, there is a module named book.module.
+  	- Inside the module is a pacage called com.sybex which has a class named OCP with main() method.
+   	- It is important to remember that you specify the modile name followed by slash followed by fully qualified name
+
+     		java --module-path mods --module book.module/com.sybex.OCP
+		java --module-path feeding --module zoo.animal.feeding/zoo.animal.feeding.Task
+
+   	- Since you already saw that --module-path uses the short form of -p
+    	- There is a short form for --module as well. The short option is -m. That means the following command is equivalent
+     		java -p feeding -m zoo.animal.feeding/zoo.animal.feeding.Task
+
+       	Options you need to know for using modules with java
+
+ 	Module name 		-m <name>		--module<name>
+  	Module Path		-p <path>		--module-path <path>
+
+Packaging our First Module:
+
+	- A module isn't much use if we can run it only in th folder it was created in.
+ 	- Our next step is to package it. 
+  	- Be sure to create a mods directory before running this command:
+		jar -cvf mods/zoo.animal.feeding.jar -C feeding/ .
+  	- There is nothing module-specific here. We are packaging everything under the feeding directory and storing it in a JAR file named zoo.animal.feeding.jar under the mods folder. This represents how the module JAR will look to other code that wants to use it.
+   	- Now let's run the program again, but this time using the mods directory instead of loose classes
+    		java -p mods -m zoo.animal.feeding/zoo.animal.feeding.Task
+      	- You might notice that the command looks identical to the one in the previous section except for the directory.
+       	- In the previous example, it was feeding. In tis one it is the module path of mods. 
+	- Since the module path is used, a module JAR is being run.
+
+ Updating our example for multiple modules:
+
+ 	Modules depending on zoo.animal.feeding
+
+    		zoo.animal.feeding <---------------- zoo.animal.care
+      			|				|
+	 	zoo.animal.talks <----------------- zoo.staff
+
+Updating the Feeding Module
+
+	Since we will be having our other modules call code in the zoo.animal.feeding package, we need to declare this intent in the module declaration
+ 	The exports directive is used to indicate that the module intends for those packages to be used by Java code outside the module. As you might expect, without any exports directive, the module is only available to be run from the command line on its own.
+  	In the following we can export package
+   		module zoo.animal.feeding {
+     			exports zoo.animal.feeding;
+		}
+  	Recompiling and repackaging the module will update the module-info.class inside our zoo.animal.feeding.jar file.
+   	These are the same javac and jar commands you ran previously
+
+    		javac -p mods -d feeding feeding/zoo/animal/feeding/*.java feeding/module-info.java
+      		jar -cvf mods/zoo.animal.feeding.jar -C feeding/ .
+
+
+Creating a Care module:
+
+	Next, let's create the zoo.animal.care module. This time, we are going to have two packages.
+ 	The zoo.animal.care.medical package will have the classes and methods tat are intended for use by other modules.
+  	The zoo.animal.care.details package is going to be used by this module. It will not be exported from the module.
+
+   		zoo.animal.care
+
+     		zoo.animal.care.medical				module-info.java
+       			Diet.java
+	  	zoo.animal.care.details
+    		    HippoBirthday.java
+
+   	The module contains two basic packages and classes in addition to the module-info.java
+    	// HippoBirthday.java
+     	package zoo.animal.care.details;
+      	import zoo.animal.feeding.*;
+       	public class HippoBirthday {
+		private Task task;
+  	}
+   	// Diet.java
+    	package zoo.animal.care.medical;
+     	public class Diet {}
+      	This time the module-info.kava file specifies three things:
+       	module zoo.animal.care {
+		exports zoo.animal.care.medical;
+  		requires zoo.animal.feeding;
+    	}
+     	Line 1 specifies the name of the module
+      	Line 2 lists the package we are exporting so it can be used by other modules. So far, this is similar to the zoo.animal.feeding module. 
+       Line 3 we see a new directive. The requires statement specifies that a module is needed.
+       The zoo.animal.care module depends on zoo.animal.feeding module.
+       Next, we need to figure out the directory structure. We will create two packages. The first s zoo.animal.care.details and contains one class named HippoBirthday. The second is zoo.animal.care.medical which contains one class named Diet. 
+       You might have noticed that the packages begin with the same prefix as the module name.
+       This is intentional. You can think of it as if the module name "claims" the matching package and all subpackages.
+       To review we now compile and package the module:
+
+		javac -p mods -d care care/zoo/animal/care/details/*.java care/zoo/animal/care/medical/*.java care/module-info.java
+
+   	We compile both packages and the module-info.java file. In the real world, you will use a build tool rather than doing this by hand. Now that we have compiled code, it's time to create the modular JAR
+    		jar -cvf mods/zoo.animal.care.jar -C care/ .
+
+Creating the Talks Module:
+
+	- So far, we have used only one exports and requires statement in a module.
+ 		zoo.animal.feeding  <---------------- zoo.animal.care
+   			|				   |
+      		zoo.animal.talks    <---------------- zoo.staff
+	- Contents of zoo.animal.talks
+ 		zoo.animal.talks
+   			zoo.animal.talks.content	zoo.animal.talks.schedule
+      			     ElephantScript.java		Weekday.java
+	      		     SeaLionScript.java			Weekend.java
+	      		zoo.animal.talks.media		
+	 		     Announcement.java			module-info.java
+	 		     Signage.java
+
+  		module zoo.animal.talks {
+    			exports zoo.animal.talks.content;
+       			exports zoo.animal.talks.media;
+	  		exports zoo.animal.talks.schedule;
+
+			requires zoo.animal.feeding;
+   			requires zoo.animal.care;
+      		}
+	- Line 1 shows the module name. Line 2-4 allows other modules to refernce all three packages.
+ 	- Line 6 and 7 specify the two modules that tis module depends on. Then we have 6 classes as shown
+  		// ElephantScript.java
+    		package zoo.animal.talks.content;
+      		public class ElephantScript {}
+		// SeaLionScript.java
+  		package zoo.animal.talks.content;
+    		public class SeaLionScript {}
+      		// Announcement.java
+		package zoo.animal.talks.media;
+  		public class Announcement {
+    			public static void main(String[] args) {
+       				System.out.println("We will be havinb talks");
+	   		}
+      		}
+		// Signage.java
+  		package zoo.animal.talks.media;
+    		public class Signage {}
+      		// Weekday.java
+		package zoo.animal.talks.schedule;
+  		public class Weekday{}
+    		// Weekend.java
+      		package zoo.animal.talks.schedule;
+		public class Weekend {}
+
+  		Command to compile and build the module
+
+     		javac -p mods -d talks talks/zoo/animal/talks/content/*.java talks/zoo/animal/talks/media/*.java talks/zoo/animal/talks/schedule/*.java talks/module-info.java
+       		jar --cvf mods/zoo.animals.talks.jar -C talks/ .
+
+
+  Creating the Staff Module:
+
+  	- Our final module is zoo.staff. Below shows that there is only one package inside. We will not be exposing this package outside the module
+   		zoo.staff
+     			zoo.staff		module-info.java
+			Jobs.java
+
+ 		zoo.animal.feeding	zoo.animal.care
+   			|			|
+      		zoo.animal.talks	zoo.staff
+
+  
+   	
+  		
+   
+   		
+       		
 
  
 
