@@ -6015,4 +6015,221 @@ Formatting with CompactNumberFormat:
       		- Finally, it prints an identifier. If SHORT is used, a symbol is returned. If LONG is used, a space followed by a word is returned.
 	
  			
-       		
+Localizing Dates:
+
+	- Like numbers, date formats can vary by locale.
+	- Factory methods to get a DateTimeFormatter
+
+   	Description					Using default Locale
+    	For formatting dates			DateTimeFormatter.ofLocalizedDate(FormatStyle dateStyle)
+     	For formatting times			DateTimeFormatter.ofLocalizedTime(FormatStyle dateStyle)
+      	For formatting dates and times		DateTimeFormatter.ofLocalizedDateTime(FormatStyle dateStyle, FormatStyle timeStyle)
+       						DateTimeFormatter.ofLocalizedDateTime(FormatStyle dateTimeStyle)
+
+      - Each method in the table takes a FormatStyle parameter or two with possible values SHORT, MEDIUM, LONG and FULL.
+      - What if you need a formatter for a specific locale? Easy enough- just append withLocale(locale) to the method call.
+      			public static void print(DateTimeFormatter dtf, LocalDateTme dateTime, Locale locale) {
+	 			System.out.println(dtf.format(dateTime) + "-------" + dtf.withLocale(locale).format(dateTime));
+     			}
+			public static void main(String[] args) {
+   				Locale.setDefault(new Locale("en", "US"));
+       				var italy = new Locale("it", "IT");
+	   			var dt = LocalDateTime.of(2022, Month.OCTOBER, 20, 15, 12, 34);
+       				print(DateTimeFormatter.ofLocalizedDate(SHORT), dt, italy); // 10/20/22 --- 20/10/22
+	   			print(DateTimeFormatter.ofLocalizedTime(SHORT), dt, italy); // 3:12 PM --- 15:12
+				print(DateTimeFormatter.ofLocalizedDateTime(SHORT, SHORT), dt, italy); 
+    				// 10/20/22, 3:12 PM --- 20/10/22, 15:12 	
+			}
+   	- First we establish en_US as the default locale, with it_IT as the requested locale.
+    	- We then output each value using the two locales.
+
+
+Specifying a Locale Category:
+
+	- When you call Locale.setDefault() with a locale, several display and formatting options are internally selected.
+ 	- If you require finer-grained control of the default locale, Java subdivides the underlying formatting options into distinct categories with the Locale.Category enum.
+  	- The Locale.Category enum is a nested element in Locale that supports distinct locales for displaying and formatting data.
+
+   	DISPLAY			Category used for displaying data about locale
+    	FORMAT			Category used for formatting dates, numbers or currencies.
+
+      	- When you call Locale.setDefault() with a locale, the DISPLAY and FORMAT are set together.
+       		public static void printCurrency(Locale locale, double money) {
+	 		System.out.println(NumberFormat.getCurrencyInstance().format(money) + ", " + locale.getDisplayLanguage());
+    		}
+      		public static void main(String[] args) {
+			var spain = new Locale("es", "ES");
+   			var money = 1.23;
+      			Locale.setDefault(new Locale("en", "US"));
+	 		printCurrency(spain, money);  //$1.23, Spanish
+    			Locale.setDefault(Category.DISPLAY, spain);
+       			printCurrency(spain, money); // $1.23, espanol
+	  		Locale.setDefault(Category.FORMAT, spain);
+     			printCurrency(spain, money); // 1,23 e, espanol
+		}
+
+  Loading Properties with Resource Bundles:
+
+  	- Up until now, we have kept all of the text strings displayed to our users as part of the program inside the classes that use them. Localization requires externalizing them to elsewhere.
+   	- A resource bundle contains the locale-specific objects to be used by a program.
+    	- It is like a map with keys and values. 	
+     	- The resource bundle is commonly stored in a properties file. 
+      	- A properties file is a text file in a specific format with key/value pairs
+       	- We immediately realize that we are going to need to internationalize our program.
+	- Resource Bundles will be quite useful. They will let us easily translate out application to multile locales or even support multiple locales at once. 
+
+ 		Locale us = new Locale("en", "US");
+   		Locale france = new Locale("fr", "FR");
+     		Locale englishCanada = new Locale("en", "CA");
+       		Locale frenchCanada = new Locale("fr", "CA");
+
+   	- In the next sections, we create a resource bundle using properties file.
+    	- It is conceptually similar to Map<String, String> with each line representing a different key/value.
+     	- The key and value are separated by an equal sign or colon
+
+
+Creating a Resource Bundle:
+
+	- Java doesn't require us to create four different resource bundles. If we don't have a country specific resource bundle, Java will use a language-specific one. 
+ 	Zoo_en.properties
+  	hello=hello
+   	open=The zoo is open
+    	Zoo_fr.properties
+     	hello=Bonjour
+      	open=Le zoo est ouvert
+       	- The filenames match the name of our resource bundle, zoo. They are then followed by an underscore target locale and .properties file extension. We can write out very first program that uses resource bundle to print this information
+		public static void printWelcomeMessage(Locale locale) {
+  			var rb = ResourceBundle.getBundle("Zoo", locale);
+     			System.out.println(rb.getString("hello") + ", " + rb.getString("open"));
+		}
+  		public static void main(String[] args) {
+    			var us = new Locale("en", "US");
+       			var france = new Locale("fr", "FR");
+	  		printWelcomeMessage(us); // Hello, The zoo is open
+     			printWelcomeMessage(france); // Bonjour, Le zoo est ouvert
+	- Since a resource bundle contains key/value pairs, you can even loop through them to list all of the pairs.
+ 	- The ResourceBundle class provides a keySet() method to get a set of all keys.
+  			var us = new Locale("en", "US");
+     			ResourceBundle rb = ResourceBundle.getBundle("Zoo", us);
+			rb.keySet().stream().map(k -> k + ": " + rb.getString(k)).forEach(System.out::println);
+   	- This example goes through all of the keys. It maps each key to a String with both the ey and the value before printing everything
+    		hello: Hello
+      		open: The zoo is open
+
+
+ Loading Resource Bundle Files at Runtime
+
+ 	- If your own aplications, though, the resource bundles can be stored in a variety of places.
+  	- While they can be stored inside the JAR that uses them, doing so is not recommended.
+   	- This approach forces you to rebuild the application JAR any time some text changes.
+    	- One of the benefits of using resource bundles is to decouple the application code from the locale-specific text data
+     	- Another approach is to have all of the properties file in a separate properties JAR or folder and load them in the classpath at runtime. In this manner, a new language can be added without changing the application JAR.
+
+
+Picking a Resource Bundle:
+
+	- There are two methods for obtaining a resource bundle that you should be familiar with:
+ 		ResourceBundle.getBundle("name");
+   		ResourceBundle.getBundle("name", locale);
+     	- The first uses the default locale. You are likely to use this one in program that you write.
+
+       	Picking a resource bundle for French/France with default locale English/US
+
+	Step		Looks for file			Reason
+ 	1		Zoo_fr_FR.properties		Requested Locale
+  	2		Zoo_fr.properties		Language was requested with no country
+   	3		Zoo_en_US.properties		Default Locale
+    	4.		Zoo_en.properties		Default locale's language with no country
+     	5. 		Zoo.properties			No locale at all - default bundle
+      	6. 		If still not found, throw MissingResourceException- No locale or default bundle available
+
+       - Look for the resource bundle for the requested locale, followed by the one for the default locale.
+       - For each locale, check the language/country followed by just the language
+       - Use the default resource bundle if no matching locale can be found.
+
+       - As mentioned earlier, Java supports resource bundles from Java classes and properties alike.
+       - When Java is searching for a matching resource bundle, it will first check for a resource bundle with the matching class name.
+
+
+ 	What is the maximum number of files that Java would need to consider in order to find the appropriate resource bundle with the following code ?
+
+    		Locale.setDefault(new Locale("hi"));
+      		ResourceBundle rb = ResourceBundle.getBundle("Zoo", new Locale("en"));
+
+ 	The answer is three. They are listed here:
+  	1. Zoo_en.properties
+   	2. Zoo_hi.properties
+    	3. Zoo.properties
+
+     The requested locale is en, so we start with it. Since the en locale does not contain a country we move on to the default locale, hi. Again, there is no country so we end with the default bundle.
+
+Selecting Resource Bundle Values
+
+	- The steps that we have discussed so far are for finding matching resource bundle to use as a base.
+ 	- Java isn't required to get all of the keys from the same resource bundle.
+  	- It can get them from any parent of the matching resource bundle.
+   	- A parent resource bundle in the hierarchy just removes components f the name until it gets to the top.
+
+    	Matching resource bundle 			Properties files keys can come from
+     	Zoo_fr_FR					Zoo_fr_FR.properties
+      							Zoo_fr.properties
+	     						Zoo.properties
+
+     	- Once a resource bundle has been selected, only properties along with a single hierarchy will be used.
+      	- Contrast this behavior in which the default en_US resource bundle is used if no other resource bundles are available.
+       	- What does this mean, exactly? Assume the requested locale is fr_FR and the default is en_US.
+	- The JVM will provide data from en_US only if there is no matching fr_FR or fr resource bundle.
+ 	- If it finds a fr_FR or fr resource bundle then only those bundles along with the default bundle will be used.
+  	- Let's put all of this together and print some information about our zoos. We have a number of properties files this time.
+
+   		Zoo.properties
+     		name=Vancouver Zoo
+       		Zoo_en.properties
+	 	hello=Hello
+   		open=is open
+     		Zoo_en_US.properties
+       		name=The Zoo
+	 	Zoo_en_CA.properties
+   		visitors=Canada Visitors
+
+      	- Suppose that we have a visitor from Quebec which has a default locale of French Canada) who has asked the program to provide information in English. What is the output?
+
+       		Locale.setDefault(new Locale("en", "US"));
+	 	Locale locale = new Locale("en", "CA");
+   		ResourceBundle rb = ResourceBundle.getBundle("Zoo", locale);
+     		System.out.println(rb.getString("hello"));
+       		System.out.print(". ");
+	 	System.out.println(rb.getString("name"));
+       		System.out.print(" ");
+	 	System.out.println(rb.getString("open"));
+       		System.out.print(" ");
+	 	System.out.println(rb.getString("visitors"));
+
+   		The program prints the following:
+     		Hello. Vancouver Zoo is open Canada visitors
+
+       - The default locale is en_US and the requested locale is en_CA
+       - First, Java goes through the available resource bundles to find a match.
+       - It finds one right away with Zoo_en_CA.properties. This means the default locale of en_US is irrelevant.
+       - Line 3 doesn't find a match for the key help in Zoo_en_CA.properties so it goes up the hierarchy to Zoo_en.properties.
+       - Line 5 doesn't find a match for name in either of the first two properties files so it has to go all the way to the top of the hierarchy Zoo.properties. Even when the property wasn't found in en_CA or en resource bundles, the program preferred using Zoo.properties the default resource bundle rather than Zoo_en_US.properties 
+       - What if a property is not found in any resource bundle? Then an exception is thrown. For example, attempting to call rb.getString("close") in the previous program results in a MissingResourceException at runtime.
+
+Formatting Messages:
+
+	- Often we just want to output the text data from a resource bundle, but sometimes you want to format the data with parameters. In real programs, it is common to substitute variables in the middle of a resource bundle string.
+ 	- The convention is to use a number inside braces such as {0}, {1} etc.
+  	- The number indicates the order in whch the parameters will be passed. Although resource bundles don't support this directly, the MessageFormat class does.
+   	- For example, suppose that we had this property defined:
+    		helloByName=Hello, {0} and {1}
+      	- In Java, we can read in this value normally. After that, we can run it through the MessageFormat class to substitute the parameters. The second parameter to format() is vararg, allowing you to specify any number of input values.
+       	- Suppose, we have a resource bundle, rb
+		String format = rb.getString("helloByName");
+  		System.out.print(MessageFormat.format(format, "Tammy", "Henry"));
+
+     	Output:
+	Hello, Tammy and Henry
+
+ 
+      	
+ 	- 
