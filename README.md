@@ -6310,5 +6310,43 @@ Creating files:
      		- Regular class and package names are not allowed to have dashes(-). Module names follow the same rule.
        	- The next step is to make sure the files are n the right directory structure.
 
+Compiling our First Module:
+
+	- Before we can run modular code, we need to compile it Other than module-path option, ths code should look famiiar
+ 		javac --module-path mods -d feeding feeding/zoo/animal/feeding/*.java feeding/module-info.java
+   	- As a review, -d option specifies the directory to place the class files in.
+    	- The end of the command is a list of the .java files to compile.
+     	- You can list the files individually or use a wildcard for all .java files in a subdirectory.
+      	- The new part is module-path. This option indicates the location of any custom module files.
+       	- In this example, the module-path could have been omitted since there are no dependencies.
+	- You can think of module-path as replacing the classpath option when you are working on a modular program.
+ 	 What about the classpath?
+   	- The classpath option has three possible forms: -cp, --class-path and -classpath. You can still use these options
+    	- In fact, it is common to do so when writing nonmodular programs.
+     	- Just like classpath, you can use an abbreviation in the command. The syntax --module-path and -p are equivalent.
+      	- That means we could have written many other commands in place of the previous command. 
+       	- The following four commands show the -p option
+		javac -p mods -d feeding feeding/zoo/animal/feeding/*.java feeding/*.java
+  		javac -p mods -d feeding feeding/zoo/animal/feeding/*.java feeding/module-info.java
+    		javac -p mods -d feeding feeding/zoo/animal/feeding/Task.java feeding/module-info.java
+      		javac -p mods -d feeding feeding/zoo/animal/feeding/Task.java feeding/*.java
+	- While you can use whichever you like the best, be sure that you can recognize all valid forms 
+
+ 	Options you need to know for using modules with javac
+
+   	Use for				Abbreviation		Long form
+    	Directory for class files	-d <dir>		n/a
+     	Module path			-p <path>		--module-path <path>
+
+Building Modules:
+
+	- Even without modules, it is rare to run javac and java commands manually on a real project.
+ 	- They get long and complicated very quickly.
+  	- Most developers use a build tool such as Maven or Gradle.
+   	- These build tools suggest directories in which to place the class files, like target/classes.
+    	- It is likely that the only time you need to know the syntax of these commands. 
+
+
+
  
 
