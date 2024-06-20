@@ -6597,8 +6597,123 @@ Effects of requires transitive:
       		- Module zoo.animal.talks cannot be compiled or executed without access to the zoo.animal.feeding module.
 	- These rules hold even if the zoo.animal.care and zoo.animal.talks modules do not expliticly reference any packages in the zoo.animal.feeding module
 	- on the other hand, without the transitive modifier in our module declaration of zoo.animal.care the other modules would have to explicitly use requires in order to reference any packages in the zoo.animal.feeding module.
- 	
-	
+
+
+ Duplicate requires statements:
+
+ 	One place the exam might trick you is mixing requires and requires transitive. Can you think of a reason this code doesn't compile?
+  		module bad.module {
+    			requires zoo.animal.talks;
+       			requires transitive zoo.animal.talks;
+	  	}
+    	Java doesn't allow you to repeat the same module in a requires clause. It is redundant and most likely an error in coding. 
+     	requires transitive is like requires + some extra behavior
+
+opening a package:
+
+	- Java allows callers to inspect and call code at runtime with a technique called reflection.
+ 	- Reflection is a powerful approach that allows calling code that might not be available at compile time. 
+  	- It can be even used to subvert access control! 
+   	- The opens directive is used to enable reflection of a package within a module.
+    	- Since reflection can be dangerous, the module system requires developers to explicitly allow reflection in the module declaration if they want calling modules to be allowed to use it. The following shows how to enable reflection for two packages in the zoo.animal.talks module:
+     		module zoo.animal.talks {
+       			opens zoo.animal.talks.schedule;
+	  		opens zoo.animal.talks.media to zoo.staff;
+     		}
+       	- The first example allows any module using this one to use reflection.
+	- The second exmaple only gives the previlige to the zoo.staff module.
+ 	- There are two more directives - provides and uses.
+
+Opening an entire module:
+
+	- In previous example, we opened two packages in the zoo.animal.talks module but suppose we instead wanted to open all the packages for reflection. 
+ 	- We can use the open module modifier rather than the opens directive
+  		open module zoo.animal.talks { }
+    	- With this module modifier, Java knows we want all the packages in the module to be opened. what happens if you apply both together ?
+     		open module zoo.animal.talks {
+       			open zoo.animal.talk.schedule; // does not compile
+	  	}
+    	- This does not compile because a modifier that uses the open modifier is not permitted to use the opens directive. After all the packages are already open
+
+Creating a Service:
+
+	- A service is composed of an interface any classes the interface references and a way of looking up implementations of the interface.
+ 	- The implementations are not part of the service. 
+
+Declaring the Service Provider Interface:
+
+ 	- First, the zoo.tours.api module defines a Java object called Souvenier. It is considered part of the service because it will be referenced by the interface
+  		// Souvenier.java
+    		package zoo.tours.api;
+      		public record Souvenier(String description) {}
+	- Next, the module contains a Java interface type. This interface is called the service provider interface because it species what behavior our service will have. In this case, it is a simple Api with three methods:
+ 		// Tour.java
+   		package zoo.tours.api;
+     		public interface Tour {
+       			String name();
+	  		int length();
+     			Souvenier getSouvenier();
+		}
+  	- All three methods use the implicit public modifier. Since we are working with modules, we also need to create a module-info.java file so our module definition exports the package containing the interface.
+   		// module-info.java
+     		module zoo.tours.api {
+       			exports zoo.tours.api;
+	  	}
+    	- Now that we have both files, we can compile and package this module
+     		javac -d serviceProviderInterfaceModule serviceProviderInterfaceModule/zoo/tours/api/*.java serviceProviderInterfaceModule/module-info.java
+       		jar --cvf mods/zoo.tours.api.jar -C serviceProviderInterfaceModule/ .
+	- A service provider "interface" can be an abstract class rather than an actual interface.
+ 	- To review, the service includes the service provider interface and supporting classes it references.
+  	- The service also includes the lookup functionality
+
+Creating a Service Locator:
+
+	- To complete our service, we need a service locator. A service locator can find any classes that implement a service provider interface.
+ 	- Java provides a ServiceLoader class to help with this task. You pass the service provider interface type to its load() method and Java will return any implementation services it can find. The following class shows it in action:
+  		//TourFinder.java
+    		package zoo.tours.reservations;
+      		import java.util.*;
+		import zoo.tours.api.*;
+  		public class TourFinder {
+    			public static Tour findSingleTour() {
+       				ServiceLoader<Tour> loader = ServiceLoader.load(Tour.class);
+	   			for (Tour tour: loader)
+       					return tour;
+	    			retun null;
+			}
+   			public static List<Tour> findAllTours() {
+      				List<Tour> tours = new ArrayList<>();
+	  			ServiceLoader<Tour> loader = ServiceLoader.load(Tour.class);
+      				for (Tour tour: loader)		
+	  				tours.add(tour);
+       				return tours;
+	   		}
+      		}
+	- As you can see, we provided two lookup methods. The first is a convenience method is you are expecting exactly one tour to be returned.
+ 	- The other returns a List, which accommodates any number os service providers. The other returns a List which accomodates any number of service providers.
+  	- At runtime, there may be many service provider that are found by the service locator.
+   	- The ServiceLoader call is relatively expensive. If you are writing a real application, it is best to cache the result.
+    	- Our module definition exports the package with the lookup class TourFinder. it requires the service provider interface package. it also has the uses directive since it will be looking up a service.
+
+       		// module-info.java
+	 	module zoo.tours.reservations {
+   			exports zoo.tours.reservations;
+      			requires zoo.tours.api;
+	 		uses zoo.tours.api.Tour;
+    		}
+      	- Remember that both requires and uses are needed, one for compilation and one for lookup. Finally, we compile and package the module
+       		javac -p mods -d serviceLocatorModule serviceLocatorModule/zoo/tours/resservations/*.java serviceLocatorModule/module-info.java
+	 	jar -cvf mods/zoo.tours.reservations.jar -C serviceLocatorModule/ .
+
+Using ServiceLoader:
+
+   	There are two methods in ServiceLoader that you need to know. The declaration is as follows, sans the full implementation:
+    		public final class ServiceLoader<S> implements Iterable<S> {
+      			public static <S> ServiceLoader<S> load(Class<S> service) {...}
+	 		public Stream<Provider<S>> stream() {...}
+    			// Additional methods
+       		}
+	 
   		
    
    		
