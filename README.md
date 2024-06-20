@@ -6509,7 +6509,96 @@ Creating the Talks Module:
       		zoo.animal.talks	zoo.staff
 
   
-   	
+   		module zoo.staff {
+     			requires zoo.animal.feeding;		
+			requires zoo.animal.care;
+   			requires zoo.animal.talks;
+      		}
+		In this module, we have a single class in the Jobs.java file
+  		package zoo.staff;
+    		public class Jobs { }
+      		Command to compile and build the module:
+			javac -p mods -d staff staff/zoo/staff/*.java staff/module-info.java
+   			jar --cvf mods/zoo.staff.jar -C staff/ .
+
+Diving into the Module declaration:
+
+	Now that we have successfully created modules, we can learn more about module declaration.
+
+Exporting a package:
+
+	- We have already seen how exports packageName exports a package to other modules. It's also possible to export a package to specific module.
+ 	- Suppose the zoo decides that only staff members should have access to talks. We could update the module declaration as follows:
+  		module zoo.animal.talks {
+    			exports zoo.animal.talks.content to zoo.staff;
+       			exports zoo.animal.talks.media;
+	  		exports zoo.animal.talks.schedule;
+
+     			requires zoo.animal.feeding;
+			requires zoo.animal.care;
+   		}
+     	- from the zoo.staff module, nothing has changed. However, no other modules would be allowed to access that package.
+      	- you might have noticed that none of our other modules requires zoo.animal.talks in the first place.
+       	- However, we don't know what other modules will exist in the future. It is important to consider future use when designing modules.
+	- Since we want only the one module to have access, we only allow access to the module.
+
+ Exported types:
+
+ 	- We have been talking about exporting a package. All public classes, interfaces, enums and records are exported.
+  	- Futher, any public and protected fields and methods in those fields are visible.
+   	- Fields and methods that are private are not visible because they are not accessible outside the class. 
+    	- Similarly package fields and methods are not visible because they are not accessible outside the package.
+
+     	The exports directive esentially gives us more levels of access control.
+      	Level		Within module code				Outside module
+       	private		Available only within class			No access
+	package		Available only within package			no access
+ 	protected	Available only within package or to subclasses	Accessible to subclasses only if package is exported
+  	public		Available to all classes			Accessible only if package is exported
+
+Requiring a Module transitively:
+
+	- requires moduleName specifies that the current module depends on moduleName. There is also a requires transitive moduleName which means that any module that requires this module will also depend on moduleName.
+ 	- for example- zoo.animal.talks depends on zoo.animal.care which depends on zoo.animal.feeding. This means that the arrow between zoo.animal.talks and zoo.animal.feeding no longer appears.
+  	- Now let's look at the four module declarations. The first module remains unchanged. We are exporting one package to any packages that use the module
+   		module zoo.animal.feeding {
+     			exports zoo.animal.feeding;
+		}
+  	- The zoo.animal.care module is the first opportunity to improve things. Rather than forcing all remaining modules to explicitly specify zoo.animal.feeding the code uses requires transitive
+   		module zoo.animal.care {
+     			exports zoo.animal.care.medical;
+			requires transitive zoo.animal.feeding;
+   		}
+     	- In the zoo.animal.talks module, we make a similar change and don't force other modules to specify zoo.animal.care. We also no longer to specidy zoo.animal.feeding so that line is commented out
+      		module zoo.animal.talks {
+			exports zoo.animal.talks.content to zoo.staff;
+   			exports zoo.animal.talks.media;
+      			exports zoo.animal.talks.schedule;
+	 		// no longer needed requires zoo.animal.feeding;
+    			// no longer needed requires zoo.animal.care;
+       			requires transtive zoo.animal.care;
+	  	}
+    	- finally, in the zoo.staff module we can get rid of two requires statements
+     		module zoo.staff {
+       			// no longer needed requires zoo.animal.feeding;
+	  		// no longer needed requires zoo.animal.care
+     			requires transitive zoo.animal.talks;
+		}
+  	the more modules you have, the greater the benefits of the requires transitive compound.
+   	It is also more convenient for the caller. If you were trying to work with this zoo, you could just require zoo.staff and hae remaining dependencies automatically inferred.
+
+
+Effects of requires transitive:
+
+	- Given our new module declarations, what is the effect of applying the transitive modifier to the requires statement in our zoo.animal.care module?
+ 	- Applying the transitive modifiers has the following effects:
+  		- Module zoo.animal.talks can optionally declare that it requires the zoo.animal.feeding module but it is not required.
+    		- Module zoo.animal.care cannot be compiled or executed without access to the zoo.animal.feeding module.
+      		- Module zoo.animal.talks cannot be compiled or executed without access to the zoo.animal.feeding module.
+	- These rules hold even if the zoo.animal.care and zoo.animal.talks modules do not expliticly reference any packages in the zoo.animal.feeding module
+	- on the other hand, without the transitive modifier in our module declaration of zoo.animal.care the other modules would have to explicitly use requires in order to reference any packages in the zoo.animal.feeding module.
+ 	
+	
   		
    
    		
