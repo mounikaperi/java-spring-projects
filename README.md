@@ -6713,7 +6713,185 @@ Using ServiceLoader:
 	 		public Stream<Provider<S>> stream() {...}
     			// Additional methods
        		}
-	 
+	 As we already saw, calling ServiceLoader.load() returns an object that you can loop through normally.
+  	 However, requesting a Stream gives you a different type. 
+    	 The reason for this is that a Stream controls when elements are evaluated.
+      	 Therefore, a ServiceLoader returns a Stream of Provider objects.
+	 You have to call get() to retrieve te value you wanted out of each Provider
+  		ServiceLoader.load(Tour.class).stream().map(Provider::get).mapToInt(Tour::length)
+    			.max().ifPresent(System.out::println);
+
+Invoking from a Consumer:
+
+	Next up is to call the service locator by a consumer.
+ 	A consumer or client refers to a modue that obtains and uses a service.
+  	Once the consumer has acquired a service via the service locator, it is able to invoke the methods provided by the service provider interface.
+   		//Tourist.java
+     		package zoo.visitor;
+       		import java.util.*;
+	 	import zoo.tours.api.*;
+   		import zoo.tours.reservations.*;
+     		public class Tourist {
+       			public static void main(String[] args) {
+	  			Tour tour = TourFinder.findSingleTour();
+      				System.out.println("Single Tour: " + tour);
+	  			List<Tour> tours = TourFinder.findAllTours();
+      				System.out.println("# tours: " + tours.size());
+	  		}
+     		}
+       	Our module definition doesn't need to know anything about the implementation since the zoo.tours.reservations module is handling the lookup
+	// module-info.java
+ 	module zoo.visitor {
+  		requires zoo.tours.api;
+    		requires zoo.tours.reservations;
+      	}
+       	This time we get to run a program after compiling and packaging:
+	javac -p mods -d consumerModule consumerModule/zoo/visitor/*.java consumerModule/module-info.java
+ 	jar -cvf mods/zoo.visitor.jar -C consumerModule/ .
+  	java -p mods -m zoo.visitor/zoo.visitor.tourist
+
+Adding a Service Provider:
+
+	- A service provider is the implementation of a service provider interface.
+ 	- At runtime it is possible to have multiple implementation classes or modules.
+  	- Our service provider is the zoo.tours.agency package because we have outsourced the running of tours to a third party.
+   		// TourImpl.java
+     		package zoo.tours.agency;
+       		import zoo.tours.api.*;
+	 	public class TourImpl implements Tour {
+   			public String name() { return "Behind the scenes"; }
+      			public int length() { return 120; }
+	 		public Souvenir getSouvenir() { return new Souvenir("Stuffed animal"); }
+    		}
+      		// module-info.java
+		module zoo.tours.agency {
+  			requires zoo.tours.api;
+     			provides zoo.tours.api.Tour with zoo.tours.agency.TourImpl;
+		}
+  	The module declaration requires the module containing the interface as a dependency.
+   	We don't export the package that implements the interface since we don't want callers referring to it directly.
+    	Instead, we use the provides directive. This allows us to specify that we provide an implementation of the interface with a specific implementation class. The syntax looks like this:
+     		provides interfaceName with className;
+       We have not exported the package containing the implementation.
+       Instead we have made the implementation available to a service provider using the interface.
+       Finally, we compile it and package it up
+       		javac -p mods -d serviceProviderModule serviceProviderModule/zoo/tours/agency/*.java servceProviderModule/module-info.java
+	 	jar -cvf mods/zoo.tours.agency.jar -C serviceProviderModule/ .
+   		java -p mods -m zoo.visitor/zoo.visitor.Tourist
+     	Notice, how we didn't recompile the zoo.tours.reservations or zoo.visitor package.
+      	The service locator was able to observe that there was now a service provider implementation available and find it for us.
+       	This is useful when you have functionality that changes independently of the rest of code base.
+	In software development, the concept of separating different components into standalonw pieces is referred to as loose coupling. One advantage of loosely coupled code is that it can be easily swapped out or replaced with minimal or zero changes to code that uses it. 
+ 	Relying on a loosely coupled structure allows service modules to be easily extensibe at runtime.
+
+Reviewing Directives and Services:
+
+	Artifact			Part of the service		Directives required
+ 	Service Provider Interface	Yes				exports
+  	Service Provider		No				requires
+   									provides
+	Service locator			Yes				exports
+ 									requires
+	  								uses
+	Consumer			No				requires
+
+ Reviewing Directives:
+
+  	Directive						Description
+
+    	exports package;			Makes package available outside module
+     	exports package to module;	
+      	requires module;			Specifies another module as dependency
+       	requires transitive module;
+	opens package;				Allows package to be used with reflection
+ 	opens package to module;		Makes service available
+  	provides serviceInterface with implName;
+   	uses serviceInterface;			References service
+
+Discovering Modules:
+
+	Even the classes built into the JDK are modularized.
+
+Identifying Built-in modules:
+
+  	The most important module to know is java.base
+   	In fact, it is so important that you don't even have to use the requires directive; it is available to all modular applications. Your module-info.java file will still compile if you explicitly require java.base. However, it is redundant, so it's better to omit it
+
+Common modules:
+
+	ModuleName					What it contains
+ 	java.base				Collections, math, IO, NIO2, concurrency etc
+  	java.desktop				AbstractWindowsToolkit(AWT) and Swing
+   	java.logging				Logging
+    	java.sql				JDBC
+     	java.xml				Extensible Markup Language(XML)
+
+Java modules prefixed with java
+
+ 	java.base
+  	java.compiler
+   	java.datatransfer
+    	java.desktop
+     	java.naming
+      	java.net.http
+       	java.prefs
+	java.rmi
+ 	java.smartcardio
+  	java.sql
+   	java.sql.rowset
+    	java.transaction.xa
+     	java.instrument
+      	java.logging
+       	java.management
+	java.management.rmi
+ 	java.scripting
+  	java.se
+   	java.security.jgss
+    	java.security.sasl
+     	java.xml
+      	java.xml.crypto
+
+Java modules prefixed with jdk
+
+	jdk.accessibility
+ 	jdk.attach
+  	jdk.charsets
+   	jdk.compiler
+    	jdk.crypto.cryptoki
+     	jdk.crypto.ec
+      	jdk.dynalink
+       	jdk.editpad
+	jdk.hotspot.agent
+ 	jdk.httpserver
+  	jdk.incubator.foreign
+   	jdk.incubator.vector
+   	jdk.jartool
+    	jdk.javadoc
+     	jdk.jcmd
+      	jdk.jconsole
+       	jdk.jdeps
+	jdk.jdi
+ 	jdk.jdwp.agent
+  	jdk.jfr
+   	jdk.jlink
+    	jdk.jshell
+     	jdk.jsobject
+      	jdk.jstatd
+       	jdk.localedata
+	jdk.manegement
+ 	jdk.management.agent
+  	jdk.management.jfr
+   	jdk.naming.dns
+    	jdk.naming.rmi
+     	jdk.net
+      	jdk.nio.mapmode
+       	jdk.sctp
+	jdk.security.auth
+ 	jdk.security.jgss
+  	jdk.xml.dom
+   	jdk.zipfs
+
+
   		
    
    		
