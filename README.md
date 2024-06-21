@@ -6891,7 +6891,97 @@ Java modules prefixed with jdk
   	jdk.xml.dom
    	jdk.zipfs
 
+Getting Details with Java:
 
+	The java command has three module-related options.
+ 	Once describes a module, another lists the available modulles and the third shows the module resolution logic. It is also possible to add modules, exports, and more at the command line.
+
+Describing a Module:
+
+	- Suppose you are given the zoo.animal.feeding module JAR file and want to know about module
+ 	- You could unjar it and open the module-info.java file.
+  	- This would show you that the module exports one package and doesn't explicitly require any modules.
+   		module zoo.animal.feeding {
+     			exports zoo.animal.feeding;
+		}
+  	- However, there is an easier way. The java command has an option to describe a module. The folowing two commands are equivalent.
+   		java -p mods --describe-module zoo.animal.feeding
+     	- Each prints information about module
+      		zoo.animal.feeding file:///absolutePath/mods/zoo.animal.feeding.jar exports zoo.animal.feeding requires zoo.base mandated
+	- The first line is the module we asked about: zoo.animal.feeding
+ 	- The second line starts with the information about the module. In our case, it is the same package exports statement we had in the method declaration file.
+  	- On the third line we see requires java.base mandated. The module declaration very clearly does not specify any modules that zoo.animal.feeding has as dependencies.
+   	- Remember that the java.base module is special. It is automatically added as a dependency to all modules. This module has frequently used packages like java.util. You get java.base regardless of whether you asked for it. 
+    	- In classes, the java.lang package is automatically imported whether you type it or not. The java.base module works the same way. It is automatically available to all modules.
+
+More about describing modules:
+
+	- Assume the following are the contents of module-info.java in zoo.animal.care
+ 		module zoo.animal.care {
+   			exports zoo.animal.care.medical to zoo.staff;
+      			requires transitive zoo.animal.feeding;
+	 	}
+   	- Now we have the command to describe the module and the output
+    		java -p mods -d zoo.animal.care
+
+      		zoo.animal.care file:///absolutePath/mods/zoo.animal.care.jar
+		requires zoo.animal.feeding transitive
+  		requires java.base mandated
+    		qualified exports zoo.animal.care.medical to zoo.staff
+      		contains zoo.animal.care.details
+
+ 	- The first line of the output is the absolute path of the module file.
+  	- The two requires lines should look familiar as well. The first is the module-info and the other is added to all modules. The qualified exports is the full name of the package we are exporting to a specific module. Finally, the contains means thet there is a package in the module that is not exported at all. This is true. Our module has two packages and one is available only to code inside the module.
+
+Listing available modules:
+
+	- In addition to describing modules, you can use the java command to list the modules that are available. The simplest form lists the modules that are part of the JDK
+ 		java --list-modules (Lists all the java modules)
+   	- More interestingly you can use this command with custom code. Let's try again with the directory containing our zoo modules
+    		java -p mods --list-modules
+      	- If there are custom modules we get a location on the file system. If the project had a module version number, it would have both the version number and the file system path.
+       	- Note that the --list-modules exists as soon as it prints the observables modules. it doesn't run program.
+
+Showing Module Resolution:
+
+	- If listing the modules doesn't give you enough output you can also use the --show-module-resolution option. You can think of it as a way of debugging modules. It spits out a lot of output when the program starts up. Then it runs the program
+ 		java --show-module-resolution -p feeding -m zoo.animal.feeding/zoo.animal.feeding.Task
+   	- It starts by listing the root module. That's the one we are running: zoo.animal.feeding. Then it lists many lines of packages included by the mandatory java.base module. After a while, it lists modules that have dependencies. Finally, it outputs the result of the program: All fed!
+
+Describing with jar:
+
+	Like the java command, the jar command can describe a module. These commands are equivalent:
+ 		jar -f mods/zoo.animal.feeding.jar -d jar --file mods/zoo.anmal.feeding.jar --describe-module
+   	The output is slightly different from when we used the java command to describe the module. With jar, it outputs the following:
+    		zoo.animal.feeding jar:file:///absolutePath/mods/zoo.animal.feeding.jar/!module-info.class
+      		exports zoo.animal.feeding
+		requires java.base mandated
+  	The JAR version includes the module-info.class in the filename, which is not a particularly significant difference in the scheme of things. 
+
+Learning about dependencies with jdeps:
+
+	- The jdeps command gives you information about dependencies within a module. Unlike describing a module, it looks at the code in addition to the module declaration. 
+ 	- This tells you what dependencies are actually used rather than simply declared. 
+  	- You are expected to understand how to use jdeps with projects that have not been modularized to assist in identifying dependencies and problems. 
+   	- First, we will create a JAR file from this class.
+    	// Animatronic.java
+     	package zoo.dinos;
+      	import java.time.*;
+       	import java.util.*;
+	import sun.misc.Unsafe;
+ 	public class Animatronic {
+  		private List<String> names;
+    		private LocalDate visitDate;
+      		public Animatronic(List<String> names, LocalDate visitDate) {
+			this.names = names;
+   			this.visitDate = visitDate;
+      		}
+		public void unsafeMethod() {
+  			Unsafe unsafe = Unsafe.getUnsafe();
+     		}
+       	}
+	
+   
   		
    
    		
