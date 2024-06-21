@@ -6980,10 +6980,224 @@ Learning about dependencies with jdeps:
   			Unsafe unsafe = Unsafe.getUnsafe();
      		}
        	}
-	
-   
-  		
-   
+	- Now when we compile this file. you might have noticed that there is no module-info.java file. That is because we aren't creating a module. We are looking into what dependencies we will need when we do modularize this JAR.
+ 		javac zoo/dinos/*.java
+   	- Compiling works, but it gives you some warnings about Unsafe being an internal API. Next, we create a JAR file.
+    		jar -cvf zoo.dino.jar .
+      	- We can run the jdeps command against the JAR to learn about its dependencies. First, let's run the command without any options. On the first two lines, the command prints the modules that we would need to add with a requires directive to migrate to the module system. It also prints a table showing what packages are used and what modules they correspond to.
+       		jdeps zoo.dino.jar
+	 	zoo.dino.jar -> java.base
+   		zoo.dino.jar -> jdk.unsupported
+     		zoo.dions -> java.lang 	java.base
+       		zoo.dions -> java.time	java.base
+	 	zoo.dions -> java.util	java.base
+   		zoo.dinos -> sun.misc 	JDK Internal API (jdk unsupported)
+     - Note that java.base is always included. It also says which modules contain classes used by the JAR.
+     - If we run in summary mode, we only see just the first part where jdeps lists the modules.
+     		jdeps -s zoo.dino.jar
+       		jdeps -summary zoo.dino.jar
+     - For a real project, the dependency list could include dozens or even hundreds of packages.
+     - It's useful to see summary of just the modules. This approach also makes it easier to see whether jdk.unsupported is in the list.
+     - There is also a --module-path option that you can use if you want to look for modules outside the JDK. Unlike other commands, there is no short form for this option on jdeps.
+     - You might have noticed that jdk.unsupported is not in the list of modules. 
+     - It's special because it contains internal libraries that developers in previous versons of Java were discouraged from using, although many people ignored this warning.
+
+Using the --jdk-internals flag:
+
+	- The jdeps command has an option to provide details about these unsupported APIs. 
+ 		jdeps --jdk-internals zoo.dino.jar
+   		Output
+     		zoo.dino.jar -> jdk.unsupported
+       			zoo.dinos.Animatronic -> sun.misc.Unsafe
+	  			JDK internal API (jdk.unsupported)
+
+	- The --jdk-internals option lists any classes you are using that call an internal API along with which API. At the end, it provides a table suggesting that you should do about it.
+ 	- If you wrote the code calling the internal API, this message is useful.
+  	- If not, the message would be useful to the team that did write the cde. 
+   	- On the other hand, you need to update or replace that JAR file entirely with one that fixes the issue.
+    	- Note that --jdkinternals is equivalent to --jdk-internals.
+
+About sun.misc.Unsafe
+
+	- Prior to the Java Platform Module system, classes had to be public, if you wanted them to be used outside the package. It was reasonable to use the class in JDK code since that is low level code that is already tight coupled to the JDK.
+ 	- Since it was needed in multiple packages, the class was made public. Sun even named it Unsafe figuring that would prevent anyone from using it outside JDK.
+  	- The jdeps command allows you to look at these JARs to see whether you will see any problems when Oracle finally prevents the usage of this class. If you find any uses, you will look at whether there is a later version of the JAR that you can upgrade to.
+
+
+Using Module files with jmod:
+
+	- The final command is jmod. Oracle recommends using JAR files for most modules.
+ 	- JMOD files are recommended only when you have native libraries or something that can't go inside a JAR file. This is unlikely to affect you in real world.
+  	- The most important thing to remember is that jmod is the only for working with the JMOD files.
+
+    	Modes using jmod
+
+     	Operation			Description
+      	create				Creates the JMOD file
+       	extract				Extracts all files from JMOD. Works like unzipping
+	describe			Prints module details such as requires
+ 	list				Lists all the files in JMOD file.
+  	hash				Prints or records hashes
+
+Creating Java Runtimes with jlink:
+
+	- One of the benefits of modules is being able to supply just the parts of Java you need.
+ 	- If the user already doesn't have Java or is on a device without much memory, downloading a JDK that is over 150MB is a big ask. This command creates our smaller distribution:
+  	jlink --module-path mods --add-modules zoo.animal.talks --output zooApp
+   	- First we specify where to find the custom modules with -p or --module-path. Then we specify our module names with --add-modules. This will include the dependencies it requires as long as they can be found.
+    	- Finally, we specify the fold3er name of our smallest JDK with --output.
+     	- The output directory contains the bin, conf, include, legal, lib and man directories along with a release file. These should look familiar as you find them in the full JDK as well.
+
+Reviewing Command line options:
+
+	Description					Syntax
+ 	Compile nonmodular code		javac -cp classpath -d directory classesToCompile
+  					javac --class-path classpath -d directory classesToCompile
+       					javac -classpath classpath -d directory classesToCompie
+	Run nonmodular code		java -cp classpath package.className
+ 					java -classpath classpath package.className
+      					java --class-path classpath package.className
+	Compile module			javac -p moduleFolderName -d directory classesToCompileIncludingModuleInfo
+ 					javac --module-path moduleFolderName -d directory classesToCompileIncludingModuleInfo
+      	Run module			java -p moduleFolderNmae -m moduleName/package.className
+       					java --module-path moduleFolderName --module moduleName/package.className
+	Describe module			java -p moduleFolderName -d moduleName
+ 					java --module-path moduleFolderName --describe-module moduleName
+      					jar --file jarName --describe-module
+	   				jar -f jarName -d
+	List available modules		java --module-path moduleFolderName --list-modules
+ 					java -p moduleFolderName --list-modules
+      					java --list-modules
+	View Dependencies		jdeps -summary --module-path moduleFolderName jarName
+ 					jdeps -s --module-path moduleFilderName jarName
+      					jdeps --jdk-internals jarName
+	   				jdeps -jdkinternals jarName
+	Show modulle resolution		java --show-module-resolution -p moduleFolderName -m moduleName
+ 					java --show-module-resolution --module-path moduleFolderName --module moduleName
+      	Create runtime JAR		jlink -p moduleFolderName --add-modules moduleName --output zooApp
+       					jlink --module-path moduleFolderName --add-modules moduleName --output zooApp
+
+
+javac:  
+
+   	Option				Description
+    	-cp<classpath>			Location of JARs in a nonmodular program
+     	--classpath<classpath>	
+      	--class-path<classpath>
+       	-d <dir>			Directory in which to place generated class files
+	-p <path>			Location of JARs in a modular program
+ 	--module-path<path>
+
+java:
+
+ 	-p <path>			Location of JARs in modular program	
+  	--module-path<path>		
+   	-m <name>			Module name to run
+    	--module<name>	
+     	-d 				Describes details of module
+      	--describe-module
+  	--list-modules			Lists observable modules without running program
+   	--show-module-resolution	Shows modules when running program
+
+jar
+
+	-c				Creates new JAR file
+ 	--create
+  	-v				Prints details when working with JAR files
+   	--verbose
+    	-f				JAR filename
+     	--file
+      	-C				Directory containing files to be used to create JAR
+       	-d				Describes details of module
+	--describe-module
+
+jdeps
+
+	--module-path <path>		Location of JARs in modular program
+ 	-s				Summarized output
+  	-summary	
+   	--jdk-internals			Lists uses of internal APIs
+    	-jdkinternals
+
+jlink
+
+	-p				Location of JARs in modular program
+ 	--module-path <path>
+  	--add-modules			List of modules to package
+   	--output			Name of output directory
+
+Comparing types of modules:
+
+	There are two other types of modules: automatic modules and unnamed modules. 
+
+Named Modules:
+
+	- A named module is one containing a module-info.java file. 
+ 	- To review this file appears in the root of thr JAR alongside one or more packages.
+  	- Unless otherwise specified, a module is a named module. 
+   	- Named modules appear on the module path rather than the classpath. 
+    	- As a way of remembering this, a named module has the name inside module-info.java file and is on the module path.
+
+Automatic Modules:
+
+	- An automatic module appears on the modulepath but does not contain a module-info.java file.
+ 	- It is simply a regular JAR file that is placed on the module path and gets treated as a module.
+  	- As a way of remembering this, Java automatically determines the module name.
+   	- The code referencing an automatic module treats it as if there is a module-info.java file present.
+    	- It automatically exports all packages. It also determines the module name.
+     	- How does it determine the module name? To answer this, we need to provide a bit of history on JAR files and module adoption
+      	- Every JAR file contains a special folder called META-INF and within it, a text file called MANIFEST.MF
+       	- It can be created automatically when the JAR is created or by hand or by the JAR's author.
+	- Getting back to modules, many Java libraries weren't quite ready to modularize when the feature was introduced.
+ 	- The authors were encouraged to declare the name they intended to use for the module by adding a property named Automatic-Module-Name into their Manifest.MF file.
+
+
+About the MANIFEST.MF file:
+
+	A JAR file contains a special text file called META-INF/MANIFEST.MF that contains information about the JAR.
+ 	It is been around significantly longer than modules - since the early days of Java and JARs to be exact
+  		zoo -> META-INF	---> sales -> healthy
+			|		   -> data
+   		      MANIFEST.MF
+	The manifest contains extra information about the JAR file. 
+ 	For example, it often contains the version of Java is used to build the JAR file
+  	For command-line programs, the class with the main() method is commonly specified.
+   	Each line in the manifest is a key/value pair separated by a colon.
+    	You can think of the manifest as a map of property names and values.
+     	The default manifest in Java 17 looks like this
+      			Manifest-version: 1.0
+	 		Created-By: 17 (Oracle Corporation)
+    	Specifying a single property in the manifest allowed library providers to make things easier for applications that wanted to use their library in a modular application.
+     	You can think it of as a promise that when the library becomes a named module it will use the specified module name.
+      	If the JAR file does not specify an automatic module name, Java will still allow you to use it in the module path.
+       	In this case, Java will determine the module name for you
+	Java determines the automatic module name by basing it on the filename of the JAR file. Suppose we have a JAR file named holiday-calendar-1.0.0.jar
+ 	First Java will remove the extension.jar 
+  	Then Java will remove the version from the end of the JAR filename. This is important because we want module names to be consistent. Having a different automatic module name everytime you upgraded to a new version would not be good.
+   	This would force you to change the module declaration of your nice, clean modularized application everytime you pulled in later version JAR.
+    	Removing the version and extension gives us holiday-calendar. This leaves us with a problem.
+     	Dashes are not allowed in module names. Java solves this problem by converting any special characters in the name of dots.
+      	As a result, the module name is holiday.calendar. Any characters other than letters and numbers are considered special characters in this replacement. Finally, any adjacent dots or leading/trailing dots are remobed.
+       	Since that's number of rules let's review the algorithm in a list for determining the name of an automatic module:
+		- If the MANIFEST.MF specifies an Automatic-Module-Name use that. Otherwise proceed with the remaining rules
+  		- Remove the file extension from the JAR name
+    		- Remove any version information from the end of the name. A version is digits and dots with possible extra information at the end
+      		- Replace any remaining characters other than letters and numbers with dots
+		- Replace any sequences of dots with a single dot
+  		- Remove the dot if it is the first or last character of the result.
+
+Practicing with automatic module name:
+
+	Beginning with JAR name			commons2-x-1.0.0-SNAPSHOT.jar		mod_$_1.0.jar
+ 	Remove file extension			commons2-x-1.0.0-SNAPSHOT		mod_$_1.0
+  	Remove version information		commons2-x				mod_$
+   	Replace special characters		commons2.x				mod..
+    	Replace sequence of dots		commons2.x				mod.
+     	Remove leading/trailing dots		commons2.x				mod
+    	R
+ 	
+
+  	
    		
        		
 
