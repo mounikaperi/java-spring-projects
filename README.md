@@ -7327,10 +7327,111 @@ Introducing Threads:
 Understanding Thread Concurrency:
 
 	- The property of executing multiple threads and processes at the same time s referred to as concurrency.
- 	- How does the systame decide to execute when there are more threads available than CPUs?
-  	
-   		
+ 	- How does the system decide to execute when there are more threads available than CPUs?
+  	- Operating systems use a thread scheduler to determine which threads should be currently executing
+   	- For example, a thread scheduler may employ a round-robin schedule in which each thread receives an ewual number of CPU cycles with which to execute with threads visited in a circular order.
+    	- When a thread's alloted time is complete but the thread has not finished processing, a context switch occurs.
+     	- A context switch is the process of storing a thread's current state and later restoring the state of the thread to continue execution. Be aware that a cost is often associated with a context switch due to lost time and having to reload a thread's state. 
+      	- Intelligent thread schedulers do their best to minimize the number of context switches while keeping an application running smoothly. 
+       	- Finally, a thread can interrupt or supersede another thread if it has a higher thread priority other than the other thread.
+	- A thread priority is a numeric value associated with a thread that is taken into consideration by the thread scheduler when determining which threads should currently be executing.
+ 	- In Java, thread priorities are specfied as integer values.
+
+
+Creating a Thread:
+
+	- One of the most common ways to define a task for a thread is by using the Runnable instance. 
+ 	- Runnable is a functional interface that takes no arguments and returns no data.
+  			@FunctionalInterface
+     			public interface Runnable { void run(); }
+	- With this, it's easy to create and start a thread. In fact, you can do so in one line of code using the Thread class
+ 			new Thread(() -> System.out.println("Hello")).start();
+    			System.out.println("World");
+       	- The first line creates a new Thread object and then starts it with the start() method. 
+	- Does this compile HelloWorld or WorldHello ? The answer is that we don't know.
+ 	- Depending on the thread priority/scheduler either is possible. Remember that the order of thread execution is often not guaranteed. 
+
+  			Runnable printInventory = () -> System.out.println("Printing zoo inventory");
+     			Runnable printRecords = () -> {
+				for (int i=0; i<3; i++) {
+    					System.out.println("Printing Record " + i);
+	 		};
+    	- Given these instances what is the output of the following?
+     		System.out.println("begin");
+       		new Thread(printInventory).start();
+	 	new Thread(printRecords).start();
+   		new Thread(printInventory).start();
+     		System.out.println("end");
+       - The sample uses a total of four threads the main() user thread and three additional threads. 
+       - Each thread created on these lines is executed as an asynchronous task.
+       - By asynchronous, we mean that the thread executing the main() method does not wait for the results of each newly created thread before continuing. The opposite of this is the synchronous task in which the program waits for the thread to finish before moving on to the next line. 
+       - While the order of thread execution is indeterminate once the threads have been the started, the order within a single thread is still linear. In particular, the for() loop is still ordered. Also, begin always appears before end.
+
+Calling run() instead of start():
+
+	- Calling run() on thread or a Runnable does not start a new thread. While the following code snippets will compile, none will execute a task on a separate thread.
+
+ 			System.out.println("begin");
+    			new Thread(printInventory).run();
+       			new Thread(printRecords).run();
+	  		new Thread(printInventory).run();
+     			System.out.println("end");
+
+ 	- Unlike the previous example, each line of the code will wait until the run() method is complete before moving onto the next line. Also, unlike the previous program, the output for this code sample will be the same everytime it is executed.
+  	- More generally we can create a Thread and its associated task in two ways in Java:
+   		- Provide a Runnable object or lambda expression to the Thread constructor.
+     		- Create a class that extends Thread and overrides the run() method.
+
+
+Distinguishing Thread Types:
+
+	- All Java applications including atr multithreaded because they include system threads.
+ 	- A system thread is created by the Java Virtual Machine and runs in the background of the application.
+  	- For example, a garbage collection is managed by a system thread created by the JVM.
+   	- Alternatively, a user-defined thread is one created by the application developer to accomplish a specific task.
+    	- The majority of the programs we have presented so far have contained only one user-defined thread, which calls the main() method. For simplicity, we commonly refer to programs that contain only a single user-defined thread as single threaded application.
+     			public class Zoo {
+				public static void pause() { // Defines the thread task
+    					try {
+	 					Thread.sleep(10_000);
+       					} catch (InterruptedException ex) {
+	    					System.out.println("Thread finished..");
+	  				}
+       				}
+	   			public static void main(String[] unused) {
+       					var job = new Thread(() -> pause()); // Create thread
+	    				job.start();
+	 				System.out.println("Main thread finished!"); // Start thread
+      				}
+	  		}
+     	- Even though the main() method is done, the JVM will wait for the user thread to be done before ending the program.
+      	- What if we change job to be a deamon thread 
+       				job.setDaemon(true);
+
+
+Managing a Thread's life cycle:
+
+
+	- After a thread has been created, it is one of the six states. You can query a thread's state by calling getState() on the thread object.
+
+ 		Create Thread
+   		      |
+	   	     NEW  ------------start()----------> RUNNABLE----------------run()-----------------> TERMINATED
+	  Created but not started		Running or able to be run------				Task Complete
+  						|   |	 |	 	|        |-----------------------
+		Resource Requested <--------------  |	wait()		|	sleep()			| Time elapsed
+			|	    		    |	 |		|	|-------------------TIMED_WAITING
+   		      BLOCKED ----Resource Granted--|	 WAITING-----notify()			Waiting a specified time
+	      Waiting to enter synchronized block     Waiting indefinitely to be notifed
        		
 
- 
+	- Every thread is initialized with a NEW state
+ 	- As soon as start() method is called, the thread is moved to a RUNNABLE state.
+  	- Does that mean it is actually running? Not exactly, it may be running or it may not be.
+   	- The RUNNABLE state just means the thread is able to run.
+    	- Once the work for the thread is completed or an uncaught exception is thrown, the thread state becomes TERMINATED and no more work is performed.
+     	- While in a RUNNABLE state, the thread may transition to one of three states where it pauses its work: BLOCKED, WAITING, TIMED_WAITING. The above figure includes common transitions between thread states, but there are other possibilities.
+      	- For example, a thread in WAITING state might be triggered by notifyAll().
+       	- Likewise, a thread that is interrupted by another thread will exit TIMED_WATHCING and go straight into RUNNABLE.
+	- Some thread methods such as wait(), notify() and join(). You should avoid them and use the CONCURRENCY APIs as much as possible. 
 
