@@ -7284,7 +7284,50 @@ Comparing migration Strategies:
   	Project that depends on all others	Unnamed module on classpath		Named Module on module path
    	Project that has no dependencies	Named module on module path		Automatic module on module path
 
-    
+
+Splitting a Big Project into odules:
+
+	- There is a problem with this decomposition.
+ 	- The Java Platform Module System does not allow for cyclic dependencies.
+  	- A cyclic dependency or circular dependency is when two things directly or indirectly depend on each other. 
+   	- What if decomposition doesn't work? A common technique is to introduce another module. That module contains the code that the other two modules. 
+
+
+Introducing Threads:
+
+	- Computers are capable of reading, writing data to external sources.
+ 	- Unfortunately, as compared to CPU operations, these disk/network operations tend to be extremely slow.
+  	- In fact, that if your computer's operatig system were to stop and wait for every disk or network operation to finish, your computer would appear to freeze constantly.
+   	- Luckily, all operating systems support what is known as multithreaded processing. 
+    	- The idea behind multithreaded processing is to allow an application or group of applications to execute multiple tasks at the same time. This allows tasks waiting for other resources to give way to other resources to give way to other processing requests.
+     	- Threads provide numerous ways using the Concurrency API. Threads and concurrency are challenging topics for many programmers to grasp, as problems with threads can be frustrating even for developers.
+      	- In practice, concurrency issues are among the most difficult problems to diagnose and resolve.
+
+       	- A thread is the smallest unit of execution that can be scheduled by the operating system.
+	- A process is a group of associated threads that can execute in the same thread environment.
+ 	- It follows then, that a single threaded process is one that contains exactly one thread whereas a multi threaded process supports more than one thread.
+  	- By shared enironment, we mean that the threads in the same process share the same memory space and can communicate directly with one another.
+
+   						Process(Java Program)
+	 		------------------------>Shared Memory<---------------------------
+    				|			|			|
+			      Thread		       Thread		      Thread
+	 		----------------------> OS Thread Scheduler <---------------------
+    				|						|	
+				CPU1		 	...			CPUn
+    	-Above figure for an overview of threads and their shared environment within a process
+     	- This figure shows a single process with three threads. It also shows how they are mapped to an rbitary number of n CPUs available within the system.
+      	- A task is a single unit of work performed by a thread. A task will commonly be implemented as a lambda expression.
+       	- By shared memory we are generally referring to static variables as well as instance and local variables passed to a thread.
+	- Yes, you finally see how static variables can be useful for performing complex, multithreaded tasks.
+ 	- Methods that static methods and variables are defined on a single class object that all instances share.
+  	- For example, one thread updates the value of a static object, this information is immediately available for other threads within the process to read.
+
+
+Understanding Thread Concurrency:
+
+	- The property of executing multiple threads and processes at the same time s referred to as concurrency.
+ 	- How does the systame decide to execute when there are more threads available than CPUs?
   	
    		
        		
