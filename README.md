@@ -7194,9 +7194,97 @@ Practicing with automatic module name:
    	Replace special characters		commons2.x				mod..
     	Replace sequence of dots		commons2.x				mod.
      	Remove leading/trailing dots		commons2.x				mod
-    	R
- 	
+    	
+ Unnamed Modules:
 
+ 	- An unnamed module appears on the classpath.
+  	- Like an automatic module, it is a regular JAR. 
+   	- Unlike an automatic module, it is on the classpath rather than the modulepath.
+    	- This means an unnamed module is treated like old code and a second-class citizen to modules.
+     	- An unnamed module does not usually contain module-info.java file. If it happens to contain one, that file will be ignored since it is on the classpath.
+      	- Unnamed modules do not export any packages to named or automatic modules.
+       	- The unnamed module can read from any JARs on the classpath or module path.
+	- You can think of an unnamed module as code that works the way Java worked before modules.
+
+Reviewing Module Types:
+
+	A key point to remember is that code on the classpath can access the module path.
+ 	By contrast, code on the module path is unable to read from classpath.
+
+ 	Property							Named			Automatic	Unnamed
+   	Does a _____ module contain a module-info.java file?		Yes			No		Ignored if present
+    	Which package does a ____ module export to other modules	Those in 		All packages	No packages
+     									module-info.java file
+	Is a ___ module readable by other modules on the modulepath	Yes			Yes		No
+ 	Is a ___ module readable by other JARs on the classpath?	Yes			Yes		Yes
+
+Migrating an Application:
+
+	- Many applications were not designed to use the Java Platform Module Syste, because they were written before it was created
+ 	- Ideally, they were atleast designed with projects instead of big ball of mud. 
+  	- Overview of strategies for migrating an existing application to use modules. - bottom-up migration, top-down migration
+
+   	-In the real world, applications have libraries that haven't been updated in 10 or more years
+    	- Note that you can use all the features of Java17 without converting your application to modules.
+
+Determining the order:
+
+	- Before we can migrate our application to use modules, we need to know how the packages and libraries in the existing application are structured.
+ 	- The dependencies between projects form a graph. The arrow shows the dependencies by pointing from the project that will require the dependency so the one that makes it available.
+
+				  |-> chicken 				chicken ----->  				
+  			nest -----					   |	     |
+     				  |-> egg				 nest	     |
+	   								   |	     |
+									  egg <-------   
+	- The right side of the diagram makes it easier to identiy the top and bottom that top-down and bottom-up migration refer to.
+ 	- Projects that do not have any dependencies are at the bottom.
+  	- Projects that do have dependencies are at the top.
+   	Determining the order when not unique:
+
+    		chicken		penguin				chicken ----> 			penguin ------|
+		   |		   |				   	    |			              |
+	 	   |--->egg<-------|				penguin	    |			chicken       |
+      								   |	    |                                 |
+		 						  egg ------|			  egg --------|
+
+Exploring a Buttom-Up migration strategy:
+
+	- The easiest approach to migration is a bottom-up migration.
+ 	- This approach works best when you have the power to convert any JAR files that aren't already modules.
+  	- For bottom-up approach migration, you follow these steps:
+   		1. Pick the lowest level project that has not yet been migrated.
+     		2. Add a module-info.java file to the project. Be sure to add any exports to exposure any package used by higher-level JAR files. Also, add a requires directive for any modules this module depends on.
+       		3. Move this newly migrated named module from the classpath to the modulepath
+	 	4. Ensure that any projects that have not yet been migrated stay as unnamed modules on the classpath.
+   		5. Repeat with the next-lowest level project until you are done.
+     	- With a bottom up migration, you are getting the lower-level projects in good shape. This makes it easier to migrate the top-level projects at the end. During migration, you have a mix of named modules and unnamed modules. The named modules are the lower level ones that have been migrated. They are on the module path and not allowed to access any unnamed modules.
+      	- The unnamed modules are on the classpath. They can access JAR files on both the classpath and the module path.
+
+Exploring a Top-Down Migration Strategy:
+
+	- A top-down migration strategy is most useful when you don't have control of every JAR file used by your application.
+ 	- They are just too busto to migrate. You wouldn't want this situation to hold up your entire migration. 
+  	- For a top-down migration follow these steps:
+   		1. Place all projects on the module path
+     		2. Pick the highest level project that has not yet been assigned.
+       		3. Add a module-info.java file to that project to convert the automatic module into named module.
+	 	4. Again, remember to add any exports or requires directives.
+   		5. You can use the automatic module name of other modules when writing the requires directive since most of the projects on the module path do not have names yet.
+     		6. Repeat with the next-higher level project until you are done.
+       		7. With a top-down migration, you are conceding that all of the lower-level dependencies are not ready but that you want to make the application itself a module.
+	 	8. During migration, you have a mix of named modules and automatic modules.
+   		9. The named modules are the higher level ones that have been migrated. They are on the module path and have access to the automatic modules. The automatic modules are also on the module path.
+
+
+Comparing migration Strategies:
+
+	Category				Bottom-Up				Top-Down
+
+  	Project that depends on all others	Unnamed module on classpath		Named Module on module path
+   	Project that has no dependencies	Named module on module path		Automatic module on module path
+
+    
   	
    		
        		
