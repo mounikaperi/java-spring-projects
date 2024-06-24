@@ -7435,3 +7435,122 @@ Managing a Thread's life cycle:
        	- Likewise, a thread that is interrupted by another thread will exit TIMED_WATHCING and go straight into RUNNABLE.
 	- Some thread methods such as wait(), notify() and join(). You should avoid them and use the CONCURRENCY APIs as much as possible. 
 
+
+ Polling with Sleep:
+
+ 	Even though multithreaded programming allows you to execute multiple tasks at the same time, one thread often needs to wait for the results of another thread to proceed. One solution is to use polling.
+  	Polling is the process of intermittently checking data at some fixed interval.
+   	Let's say you have a thread that modifies a shared static ounter value and your main() thread is waiting for the thread to reach 1 million
+
+    			public class CheckResults {
+       				private static int counter = 0;
+	   			public static void main(String[] args) {
+       					new Thread(() -> {
+						for(int i=0; i<1_000_000; i++) counter++;
+      					}).start();
+	   				while (counter <1_000_000) {
+						System.out.println("Not reached yet");
+      					}
+	   				System.out.println("Reached: " + counter);
+				} }
+    	Using while loop to check for data without some kind of delay is considered a bad coding practice as it ties up CPU resources for no reason. We can improve this result by using the Thread.sleep() method to implement polling and sleep for 1000 milliseconds.
+
+	While polling does prevent the CPU from being overwhelmed with a potentially infinite loop, it does not guarantee when the loop will terminate. For example, the separate thread could be loosing CPU time to a higher priority process resulting in multple executions of the while() loop before it finishes.
+ 	Another issue to be concerned about is the shared counter variable. What if one thread is reading the counter variable while another thread is writing it? The thread reading the shared variable may end up with an invalid or unexpected value.
+
+
+Interrupting a Thread:
+
+	- While our previous solution prevented the CPU from waiting endlessly on a while() loop, it did come at the cost of inserting a one-second delays into our program
+ 	- If the task takes 2.1 seconds to run, the program will use the full 3 seconds, wasting 0.9 seconds.
+  	- One way to improve the program is to allow the thread to interrupt the main() thread when it's done
+   	- The improved version includes both sleep() to avoid tying up the CPI and interrupt() so the thread's work ends without delaying the program.
+    	- As before, our main() thread's state alternates between TIMED_WAITING and RUNNABLE.
+     	- Calling interrupt() on a thread in the TIMED_WAITIING or WAITING state causes the main() thread to become RUNNABLE again, triggering an InterruptedException. The thread may also move to a BLOCKED state if it needs to reacquire when it wakes up.
+      	- Calling interrupt() on a thread already in RUNNABLE state doesn't change the state. 
+       	- In fact, it only changes the behavior if the thread is periodically checking the Thread.isInterrupted() value state.
+
+
+ Creating Threads with the Concurrency API:
+
+ 	- Java includes the java.util.concurrenct package which we refer to as the Concurrency API to handle the complicated work of managing threads for you. The Concurrency API includes the ExecutorService interface which defines services that create and manage threads.
+  	- You first obtain an instance of an ExecutorService interface and then you can send the service tasks to be processed.
+   	- The framework includes numerous useful features such as thread pooling and scheduling.
+    	- It is recommended that you use this framework anytime you need to create and execute a separate task even if you need only a single thread.
+     	- When writing multithreaded programs in practice, it is often better to use the Concurrency API for some other multithreaded SDK rather than work with Thread objects directly. The libraries are much more robust, and it is easier to handle complex interactions.
+
+
+Introducing the Single Thread Executor:
+
+	- Since ExecutorService is an interface, how do you obtain an instance of it? The ConcurrencyAPI includes the Executors factory class that can be used to create instances of the ExecutorService object. 
+ 	Let's rewrite our earlier example with the two Runnable instances to using an ExecutorService:
+
+    		ExecutorService service = Executors.newSingleThreadExecutor();
+      		try {
+			System.out.println("begin");
+   			service.execute(printInventory);
+      			service.execute(printRecords);
+	 		service.execute(printInventory);
+    		} finally {
+      			service.shutdown();
+	 	}
+   	In this example, we are using the newSingleThreadExecutor() method to create the service.
+    	Unlike our earlier example, in which we had four threads one main() and three new threads, we have only two threads here one main() and one new thread. This means that the output will still be unpredictable will have less variation than before. 
+
+     	With single-thread executor, tasks are guaranteed to be executed sequentially. 
+
+Shutting down a Thread Executor:
+
+	- Once you have finished using a thread executor, it is important that you call the shutdown() method. 
+ 	- A thread executor creates a non daemon thread on the first task that is executed, so failing to call shutdown() will result in your application never terminating.
+  	- The shutdown process for a thread executor will continue to execute any previously submitted tasks.
+   	- During this time, calling the isShutDown() will return true, while isTerminated() will return false.
+    	- If a new task is submitted to the thread executor while it is shutting won, a RejectedExecutionException will be trown.
+     	- Once all active tasks have been completed, isShutDown() and isTerminated() will both return true.
+
+      	ExecutorService Lifecycle:
+
+
+       		New Executor Service
+	 		|
+    		      ACTIVE -------shutdown()----> SHUTTING DOWN --------All Tasks Finished---> Shutdown
+	    	Accepts new tasks		Rejects new tasks				Rejects new tasks
+      		Executes tasks			Executes tasks					No tasks running
+		isShutDown() - false		isShutDown() - true				isShutDown() - true
+  		isTerminated()-false		isTerminated() - false				isTerminated()- true
+
+    	- shutdown() does not stop any tasks that have already been submitted to the thread executor.
+     	- What if you want to cancel all running and upcoming tasks ? The ExecutorService provides a method called shutDownNow() which attempts to stop all running tasks and discard any that have not been started yet. It is not guaranteed to succeed because it is possible to create a thread that will never terminate, so any attempt to interrupt it may be ignored.
+	- Resources such as thread executors should be properly closed to prevent memory leaks.
+ 	- Unfortunately, the ExecutorService interface does not extend the AutoCloseable interface, so you cannot use try-with-resources statement. You can still use a finally block as we do throughout. 
+  	- While you are not required to use a finally block it is considered a good practice to do so.
+
+Submitting Tasks:
+
+	- You can submit tasks to an ExecutorService instance multiple ways. The first method we presented, execute() is inherited from the Executor interface which the ExecutorService interface extends.
+ 	- The execute() method takes a Runnable instance and completes the task asynchronously.
+  	- Because the return type of the method is void, ir does not tell us anything about the result of the task.
+   	- It is considered a fire and forget method as once it is submitted the results are not dieectly available to calling thread.
+    	- Fortunately, the writers of Java added submit() methods to the ExecutorService interface which like execute() can be used to complete tasks asynchronously. 
+     	- Unlike execute() though submit() returns a Future instance that can be used to determine whether the task is complete. 
+      	- It can also be used to return a generic result object after the task has been completed.
+       	- The below table shows five methods including execute() and two submit() methods. 
+	- In practice, using the submit() method is quite similar to using the execute() methood except that the submit() method returns a Future instance that can be used to determine whether the task has completed execution
+
+
+ExecutorService methods:
+
+	Method name								Description
+
+ 	void execute(Runnable command)		Executes Runnable task at some point in future
+  	Future<?> submit(Runnable task)		Executes Runnable task at some point in future and returns Future representing task
+   	<T> Future<T> submit(Callable<T> task)	Executes Callable Task at some point in future and returns Future representing 							pending results of task
+    	<T> List<Future<T>> invokeAll(		Executes given tasks and waits for all tasks to complete. Returns List of Future
+     	Collection<? extends 			instances in same order in which they were in original collection.
+      	Callable<T>> tasks)
+       	<T> T invokeAny(			Executes given tasks and waits for at least one to complete
+	Collection<? extends 
+ 	Callable<T>> tasks)
+      	
+     		
+
