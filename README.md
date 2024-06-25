@@ -7823,3 +7823,148 @@ Synchronizing on Methods:
 	 - As before, the first uses a synchronized block, with the second example using the synchronized modifier. 
   	 - You can use static synchronization if you need to order thread access across all instances rather than a single instance.
  				
+Understanding the Lock Framework:
+
+	- A synchronized block supports only a limited set of functionality.
+ 	- For example, what if we want to check whether a lock is available and if it is not perform some other task?
+  	- Furthermore, if the lock is never available and we synchronize on it we might wait forever.
+   	- The Concurrency API includes the Lock interface, which is conceptually similar to using the synchronied keyword but with a lot more bells and whistles. Instead of synchronizing on any object, though we lock only on an object that imlements the Lock interface.
+
+Applying a ReentrantLock:
+
+ 	- The Lock interface is pretty easy to use. When you need to protect a piece of code from multithreaded processing, create an instance of Lock that all threads have access to.
+  	- Each thread then calls lock() before it enters the protected code and calls unlock() before it exits the protected code.
+   	- By contrast, the following shows two implementations, one with a synchronized block and one with a Lock instance.
+    	- While longer, the Lock solution has a number of features not available to the synchronized block
+
+     		// Implementation #1 with a synchronized block
+       		Object object = new Object();
+	 	synchronized(object) { // Protected code }
+
+   		// Implementation #2 with a lock
+     		Lock lock = new ReentrantLock();
+       		try {
+	 		lock.lock();
+    		} finally {
+      			lock.unlock();
+	 	}
+
+    	- These two implementations are conceptually equivalent. 
+     	- The ReentrantLock class is a simple monitor that implements the Locak interface and supports mutual exclusion.
+      	- In other words, at most one thread is allowed to hold a lock at any given time.
+       	- While certainly not required, it is a good practice to use a try/finally block with Lock instances.
+	- Doing so ensures that any required locks are properly released.
+
+ 	- The ReentrantLock class ensures that once a thread has called lock() and obtained the lock, all other threads that call lock() will wait until the first thread calls unlock(). Which thread gets the lock next depends on the parameters used to create the Lock object. 
+  	- The ReentrantLock class includes a constructor that takes a single booean and sets a fairness parameter.
+   	- If the parameter is set to true, the lock will usually be granted to each thread in the order in which it was requested.
+    	- It is false by default when using the no-argument constructor. In practice, you should enable fairness only when ordering is absolutely required, as it could lead to a significant slowdown.
+     	- Besides always making sure to release a lock, you also need to be sure that you only release a lock that you have.
+      	- If you attempt to release a lock that you do not have, you will get an exception at runtime.
+       			Lock lock = new ReentrantLock();
+	  		lock.unlock(); // IllegalMonitorStateException
+
+
+Attempting to acquire a lock:
+
+	- While the ReentrantLock class allows you to wait for a lock, it so far suffers from the same problem as a synchronized block. A thread could end up waiting forever to obtain a lock.
+
+  	Lock Methods:
+
+   	void lock()					Requests lock and blocks unti lock is acquired
+    	void unlock()					Releases lock
+     	boolean tryLock()				Requests lock and returns immediately. Returns boolean indicating whether 							lock was successfully acquired
+      	boolean tryLock(long timeout, TimeUnit unit)	Requests lock and blocks for specified time or until lock is acquired. 								Returns boolean indicating whether lock was successfully acquired
+
+
+	- For convenience we use the method for the code
+ 		public static void printHello(Lock lock) {
+   			lock.lock();
+      			System.out.println("Hello");
+	 	} finally {
+   			lock.unlock();
+      		}}
+
+  tryLock():
+
+   	- The tryLock() method will attempt to acquire a lock and immediately return a boolean result indicating whether the lock was obtained. Unlike the lock() method, it does not wait if another thread already holds the lock. It returns immediately, regardless of whether a lock is available. The following is the sample implementation using the tryLock() method:
+    	Lock lock = new ReentrantLock();
+     	new Thread(() -> printHello(lock)).start();
+      	if (lock.tryLock()) {
+       		try {
+	 		System.out.println("Lock obtained, entering protected code");
+    		} finally {
+      			lock.unlock();
+	 	}
+   	} else {
+    		System.out.println("Unable to acquire lock, doing something else");
+      	}
+       - When you run this code, it could produce either the if or else message, depending on the order of execution.
+       - It will always print Hello though,  as the call to lok() in printHello() will wait indefinitely for the lock to become available.
+	- Like lock(), the tryLock() method should be used with a try/finally block. Fortunately, you need to release the lock only if it was successfully acquired. For this reason, it is common to use the output of tryLock() in an if statement so that unlock() is called only when the lock is obtained.
+ 	- It is imperative that your program always checks the return value of the tryLock() method.
+  	- It tells your program whether it is safe to proceed with the operation and whether the lock needs to be released later.
+
+tryLock(long.TimeUnit):
+
+ 	- The Lock interface includes an overloaded version of tryLock(long, TimeUnit) that acts like a hybrid of lock() and tryLock(). Like the other two methods, if a lock is available, it will immediately return with it. 
+  	- If a lock is unavailable, it will wait up to the specified time limit for the lock.
+   	- The following code snippet uses the overloaded version of tryLock(long, TimeUnit)
+    		Lock lock = new ReentrantLock();
+      		new Thread(() -> printHello(lock)).start();
+		if (lock.tryLock(10, TimeUnit.SECONDS) {
+  			try {
+     				System.out.println("Lock obtained, entering protected code");
+	 		} finally {
+    				lock.unlock();
+			}
+		} else {
+  			System.out.println("Unable to acquire lock, doing something else");
+     		}
+       - The code is same as before, except this time, one of the threads waits up to 10 seconds to acquire the lock.
+
+Acquiring the same lock twice:
+
+	- The ReentrantLock class maintains a counter of the number of times a lock has been successfully granted to a thread.
+ 	- To release the loc for other threads to use, unlock() must be called the same number of times the lock was granted.
+  	- The following code snippet contains an error. Can you spot it?
+   		Lock lock = new ReentrantLock();
+     		if(lock.tryLock()) {
+       			try {
+	  			lock.lock();
+      				System.out.println("Lock obtained, entering protected code");
+	  		} finally {
+     				lock.unlock();
+	 		}
+    		}
+      - The thread obtains the lock twice but releases only once. You can verify this by spawning a new thread after this code runs thats attempts to obtain a lock. The following prints falsE:
+      		new Thread(() -> System.out.print(loc.tryLock())).start(); // false
+	- It is critical that you release a lock the same number of times it is acquired! For calls with tryLock() you need to call unlock() only if the method returned true.
+
+
+Reviewing the Lock Framework:
+
+
+	- The ReentrantLock class supports the same features as synchronized block while adding number of improvements:
+ 		- Ability to request a lock without blocking
+   		- Ability to request a lock while blocking for a specified amount of time.
+     		- A lock can be created with a fairness property in which the loc is granted to threads in the order requested.
+       	- ReentrantReadWriteLock is a really useful class. It includes separate locks for reading and writing data and is useful on data structures where reads are far more common than writes. For example, if you have thousands of threads reading data only one thread writing data, this class can help you in maximize concurrent access.
+
+
+ Orchestrating Tasks with a CyclicBarrier:
+
+ 	- We started the thread safety topic by discussing protecting individual variables and then moved on to blovks of code and locs. We complete our discussion of thread-safety by showing how to orchestrate complex tasks with many steps
+  	- The CyclicBarrier takes in its constructors a limit value, indicating the number of threads to wait for.
+   	- As each thread finishes, it cals the await() method on the cyclic barrier. One the specified number of threads have each called await() the barrier is released and all threads can continue.
+    	- The CyclicBarrier class allows us to perform complex, multithreaded tasks while all threads stop and wait at logical barriers. This solution is superior to a single-threaded solution as the individual tasks
+
+Reusing CyclicBarrier:
+
+	- After a CyclicBarrier limit is reached all threads are released, and the number of threads waiting on the CyclicBarrier goes back to zero. At this point, the CyclicBarrier may be used agan for a new set of waiting threads. 
+ 	- For example, if our CyclicBarrier limit is 5 and we have 15 threads that call await(), the CyclicBarrier will be activated a total of three times. 
+
+
+Usng Concurrent Collections:
+
+	
