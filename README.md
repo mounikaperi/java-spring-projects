@@ -7707,7 +7707,30 @@ Scheduling Tasks:
 Increasing Concurrency with Pools:
 
 	
+	- We now present three additional factory methods in the Executors class that act on a pool of threads rather than on a single thread.
+ 	- A thread pool is a group of pre-instantiated reusable threads that are available to perform a set of arbitary tasks.
+  	- Below table includes our two previous single thread executor methods along with the new ones.
 
+   	Executors Factory Methods:
+
+     	ExecutorService newSingleThreadExecutor():
+      		Creates single-threaded executor that uses single worker thread operating off unbounded queue.
+		Results are processed sequentially in order in which they are submitted.
+      	ScheduledExecutorService newSingleThreadScheduledExecutor():
+       		Creates single-threaded executor that can schedule commands to run after given delay or to execute periodically
+       	ExecutorService newCachedThreadPool():
+		Creates thread pool that creates new threads as needed but reuses previously constructed threads when they are available
+	ExecutorService newFixedThreadPool(int):
+ 		Creates thread pool that reuses fixed number of threads operating off shared unbounded queue
+ 	ScheduledExecutorService newScheduledThreadPool(int)
+  		Creates thread pool that schedule commands to run after given delay or execute periodically.
+
+    These methods return the same instance types, ExecutorService and ScheduledExecutorService 
+    The difference between a single-thread and a pooled-thread executor is what happens when a task is already running.
+    While a single-thread executor will wait for the thread to become available before running the next task, a pooled thread executor can execute the next task concurrently.
+    If the pool runs out of the available threads, the task will be queued by the thread executor and wait to be completed
+
+    
   
  	
  				
