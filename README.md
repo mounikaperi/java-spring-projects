@@ -7730,7 +7730,96 @@ Increasing Concurrency with Pools:
     While a single-thread executor will wait for the thread to become available before running the next task, a pooled thread executor can execute the next task concurrently.
     If the pool runs out of the available threads, the task will be queued by the thread executor and wait to be completed
 
-    
-  
- 	
+
+Writing Thread safe Code:
+
+	- Thread safety is the property of an object that guarantees safe execution by multiple threads at the same time.
+ 	- Since threads run in a shared environment and memory space how do we prevent two threads from interfering with each other?
+  	- We must organize access to data so that we don't end up with invalid or unexpected results.
+
+Understanding Thread safety:
+
+	- Both threads read and write the same values causng one of the two operations to be lost.
+ 	- Therefore, the operation is not thread-safe. The unexpected result of two tasks executing at the same time is referred to as a race condition.
+
+
+Accessing Data with volatile:
+
+	- The volatile keyword is used to guarantee that access to data within memory is consistent.
+ 	- The volatile attribute ensures that only one thread is modifying a variable at one time and that data read among multiple threads is consistent. 
+
+Protecting data with Atomic classes:
+
+	- As we saw the increment operator is not thread-safe when volatile is used.
+ 	- It is not thread-safe because the operation is not atomic carrying out two tasks read and write that can be interrupted by other threads.
+  	- Atomic is the property of an operation to be carried out as a single unit of executon without any interference from another thread. A thread-safe atomic version of the increment operator would perform the read and write of the variable as a single operation not allowing any other threads to access the variable during the operation.
+   	- In this case, any thread trying to access the variable while an atomic operation is in process will have to wait until the atomic operation on the variable is complete.
+
+    		Thread Synchronization using atomic operations:
+
+      		--------------------------------> Thread1 <------------------------------------
+				|					|
+    		--------------------------------> Shared Memory <-----------------------------
+      							|
+	     	---------------------------------> Thread2 <---------------------------------
+
+       		-------------------------------Time----------------------------------------->
+
+  	- Since accessing primitives and references is common in Java, the Concurrency API includes numerous useful classes in the java.util.concurrent.atoic package.
+
+   		AtomicBoolean			A boolean value that may be updated atomically
+     		AtomicInteger			An int value that may be updated atomically
+       		AtomicLong			A long value that may be updated atomically
+
+  	- How do we use an atomic class? Each class includes numerous methods that are equivalent to many of the primitive built-in operations that we use on primitives such as assignment operator and the increment operators (++)
+
+   		private AtomicInteger sheepCount = new AtomicInteger(0);
+     		private void incrementAndReport() {
+       			System.out.println(sheepCount.incrementAndGet() + " ");
+	  	}
+
+Common atomic methods:
+
+	get()				Retrieves current value
+ 	set(type newValue)		Sets given value, equivalent to assignment operator
+  	getAndSet(type newValue)	Atomically sets new value and returns old value
+   	incrementAndGet()		For numeric classes, atomic preincrement operation equivalent to ++value
+    	getAndIncrement()		For numeric classes, atomic postincrement operation equivalent to value++
+     	decrementAndGet()		For numeric classes, atomic predecrement operation equivalent to ++value
+      	getAndDecrement()		For numeric classes, atomic postdecrement operation equivalent to value++
+
+Improving access with synchronized blocks:
+
+	- While atomic classes are great at protecting single variable they aren't particularly useful if you need to execute a series of commands or call a method. For example, we can't use them to update two atomic variables at the same time.
+ 	- How do we improve the results so that each worker is able to increment and report the results in order?
+  	- The most common technique is to use a monitor to synchronize access.
+   	- A monitor, also called as lock is structure that supports mutual exclusion, which is the property that at most one thread is executing particular segment of code at a given time.
+    	- In Java, any Object can be used as a monitor along with the synchronized keyword as shown in the following example:
+     		var manager = new SheepManager();
+       		synchronized(manager) {}
+	- This example is referred to as synchronized block. Each thread that arrives ill first check if any threads are already running the block. If the lock is not available, the thread will transition to a BLOCKED state until it can acquire the lock. 
+ 	- If the lock s available for the thread already holds the lock, the single thread will enter the block preventing all threads from entering. Once the thread finishes executing the block, it will release the lock allowing one of the waiting threads to proceed.
+  	- To synchronize access across multiple threads, each thread must have access to the same Object.
+   	- If each thread synchronizes on different objects the code is not thread safe.
+
+
+Synchronizing on Methods:
+
+	- We established our monitor using synchronized(this) around the body of the method.
+ 	- Java provides a more convenient compiler enhancement for doing so. 
+  	- We can add the synchronized modifier to any instance method to synchronize automatically on the object itself.
+   		void sing() {	
+     			synchronized(this) { System.out.print("La la la!"); }
+		}
+  		synchronized void sing() { System.out.print("La la la!"); }
+    	- The first uses a synchronized block, whereas the second uses the synchronized method modifier. 
+     	- We can also apply the synchronized modifier to static methods.
+      	- What object is used as the monitor when we synchronize on a static method? The class object.
+       	- For example, the following two methods equivalent for static synchronization inside class
+		static void dance() {	
+  			synchronized(SheepManager.class) { System.out.print("Time to dance!"); }
+     		}
+       		static synchronized void dance() { System.out.print("Time to dance!"); }
+	 - As before, the first uses a synchronized block, with the second example using the synchronized modifier. 
+  	 - You can use static synchronization if you need to order thread access across all instances rather than a single instance.
  				
