@@ -7984,5 +7984,53 @@ Understandng Memory Consistency Errors:
       - Although we don't usually modify a loop variable, this example highlights the fact that ConcurrentHashMap is ordering read/wrte access such that all access to the class is consistent. In the code snippet, the iterator created by keySet() is updated as soon as an object is removed from the Map.
       - The concurrent classes were created to help avoid common issues in which multiple threads are adding and removing objects from the same collections. At any given instance, all threads should have the same consistent view of the structure of the collection.
 
-      
-	
+Working wth Concurrent Classes:
+
+	- You should use a concurrent collection class anytime you have multiple threads modify a collection outside a synchronized block or method even if you don't expect a concurrency problem.
+ 	- Without a concurrent collections, multiple threads accessing a collection could result in an exception being thrown or worse corrupt data!
+  	- If the collection is immutale and contains immutable objects the concurrent collections are not necessary. 
+   	- Immutable objects can be accessed by any number of threads and do not require synchronization. 
+    	- By definition, they do not change so there is a chance of memory consistency error.
+     	- When passing around a concurrent collection a caller may need to know the particular implementaton class. 
+      	- That said, it is considered a good practice to pass around a non-concurrent interface reference when possible, similar to how we instantiate the HashMap but often pass around a Map reference
+       		Map<String, Integer> map = new ConcurrentHashMap<>();
+
+Concurrent Collection classes:
+	ClassName			Java collection Interfaces	Sorted?		Blocking?
+
+	ConcurrentHashMap		Map				No		No
+ 					ConcurrentMap	
+      	ConcurrentLinkedQueue		Queue				No		No
+       	ConcurrentSkipListMap		Map				Yes		No
+					SortedMap
+     					NavigableMap
+	  				ConcurrentMap
+       					ConcurrentNavigableMap
+	ConcurrentSkipListSet		Set				Yes		No
+ 					SortedSet
+      					NavigableSet
+	CopyOnWriteArrayList		List				No		No
+ 	CopyOnWriteArraySet		Set				No		No
+  	LinkedBlockingQueue		Queue				No		Yes
+   					BlockingQueue
+
+
+  	Most of the classes are just concurrent versions of their nonconcurrent counterpart classes such as ConcurrentHashMap vc Map or ConcurrentLinkedQueue vs Queue.
+   	The Skip classes might sound strange but they are just sorted versions of the associated concurretn collections.
+    	When you see a class with Skip in the name just think sorted have seen. 
+     	These classes create a copy of collection anytime a reference is added removed or changed in the collection and then update the origina collection reference to point to the copy. 
+      	These classes are commonly used to ensure an iterator doesn;t seemodifications to the collection.
+       		List<Integer> favNumbers = new CopyOnWriteArrayList<>(List.of(4, 3, 42));
+	 	for (var n: favNumbers) {
+   			System.out.print(n + " ");
+      			favNumbers.add(n+1);
+	 		System.out.println();
+    			System.out.println("Size: " + favNumbers.size());
+
+	Despite addng elements, the iterator is not modified and the loop executes exactly three times.
+ 	Alternatively, if we had used a regular ArrayList object, a ConcurrentModificationException would have been thrown at runtime. The CopyOnWrite classes can use alot of memory, since a new collection structure is created anytime the collection is modified. therefore they are commonly used in multithreaded environment situations where reads are far more common than writes.
+
+  	A CopyOnWrite instance is similar to an immutable object as a new underlying structure is created everytime the collection is modified. Unlike a true immutable object though, the reference to the Object stays the same even while the underlying data is changed.
+
+   	LinkedBlockingQueue which implements the concurrentBlockingQueue interface.
+    	This class is just like a regular queue, except that it includes overloaded versions of offer() and poll() that take a timeout. These methods wait or block up to a specific amount of time to complete an operation.
