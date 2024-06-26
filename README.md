@@ -8034,3 +8034,33 @@ Concurrent Collection classes:
 
    	LinkedBlockingQueue which implements the concurrentBlockingQueue interface.
     	This class is just like a regular queue, except that it includes overloaded versions of offer() and poll() that take a timeout. These methods wait or block up to a specific amount of time to complete an operation.
+
+
+Obtaining Synchronized Collections:
+
+	- Besides the concurrent collection classes that we have covered, the Concurrency API also includes methods for obtaining synchronized versions of existing non concurrent collection objects.
+ 	- These synchronized methods are defined in the Collections class. They operate on the inputted collection and return a reference that is the same type as the underlying collection.
+
+
+Synchronized Collection methods:
+
+	- synchronizedCollection(Collection<T> c)
+ 	- synchronizedList(List<T> list)
+  	- synchronizedMap(Map<K, V> m)
+   	- synchronizedNavigableMap(NavigableMap<K,V> m)
+    	- synchronizedSet(Set<T> s)
+     	- synchronizedSortedMap(SortedMap<K, v> s)
+      	- synchronizedSortedSet(SortedSet<T> s)
+
+       If you are writing code to create a collection and it requires synchronization you should use the classes. 
+       On the other hand if you are passed a nonconcurrent collection and need synchronization
+
+Identifying Threading Problems:
+
+	- Now that you know how to write thread-safe code let's talk about what qualifies as a threading problem
+ 	- A threading problem can occur in multithreaded applications when two or more threads interact in an unexpected and undesirable way. For example, two threads may block each other from accessing a particular segment of code.
+  	- The Concurrency API was created to help eliminate potental threading issues common to all developers.
+   	- As you have seen, the concurrency API creates threads and manages complex thread interactions for you often in just few lines of code.
+    	- Although the ConcurrencyAPI reduces potential for threading issues, it does not eliminate them. In practice, finding and identifying threading issues within an application is often one of the most difficult tasks a developer can undertake.
+
+
