@@ -1,4 +1,4 @@
-Core Java 8, 11, 17, 21
+![image](https://github.com/mounikaperi/java-spring-projects/assets/118611857/adb44001-451f-479c-bc65-9d3c3503a407)Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
       2. Generics (JDK 5)
@@ -8089,6 +8089,17 @@ LiveLock:
    	- LiveLock is often a result of two threads trying to resolve a deadlock.
 	- In practice, livelock is often difficult issue to detect. Threads is a livelock state appear active and able to respond to requests even when they are struck in endless cycle.
 
+
+Managing Race Conditions:
+
+	- A race condition is an undesirable result that occurs when two tasks that should be completed sequentially are completed at the same time. 
+	- Possible outcomes for this race condition:
+		○ Both users are able to create accounts 
+		○ Neither user is able to create an account with the username and error message is returned to both users.
+		○ One user is able to create an account with username while the other user receives an error message.
+	- The first outcome is really bad, as it leads to users trying to log in with the same username.
+	- The second outcome causes both users to have to try again which is frustrating but at least doesn't lead to corrupt or bad data.
+	- The third outcome is often considered as the best solution. Like the second situation, we preserve data integrity but unlike the second situation at least one user is able to move forward on the first request, avoiding additional race condition scenarios.
 
 
 
