@@ -1,4 +1,3 @@
-![image](https://github.com/mounikaperi/java-spring-projects/assets/118611857/adb44001-451f-479c-bc65-9d3c3503a407)Core Java 8, 11, 17, 21
 
       1. Enhanced For Loop (JDK 5)
       2. Generics (JDK 5)
@@ -8100,6 +8099,58 @@ Managing Race Conditions:
 	- The first outcome is really bad, as it leads to users trying to log in with the same username.
 	- The second outcome causes both users to have to try again which is frustrating but at least doesn't lead to corrupt or bad data.
 	- The third outcome is often considered as the best solution. Like the second situation, we preserve data integrity but unlike the second situation at least one user is able to move forward on the first request, avoiding additional race condition scenarios.
+
+
+Working with Parallel Streams:
+
+	- One of the most powerful feature of Stream API is built-in concurrency support. Up until now, all of the streas you have worked with have been serial streams. A serial stream is a stream in which the results are ordered wth only one entry being processed at a time.
+	- A parallel stream is capable of processing results concurrenty using multiple threads.
+	- For example, you can use a parallel stream and the map() operation to operate concurrently on the elements in the stream, vastly improving performance over processing a single element at a time.
+	- Using a parallel stream can change not only the performance of your application but also the expected results. Some operations also require special handling to be able to be processed in a parallel manner.
+	- The number of threads available in a parallel stream is proptional to the number of available CPUs in your environment.
+
+
+Creating Parallel Streams:
+
+	- The Stream API was designed to make creating parallel streams quite easy. 
+	- There are two ways of creating parallel streams:
+		○ Collection<Integer> collection = List.of(1,2);
+		Stream<Integer> p1 = collection.stream().parallel();
+		Stream<Integer> p2 = collection.parallelStream();
+		
+	- The first way to create a parallel stream is from an existing stream. Any stream can be made parallel! The second way to create a parallel stream is from a Java Collection class.  We use both of these methods throughout this section
+	- The Stream interface includes a method isParallel() that can be used to test whether the instance of a stream supports parallel processing. Some operations on streams preserve the parallel attribute, while others do not.
+
+Performing a Parallel Decomposition:
+
+	- A parallel decomposition is the process of taking a task, breaking it into smaller pieces that can be performed concurrently and then reassembling the results. 
+	- The more concurrent a decomposition, the greater the performance improvement of using parallel streams.
+			private static int doWork(int input) {
+				try  {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {}
+				return input;
+			}
+	- We can pretend that in a real application, this work might involve calling a database or reading a file.
+			long start = System.currentTimeMillis();
+			List.of(1,2,3,4,5).stream().map(w-> doWork(w)).forEach(s->System.out.println(s+ " ");
+			System.out.println();
+			var timeTaken = (System.currentTimeMillis()-start)/1000;
+			System.out.println("Time: " + timeTaken+"  seconds");
+			
+	- The map() and forEach() operations on a parallel stream are equivalent to submitting multiple Runnable lambda expressions to a pooled thread executor and then waiting for the results.
+	What about the time required? In this case, our system has enough CPUs for all of the tasks to be run concurrently.
+
+ Ordering Results:
+
+	- If your stream operation needs to guarantee ordering and you are not sure if it is serial or parallel, you can replace with one that uses forEachOrdered()
+				forEachOrdered(s-> System.out.print(s+ " "));
+	- While we have lost some of the performance gains of using a parallel stream our map() operation can still take advantage of the parallel stream.
+
+
+Processing Parallel Reductions:
+
+	- Besides potentially improving performance and modifying the order of operations, using parallel streams can impact how you write your application. A parallel reduction is a reduction operation applied to a parallel stream. The results for parallel reductions can differ from what you expect when working with serial streams
 
 
 
