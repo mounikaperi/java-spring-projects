@@ -8063,4 +8063,32 @@ Identifying Threading Problems:
    	- As you have seen, the concurrency API creates threads and manages complex thread interactions for you often in just few lines of code.
     	- Although the ConcurrencyAPI reduces potential for threading issues, it does not eliminate them. In practice, finding and identifying threading issues within an application is often one of the most difficult tasks a developer can undertake.
 
+Understanding Liveness:
+
+	- Many thread operations can be performed independenly, but some require coordination.
+	- For example, synchronizing on a method requires all threads that call the method to wait for other threads to finish before continuing.
+	- What happens to the application while all of these threads are waiting? In many cases, the waiting is ephemeral and the user has very little idea that any delay has occurred. In other cases though, the waiting may be extremely difficult.
+	- Liveness is the ability of an application to be able to execute in a timely manner. Liveness problems then are those in which the application becomes unresponsive or is in some kind of "struck" state.
+	- More precisely, liveness problems are often the result of a thread entering a BLOCKING or WAITING state forever, or repeatedly entering/exiting these states.
+	There are three types of liveness issues with which you should be familiar: deadlock, starvation and lock
+
+
+Deadlock:
+	
+	- Deadlock occurs when two or more threads are blocked forever each waiting on the other
+
+Starvation:
+
+	- Starvation occurs when a single thread is perpetually denied access to a shared resource or lock.
+	- The thread is still active but it is unable to complete its work as a result of other threads constantly taking the resource that it is trying to access.
+
+LiveLock:
+	
+   	- Livelock occurs when two or more threads are conceptually blocked forever although they are each still and trying to complete their task.
+   	- Livelock is a special case of resource starvation in which two or more threads actively try to acquire a set of locks are unable to do so and restart part of the process.
+   	- LiveLock is often a result of two threads trying to resolve a deadlock.
+	- In practice, livelock is often difficult issue to detect. Threads is a livelock state appear active and able to respond to requests even when they are struck in endless cycle.
+
+
+
 
