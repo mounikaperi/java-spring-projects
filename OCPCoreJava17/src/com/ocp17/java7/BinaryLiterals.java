@@ -1,4 +1,4 @@
-package com.ocp17.java7Features;
+package com.ocp17.java7;
 
 public class BinaryLiterals {
     public static void main(String[] args) {

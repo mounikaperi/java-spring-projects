@@ -1,5 +1,8 @@
+package com.ocp17.java7;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 public class CatchingMultipleExceptions {
     private final static Logger LOGGER = Logger.getLogger(CatchingMultipleExceptions.class.getName());
