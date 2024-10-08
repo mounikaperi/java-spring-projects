@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-public class Main {
+public class FilesInJava7 {
     private static String HOME_DIR = "C:\\";
     public static void main(String[] args) throws IOException {
       workingWithFiles();
