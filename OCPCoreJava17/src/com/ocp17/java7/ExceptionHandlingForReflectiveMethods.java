@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 import java.lang.reflect.InvocationTargetException;
 
 public class ExceptionHandlingForReflectiveMethods {
-    private final static Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(ExceptionHandlingForReflectiveMethods.class.getName());
     public static void main(String[] args) {
       beforeJava7();
       withJava7();

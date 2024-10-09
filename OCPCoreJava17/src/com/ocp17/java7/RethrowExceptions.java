@@ -1,4 +1,5 @@
-import java.util.*;
+package com.ocp17.java7;
+
 
 public class RethrowExceptions {
     public static void main(String[] args) throws Exception {

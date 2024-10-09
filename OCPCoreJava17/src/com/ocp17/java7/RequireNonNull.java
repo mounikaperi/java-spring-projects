@@ -1,3 +1,7 @@
+package com.ocp17.java7;
+
+import java.util.Objects;
+
 public class RequireNonNull {
     public static void main(String[] args) {
       Person person = null;
